@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Service Man</string>
+
+    <!--activities-->
+    <string name="activity_add_alarm">Добавить проблему</string>
+    <string name="activity_alarms">Аварии и проблемы</string>
+    <string name="activity_map">Карта объектов</string>
+    <string name="activity_references">Справочники</string>
+    <!--activities end-->
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="user_master">Мастер</string>
+    <string name="user_user">Пользователь</string>
+
+    <!--navigation drawer-->
+    <string name="nav_profile">Профиль</string>
+    <string name="nav_users">Пользователи</string>
+    <string name="nav_questions">Вопросы</string>
+    <string name="nav_gallery">Галерея</string>
+    <string name="nav_tricks">Трюки</string>
+    <string name="nav_switch_theme">Режим день/ночь</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="nav_about">О сервисе</string>
+    <!--navigation drawer end-->
+
+    <!--profile fragment-->
+    <string name="profile_submit_button">Добавить</string>
+    <!--navigation drawer end-->
+
+    <!--question list page-->
+    <string name="all">All</string>
+    <string name="on_the_way">On the way</string>
+    <string name="delivered">Delivered</string>
+    <string name="action_search">Search</string>
+    <string name="mark_all_read">Mark all read</string>
+    <string name="share">Share</string>
+    <string name="delete">Удалить</string>
+    <string name="copy_code">Copy code</string>
+    <string name="set_unread">Set unread</string>
+    <string name="set_read">Set read</string>
+    <string name="remove">Ответить</string>
+    <string name="get_answers_error">Unable to get the latest answer.</string>
+    <string name="network_error">Network error, try again later.</string>
+    <string name="package_number_copied">Package number has been copied successfully.</string>
+    <string name="package_removed_msg">has been removed.</string>
+    <string name="undo">UNDO</string>
+    <string name="go_to_settings">Go to settings</string>
+    <string name="to_add_question">Нажмите кнопку, чтобы добавить вопрос</string>
+    <string name="latest_status">Latest status:&#160;</string>
+
+    <string-array name="question_status">
+        <item>Открыт</item>
+        <item>Закрыт</item>
+    </string-array>
+    <!--question list page end-->
+
+    <string name="to_add_trick">Нажмите кнопку, чтобы добавить рецепт</string>
+
+    <!--details-->
+    <string name="user_name">Автор</string>
+    <string name="question_title">Вопрос</string>
+    <string name="delete_question_message">Вы уверены, что хотите удалить свой вопрос?</string>
+    <string name="delete_trick_message">Вы уверены, что хотите удалить свой совет?</string>
+    <string name="edit_name">Редактирование вопроса</string>
+    <string name="input_empty">Вопрос не может быть пустым</string>
+    <string name="delete_trick">Удалить совет</string>
+    <string name="default_rate_plus">0</string>
+    <string name="default_rate_minus">0</string>
+    <!--details end-->
+
+    <!--add question-->
+    <string name="tint_question_title">Вопрос</string>
+    <string name="tint_question_text">Описание</string>
+    <string name="wrong_title">Вопрос не указан</string>
+    <string name="require_permission">Нет разрешений на запись фотографий</string>
+    <string name="question">Вопрос</string>
+    <string name="question_exist">Вопрос с таким названием уже есть</string>
+    <string name="error">Ошибка</string>
+    <string name="something_wrong">Что-то пошло не так</string>
+    <string name="unable_to_open_camera">Не можем запустить камеру</string>
+    <string name="add_question">Добавить вопрос</string>
+    <!--add question end-->
+
+    <string name="tint_answer_title">Ответ</string>
+    <string name="tint_trick_title">Совет</string>
+    <string name="tint_answer_text">Ваш ответ</string>
+
+    <!--user details-->
+    <string name="profile_name">Ваше имя или никнейм</string>
+    <string name="profile_city">Город или локация</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="official_website">Страница в соцсети</string>
+    <!--user details end-->
+
+    <!--Settings-->
+    <string name="notifications">Оповещения</string>
+    <string name="alert">Сообщения</string>
+    <string name="alert_desc">Посылать мне оповещения когда на мой вопрос появятся ответы</string>
+    <string name="do_not_disturb_mode">Режим не беспокоить</string>
+    <string name="do_not_disturb_mode_desc">Не оповещать меня в эти часы</string>
+    <string name="start_time">Начало</string>
+    <string name="start_time_desc">23:00</string>
+    <string name="end_time">Конец</string>
+    <string name="end_time_desc">06:00</string>
+    <string name="notification_interval">Интервал оповещений</string>
+    <string name="other">Разное</string>
+    <string name="user_interface">Интерфейс</string>
+    <string name="navigation_bar_restart_msg">Изменения вступят в силу после перезапуска</string>
+    <string-array name="notification_interval">
+        <item>10 минут</item>
+        <item>30 минут</item>
+        <item>1 час</item>
+        <item>1.5 часа</item>
+        <item>2 часа</item>
+    </string-array>
+    <string-array name="notification_interval_item">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <!--Settings end-->
+
+    <!--About-->
+    <string name="version">Версия</string>
+    <string name="rate">Оценка</string>
+    <string name="rate_desc">Если Вам нравится приложение - оцените его.</string>
+    <string name="licenses">Лицензия</string>
+    <string name="source_code">GitHub Source code</string>
+    <string name="source_code_desc">https://github.com/Olejek88/AskMaster</string>
+    <string name="support">Поддержка</string>
+    <string name="send_advices">Связаться со мной</string>
+    <string name="mail_account">mailto:shtrmvk@gmail.com</string>
+    <string name="mail_topic">AskMaster</string>
+    <string name="send_advices_desc">Помогите мне улучшить приложение.</string>
+    <string name="web_site">Страница проекта в сети</string>
+    <string name="web_site_link">http://askmaster.ru</string>
+    <string name="set_end_time_error">Start time can not be same as end time.</string>
+    <string name="notification_new_answer">\"The question has a new answer\"</string>
+    <!--About end-->
+
+    <!--shortcuts-->
+    <string name="shortcut_label_add_package">Add manually</string>
+    <string name="shortcut_label_search">Search</string>
+    <string name="shortcut_label_scan_code">Scan code</string>
+    <!--shortcuts end-->
+
+    <!--widget-->
+    <string name="all_packages_are_delivered">All packages are delivered.</string>
+    <!--widget end-->
+
+    <!--onboarding-->
+    <string name="onboarding_next_button_description">Дальше</string>
+    <string name="onboarding_finish_button_description">Закончить</string>
+    <string name="onboarding_pre_button_description">Назад</string>
+    <string name="onboarding_section_1">Добавляйте свои вопросы в любой непонятной ситуации</string>
+    <string name="onboarding_intro_1">Сопровождайте свои проблемы фото с места событий</string>
+    <string name="onboarding_section_2">Мастера своего дела обязательно ответят Вам</string>
+    <string name="onboarding_intro_2">И дадут свои рекомендации и советы</string>
+    <string name="onboarding_section_3">Голосуйте за хорошие советы и повышайте рейтинг</string>
+    <string name="onboarding_intro_3">Получайте уведомления об ответах на свои вопросы</string>
+    <string name="onboarding_finish_button_description_wait">Пожалуйста подождите…</string>
+    <!--onboarding end-->
+
+    <!--search-->
+    <string name="no_result">NO RESULT</string>
+    <string name="search_hint">Package or company…</string>
+    <string name="search_label_package">PACKAGE</string>
+    <string name="search_label_company">COMPANY</string>
+    <string name="item_loading">Loading…</string>
+    <!--search end-->
+
+    <!--custom tabs-->
+    <string name="error_no_browser">No browser installed on the device.</string>
+    <!--custom tabs end-->
+
+</resources>

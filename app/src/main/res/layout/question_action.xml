@@ -1,0 +1,54 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        android:src="@android:drawable/ic_menu_add"
+        android:visibility="invisible"
+        app:layout_anchor="@id/user_detail"
+        app:backgroundTint="@color/light_blue_500"
+        app:fabSize="normal" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        app:layout_anchor="@id/user_detail"
+        android:src="@android:drawable/ic_menu_edit"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        app:layout_anchor="@id/user_detail"
+        android:src="@android:drawable/ic_menu_delete"
+        android:visibility="invisible"
+        app:backgroundTint="@color/red"
+        app:fabSize="normal" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_answer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        android:src="@android:drawable/ic_menu_rotate"
+        android:visibility="invisible"
+        app:layout_anchor="@id/user_detail"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:fabSize="normal" />
+
+</FrameLayout>

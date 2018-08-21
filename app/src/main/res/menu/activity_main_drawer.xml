@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/main_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/baseline_person_black_24dp"
+            android:title="@string/nav_profile" />
+        <item
+            android:id="@+id/nav_users"
+            android:icon="@drawable/baseline_group_black_24dp"
+            android:title="@string/nav_users" />
+        <item
+            android:id="@+id/nav_questions"
+            android:icon="@drawable/baseline_contact_support_black_24dp"
+            android:title="@string/nav_questions" />
+        <item
+            android:id="@+id/nav_tricks"
+            android:icon="@drawable/baseline_sentiment_very_satisfied_black_24dp"
+            android:title="@string/nav_tricks" />
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/baseline_photo_library_black_24dp"
+            android:title="@string/nav_gallery" />
+
+    </group>
+
+    <group android:id="@+id/second_group"
+        android:checkableBehavior="none">
+
+        <item android:id="@+id/nav_switch_theme"
+            android:icon="@drawable/ic_brightness_6_black_24dp"
+            android:title="@string/nav_switch_theme"/>
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/nav_settings" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info_black_24dp"
+            android:title="@string/nav_about" />
+
+    </group>
+
+</menu>

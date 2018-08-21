@@ -32,53 +32,13 @@ public class UsersRepository implements UsersDataSource {
     }
 
     @Override
-    public Observable<List<User>> getUsers() {
+    public List<User> getUsers() {
         return localDataSource.getUsers();
     }
 
     @Override
-    public Observable<User> getUser(@NonNull String id) {
-        return localDataSource.getUser(id);
-    }
-
-    @Override
-    public Observable<List<User>> searchUsers(@NonNull String keyWords) {
-        return localDataSource.searchUsers(keyWords);
-    }
-
-    @Override
-    public User getUserById(@NonNull String id) {
-        return localDataSource.getUserById(id);
-    }
-
-    @Override
-    public boolean isUserExist(@NonNull String id) {
-        return localDataSource.isUserExist(id);
-    }
-
-    @Override
-    public void deleteUser(@NonNull String id) {
-        localDataSource.deleteUser(id);
-    }
-
-    @Override
-    public void saveUser(@NonNull User user) {
-        localDataSource.saveUser(user);
-    }
-
-    @Override
-    public void addQuestion(@NonNull Question question, User user) {
-        localDataSource.addQuestion(question, user);
-    }
-
-    @Override
-    public void addTrick(@NonNull Trick trick, User user) {
-        localDataSource.addTrick(trick, user);
-    }
-
-    @Override
-    public void addAnswer(@NonNull Answer answer, User user) {
-        localDataSource.addAnswer(answer, user);
+    public User getUser(@NonNull String userUuid) {
+        return localDataSource.getUser(userUuid);
     }
 
 }

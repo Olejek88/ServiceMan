@@ -1,7 +1,6 @@
 package ru.shtrm.serviceman.mvp.questiondetails;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +18,6 @@ import java.util.Locale;
 
 import io.realm.RealmList;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.component.Timeline;
 import ru.shtrm.serviceman.data.Answer;
 import ru.shtrm.serviceman.data.Question;
 import ru.shtrm.serviceman.mvp.images.ImageGridAdapter;

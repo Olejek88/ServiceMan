@@ -35,13 +35,10 @@ public class UsersLocalDataSource implements UsersDataSource {
     }
 
     @Override
-    public Observable<List<User>> getUsers() {
+    public List<User> getUsers() {
         Realm realm = RealmHelper.newRealmInstance();
-        return Observable
-                .fromIterable(realm.copyFromRealm(
-                        realm.where(User.class).findAllSorted("name", Sort.ASCENDING)))
-                .toList()
-                .toObservable();
+        return realm.copyFromRealm(
+                        realm.where(User.class).findAllSorted("name", Sort.ASCENDING));
     }
 
     public User getLastUser() {
@@ -52,40 +49,13 @@ public class UsersLocalDataSource implements UsersDataSource {
     }
 
     @Override
-    public Observable<User> getUser(@NonNull String id) {
+    public User getUser(@NonNull String id) {
         Realm realm = RealmHelper.newRealmInstance();
         User user = realm.where(User.class).equalTo("id", id).findFirst();
         if (user!=null)
-            return Observable.just(realm.copyFromRealm(user));
+            return realm.copyFromRealm(user);
         else
             return null;
-    }
-
-    @Override
-    public User getUserById(@NonNull String id) {
-        Realm realm = RealmHelper.newRealmInstance();
-        User user = realm.where(User.class).equalTo("id", id).findFirst();
-        if (user!=null) {
-            user = realm.copyFromRealm(user);
-        }
-        realm.close();
-        return user;
-    }
-
-    @Override
-    public Observable<List<User>> searchUsers(@NonNull String keyWords) {
-        Realm rlm = RealmHelper.newRealmInstance();
-        List<User> results = rlm.copyFromRealm(
-                rlm.where(User.class)
-                        .like("name","*" + keyWords + "*", Case.INSENSITIVE)
-                        .or()
-                        .like("phone", "*" + keyWords + "*", Case.INSENSITIVE)
-                        .or()
-                        .like("website", "*" + keyWords + "*", Case.INSENSITIVE)
-                        .findAllSorted("name", Sort.ASCENDING));
-        return Observable.fromIterable(results)
-                .toList()
-                .toObservable();
     }
 
     public User getAuthorisedUser() {
@@ -99,94 +69,6 @@ public class UsersLocalDataSource implements UsersDataSource {
             }
         }
         return null;
-    }
-
-    public boolean isUserExist(@NonNull String id) {
-        Realm realm = RealmHelper.newRealmInstance();
-        User user =  realm.where(User.class).equalTo("id", id).findFirst();
-        realm.close();
-        return user != null;
-    }
-
-    public void deleteUser(@NonNull String id) {
-        Realm realm = RealmHelper.newRealmInstance();
-        final User user =  realm.where(User.class).equalTo("id", id).findFirst();
-        if (user!=null) {
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    user.deleteFromRealm();
-                }
-            });
-        }
-        realm.close();
-    }
-
-    public void deleteUsers() {
-        Realm realm = RealmHelper.newRealmInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.where(User.class).findAll().deleteAllFromRealm();
-            }
-        });
-        realm.close();
-    }
-
-    /**
-     * Save a user to database.
-     * @param user See {@link User}
-     */
-    @Override
-    public void saveUser(@NonNull final User user) {
-        Realm realm = RealmHelper.newRealmInstance();
-        // DO NOT forget begin and commit the transaction.
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(user);
-            }
-        });
-        realm.close();
-    }
-
-    @Override
-    public void addQuestion(@NonNull final Question question, final User user) {
-        Realm realm = RealmHelper.newRealmInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                user.getQuestions().add(question);
-                realm.copyToRealmOrUpdate(user);
-            }
-        });
-        realm.close();
-    }
-
-    @Override
-    public void addTrick(@NonNull final Trick trick, final User user) {
-        Realm realm = RealmHelper.newRealmInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                user.getTricks().add(trick);
-                realm.copyToRealmOrUpdate(user);
-            }
-        });
-        realm.close();
-    }
-
-    @Override
-    public void addAnswer(@NonNull final Answer answer, final User user) {
-        Realm realm = RealmHelper.newRealmInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                user.getAnswers().add(answer);
-                realm.copyToRealmOrUpdate(user);
-            }
-        });
-        realm.close();
     }
 
 }

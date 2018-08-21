@@ -13,7 +13,6 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.component.FastScrollRecyclerView;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.util.MainUtil;

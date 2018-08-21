@@ -9,111 +9,28 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
-
-    @Expose
-    @SerializedName("name")
-    private String name;
-
     @PrimaryKey
-    @Expose
-    @SerializedName("id")
-    private String id;
+    private String _id;
+    private String uuid;
+    private String name;
+    private String pin;
+    private String image;
+    private String contact;
 
-    @Expose
-    @SerializedName("phone")
-    private String phone;
-
-    @Expose
-    @SerializedName("website")
-    private String website;
-
-    @Expose
-    @SerializedName("address")
-    private String address;
-
-    @Expose
-    @SerializedName("avatar")
-    private String avatar;
-
-    @Expose
-    @SerializedName("rating")
-    private String rating;
-
-    @Expose
-    @SerializedName("questions")
-    private RealmList<Question> questions;
-
-    public RealmList<Question> getQuestions() {
-        return questions;
+    public String get_id() {
+        return _id;
     }
 
-    public void setQuestions(RealmList<Question> questions) {
-        this.questions = questions;
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
-    @Expose
-    @SerializedName("answers")
-    private RealmList<Answer> answers;
-
-    public RealmList<Answer> getAnswers() {
-        return answers;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setAnswers(RealmList<Answer> answers) {
-        this.answers = answers;
-    }
-
-    @Expose
-    @SerializedName("tricks")
-    private RealmList<Trick> tricks;
-
-    public RealmList<Trick> getTricks() {
-        return tricks;
-    }
-
-    public void setTricks(RealmList<Trick> tricks) {
-        this.tricks = tricks;
-    }
-
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getRating() {
-        return rating;
-    }
-
-    public void setRating(String rating) {
-        this.rating = rating;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -124,29 +41,27 @@ public class User extends RealmObject {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getPin() {
+        return pin;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 
-    @Override
-    public String toString() {
-        return new Gson().toJson(this);
+    public String getImage() {
+        return image;
     }
 
-    public String getStats() {
-        String stats = " [Q: ".
-                concat(Integer.toString(questions.size())).
-                concat(" A: ").
-                concat(Integer.toString(answers.size())).
-                concat(" T: ").
-                concat(Integer.toString(tricks.size())).
-                concat("]");
-        if (rating!=null)
-            stats = stats.concat(" R: ").concat(rating);
-        return stats;
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 }

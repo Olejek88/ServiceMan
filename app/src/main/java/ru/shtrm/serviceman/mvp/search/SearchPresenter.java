@@ -12,7 +12,6 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import ru.shtrm.serviceman.data.Question;
-import ru.shtrm.serviceman.data.QuestionsAndUsersPairs;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.QuestionsRepository;
 import ru.shtrm.serviceman.data.source.UsersRepository;

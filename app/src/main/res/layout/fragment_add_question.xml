@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".mvp.addquestion.AddQuestionActivity"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout
@@ -125,7 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:contentDescription="@string/activity_add_question"
+            android:contentDescription="@string/activity_add_alarm"
             android:src="@drawable/ic_done_white_24dp"
             android:tint="@android:color/white"
             app:backgroundTint="@color/colorPrimary" />

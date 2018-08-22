@@ -27,34 +27,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.appwidget.AppWidgetProvider;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.ImagesRepository;
-import ru.shtrm.serviceman.data.source.QuestionsRepository;
-import ru.shtrm.serviceman.data.source.TricksRepository;
 import ru.shtrm.serviceman.data.source.UsersRepository;
-import ru.shtrm.serviceman.data.source.local.ImagesLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.QuestionsLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.TricksLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.data.source.remote.QuestionsRemoteDataSource;
-import ru.shtrm.serviceman.data.source.remote.TricksRemoteDataSource;
-import ru.shtrm.serviceman.mvp.images.ImagesFragment;
-import ru.shtrm.serviceman.mvp.images.ImagesPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
-import ru.shtrm.serviceman.mvp.questionedit.QuestionEditFragment;
-import ru.shtrm.serviceman.mvp.questions.QuestionFilterType;
-import ru.shtrm.serviceman.mvp.questions.QuestionsFragment;
-import ru.shtrm.serviceman.mvp.questions.QuestionsPresenter;
-import ru.shtrm.serviceman.mvp.tricks.TricksFragment;
-import ru.shtrm.serviceman.mvp.tricks.TricksPresenter;
-import ru.shtrm.serviceman.mvp.users.UsersFragment;
-import ru.shtrm.serviceman.mvp.users.UsersPresenter;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
-import ru.shtrm.serviceman.util.PushUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class MainActivity extends AppCompatActivity
@@ -66,14 +46,7 @@ public class MainActivity extends AppCompatActivity
 
     private NavigationView navigationView;
     private DrawerLayout drawer;
-    private ImagesFragment imagesFragment;
-    private QuestionsFragment questionsFragment;
-    private QuestionEditFragment questionEditFragment;
-    private UsersFragment usersFragment;
     private UserDetailFragment profileFragment;
-    private TricksFragment tricksFragment;
-
-    private QuestionsPresenter questionsPresenter;
 
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
     private static final String CURRENT_FILTERING_KEY = "CURRENT_FILTERING_KEY";
@@ -103,87 +76,22 @@ public class MainActivity extends AppCompatActivity
             if (user==null) {
                 user = UsersLocalDataSource.getInstance().getLastUser();
                 if (user != null)
-                    AuthorizedUser.getInstance().setId(user.getId());
+                    AuthorizedUser.getInstance().setId(user.get_id());
             }
         }
 
         initViews();
 
         if (savedInstanceState != null) {
-            questionsFragment = (QuestionsFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "QuestionsFragment");
-            usersFragment = (UsersFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "UsersFragment");
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "UserDetailFragment");
-            imagesFragment = (ImagesFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "ImagesFragment");
-            tricksFragment = (TricksFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "TricksFragment");
-/*
-            questionEditFragment = (QuestionEditFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState,"QuestionEditFragment");
-*/
             selectedNavItem = savedInstanceState.getInt(KEY_NAV_ITEM);
         } else {
-            questionsFragment = (QuestionsFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            if (questionsFragment == null) {
-                questionsFragment = QuestionsFragment.newInstance();
-            }
-
-/*
-            questionEditFragment = (QuestionEditFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            if (questionEditFragment == null) {
-                questionEditFragment = QuestionEditFragment.newInstance();
-            }
-*/
-
-            usersFragment = (UsersFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            if (usersFragment == null) {
-                usersFragment = UsersFragment.newInstance();
-            }
-
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
                     findFragmentById(R.id.content_main);
             if (profileFragment == null) {
                 profileFragment = UserDetailFragment.newInstance();
             }
-
-            imagesFragment = (ImagesFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            if (imagesFragment == null) {
-                imagesFragment = ImagesFragment.newInstance();
-            }
-
-            tricksFragment = (TricksFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            if (tricksFragment == null) {
-                tricksFragment = TricksFragment.newInstance();
-            }
-        }
-
-        // Add the fragments.
-        if (!questionsFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, questionsFragment, "QuestionsFragment")
-                    .commit();
-        }
-
-/*
-        if (!questionEditFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, questionEditFragment, "QuestionEditFragment")
-                    .commit();
-        }
-*/
-
-        if (!usersFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, usersFragment, "UsersFragment")
-                    .commit();
         }
 
         if (profileFragment!=null && !profileFragment.isAdded()) {
@@ -191,80 +99,36 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.content_main, profileFragment, "UserDetailFragment")
                     .commit();
         }
-
-        if (!imagesFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, imagesFragment, "ImagesFragment")
-                    .commit();
-        }
-
-        if (!tricksFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, tricksFragment, "TricksFragment")
-                    .commit();
-        }
-
         CheckPermission();
 
-        // Make sure the data in repository is the latest.
-        // Also to void the repo only contains a package
-        // when user has already gone to detail page
-        // by check a notification or widget.
+/*
         QuestionsRepository.destroyInstance();
         // Init the presenters.
         questionsPresenter = new QuestionsPresenter(questionsFragment,
                 QuestionsRepository.getInstance(
                         QuestionsRemoteDataSource.getInstance(),
                         QuestionsLocalDataSource.getInstance()));
-        new UsersPresenter(usersFragment,
-                UsersRepository.getInstance(UsersLocalDataSource.getInstance()));
-
-/*
-        new QuestionEditPresenter("",
-                QuestionsRepository.getInstance(
-                        QuestionsRemoteDataSource.getInstance(),
-                        QuestionsLocalDataSource.getInstance()), questionEditFragment);
 */
-
         new UserDetailPresenter(profileFragment,
                 UsersRepository.getInstance(UsersLocalDataSource.getInstance()),
                 "");
 
-        new ImagesPresenter(QuestionsRepository.getInstance(
-                        QuestionsRemoteDataSource.getInstance(),
-                        QuestionsLocalDataSource.getInstance()),
-                ImagesRepository.getInstance(ImagesLocalDataSource.getInstance()),
-                imagesFragment);
-
-        new TricksPresenter(tricksFragment,
-                TricksRepository.getInstance(TricksRemoteDataSource.getInstance(),
-                TricksLocalDataSource.getInstance()));
-
-        // Get data from Bundle.
-        if (savedInstanceState != null) {
-            QuestionFilterType currentFiltering = (QuestionFilterType) savedInstanceState.
-                    getSerializable(CURRENT_FILTERING_KEY);
-            if (currentFiltering!=null)
-                questionsPresenter.setFiltering(currentFiltering);
-        }
-
         // Show the default fragment.
         if (selectedNavItem == 0) {
-            showProfileFragment();
+            //showAlarmFragment();
         } else if (selectedNavItem == 1) {
-            showUsersFragment();
+            //showMapFragment();
         } else if (selectedNavItem == 2) {
-            showQuestionsFragment();
+            //showCheckinFragment();
+        } else if (selectedNavItem == 3) {
+            //showReferencesFragment();
         }
-
-        PushUtil.startReminderService(this);
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sendBroadcast(AppWidgetProvider.getRefreshBroadcastIntent(getApplicationContext()));
+        //sendBroadcast(AppWidgetProvider.getRefreshBroadcastIntent(getApplicationContext()));
     }
 
     /**
@@ -296,16 +160,16 @@ public class MainActivity extends AppCompatActivity
                 showProfileFragment();
                 break;
             case R.id.nav_questions:
-                showQuestionsFragment();
+                //showQuestionsFragment();
                 break;
             case R.id.nav_users:
-                showUsersFragment();
+                //showUsersFragment();
                 break;
             case R.id.nav_gallery:
-                showGalleryFragment();
+                //showGalleryFragment();
                 break;
             case R.id.nav_tricks:
-                showTricksFragment();
+                //showTricksFragment();
                 break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -315,7 +179,6 @@ public class MainActivity extends AppCompatActivity
 
                     @Override
                     public void onDrawerOpened(@NonNull View drawerView) {
-
                     }
 
                     @Override
@@ -362,7 +225,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(CURRENT_FILTERING_KEY, questionsPresenter.getFiltering());
+        //outState.putSerializable(CURRENT_FILTERING_KEY, questionsPresenter.getFiltering());
         super.onSaveInstanceState(outState);
         Menu menu = navigationView.getMenu();
         if (menu.findItem(R.id.nav_profile).isChecked()) {
@@ -371,17 +234,8 @@ public class MainActivity extends AppCompatActivity
             outState.putInt(KEY_NAV_ITEM, 1);
         }
         // Store the fragments' states.
-        if (questionsFragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "QuestionsFragment", questionsFragment);
-        }
-        if (usersFragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "UsersFragment", usersFragment);
-        }
-        if (imagesFragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "ImagesFragment", imagesFragment);
-        }
-        if (tricksFragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "TricksFragment", tricksFragment);
+        if (profileFragment.isAdded()) {
+            getSupportFragmentManager().putFragment(outState, "ProfileFragment", profileFragment);
         }
     }
 
@@ -414,16 +268,12 @@ public class MainActivity extends AppCompatActivity
                         showProfileFragment();
                         break;
                     case R.id.nav_questions:
-                        showQuestionsFragment();
                         break;
                     case R.id.nav_users:
-                        showUsersFragment();
                         break;
                     case R.id.nav_tricks:
-                        showTricksFragment();
                         break;
                     case R.id.nav_gallery:
-                        showGalleryFragment();
                         break;
                 }
                 return true;
@@ -432,10 +282,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void showQuestionsFragment() {
-        changeFragment(questionsFragment);
-        toolbar.setTitle(getResources().getString(R.string.nav_questions));
-        navigationView.setCheckedItem(R.id.nav_profile);
+    public void showAlarmsFragment() {
     }
 
     private void showProfileFragment() {
@@ -444,51 +291,22 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_profile);
     }
 
-    private void showUsersFragment() {
-        changeFragment(usersFragment);
-        toolbar.setTitle(getResources().getString(R.string.nav_users));
-        navigationView.setCheckedItem(R.id.nav_users);
+    private void showReferencesFragment() {
     }
 
-    private void showGalleryFragment() {
-        changeFragment(imagesFragment);
-        toolbar.setTitle(getResources().getString(R.string.nav_gallery));
-        navigationView.setCheckedItem(R.id.nav_gallery);
+    private void showCheckinFragment() {
     }
 
-    private void showTricksFragment() {
-        changeFragment(tricksFragment);
-        toolbar.setTitle(getResources().getString(R.string.nav_tricks));
-        navigationView.setCheckedItem(R.id.nav_tricks);
+    private void showMapFragment() {
     }
 
     void changeFragment(Fragment selectedFragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.hide(tricksFragment);
-        fragmentTransaction.hide(usersFragment);
-        fragmentTransaction.hide(questionsFragment);
         fragmentTransaction.hide(profileFragment);
-        fragmentTransaction.hide(imagesFragment);
 
-        if (selectedFragment==tricksFragment)
-            fragmentTransaction.show(tricksFragment);
-        if (selectedFragment==usersFragment)
-            fragmentTransaction.show(usersFragment);
-        if (selectedFragment==questionsFragment)
-            fragmentTransaction.show(questionsFragment);
         if (selectedFragment==profileFragment)
             fragmentTransaction.show(profileFragment);
-        if (selectedFragment==imagesFragment)
-            fragmentTransaction.show(imagesFragment);
         fragmentTransaction.commit();
-    }
-
-    /**
-     * Pass the selected question id to fragment.
-     * @param id The selected question id.
-     */
-    public void setSelectedQuestionId(@NonNull String id) {
-        questionsFragment.setSelectedQuestion(id);
     }
 
     private void CheckPermission () {

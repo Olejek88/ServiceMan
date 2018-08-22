@@ -44,9 +44,6 @@ public class PrefsActivity extends AppCompatActivity {
         } else if (intent.getIntExtra(EXTRA_FLAG, 0) == FLAG_ABOUT){
             setTitle(R.string.nav_about);
             fragment = new AboutFragment();
-        } else if (intent.getIntExtra(EXTRA_FLAG, 0) == FLAG_LICENSES) {
-            setTitle(R.string.licenses);
-            fragment = new LicensesFragment();
         } else {
             throw new RuntimeException("Please set flag when launching PrefsActivity.");
         }

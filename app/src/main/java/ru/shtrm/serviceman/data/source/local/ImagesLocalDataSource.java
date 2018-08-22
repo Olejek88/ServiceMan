@@ -11,7 +11,6 @@ import io.realm.RealmList;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.Image;
 import ru.shtrm.serviceman.data.source.ImagesDataSource;
-import ru.shtrm.serviceman.realm.RealmHelper;
 
 public class ImagesLocalDataSource implements ImagesDataSource {
 
@@ -32,18 +31,18 @@ public class ImagesLocalDataSource implements ImagesDataSource {
 
     @Override
     public List<Image> getImages() {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(realm.where(Image.class).findAllSorted("date", Sort.DESCENDING));
     }
 
     @Override
     public Image getImage(@NonNull String id) {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(realm.where(Image.class).equalTo("id", id).findFirst());
     }
 
     public void deleteImage(@NonNull String id) {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         final Image Image =  realm.where(Image.class).equalTo("id", id).findFirst();
         if (Image!=null) {
             realm.executeTransaction(new Realm.Transaction() {
@@ -61,7 +60,7 @@ public class ImagesLocalDataSource implements ImagesDataSource {
      */
     @Override
     public void saveImage(@NonNull final Image Image) {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         // DO NOT forget begin and commit the transaction.
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -73,7 +72,7 @@ public class ImagesLocalDataSource implements ImagesDataSource {
     }
 
     public RealmList<Image> saveImages(@NonNull final ArrayList<Image> images) {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         // DO NOT forget begin and commit the transaction.
         final RealmList<Image> list = new RealmList<>();
         realm.executeTransaction(new Realm.Transaction() {

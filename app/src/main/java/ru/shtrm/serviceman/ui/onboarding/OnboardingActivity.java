@@ -3,11 +3,7 @@ package ru.shtrm.serviceman.ui.onboarding;
 import android.animation.ArgbEvaluator;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,12 +16,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import java.util.Arrays;
-
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.mvp.MainActivity;
-import ru.shtrm.serviceman.mvp.addquestion.AddQuestionActivity;
-import ru.shtrm.serviceman.mvp.search.SearchActivity;
 import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class OnboardingActivity extends AppCompatActivity {
@@ -63,7 +55,8 @@ public class OnboardingActivity extends AppCompatActivity {
 
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                    int colorUpdate = (Integer) new ArgbEvaluator().evaluate(positionOffset, bgColors[position], bgColors[position == 2 ? position : position + 1]);
+                    int colorUpdate = (Integer) new ArgbEvaluator().
+                            evaluate(positionOffset, bgColors[position], bgColors[position == 2 ? position : position + 1]);
                     viewPager.setBackgroundColor(colorUpdate);
                 }
 
@@ -90,7 +83,6 @@ public class OnboardingActivity extends AppCompatActivity {
                     ed.putBoolean(SettingsUtil.KEY_FIRST_LAUNCH, false);
                     ed.apply();
                     navigateToMainActivity();
-                    enableShortcuts();
                 }
             });
 
@@ -182,44 +174,6 @@ public class OnboardingActivity extends AppCompatActivity {
         protected void onProgressUpdate(Void... values) {
 
         }
-    }
-
-    private void enableShortcuts() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            ShortcutManager manager =  getSystemService(ShortcutManager.class);
-            ShortcutInfo addPkg = new ShortcutInfo.Builder(this, "shortcut_add_package")
-                    .setLongLabel(getString(R.string.shortcut_label_add_package))
-                    .setShortLabel(getString(R.string.shortcut_label_add_package))
-                    .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_add))
-                    .setIntent(
-                            new Intent(OnboardingActivity.this, AddQuestionActivity.class)
-                                    .setAction(Intent.ACTION_VIEW)
-                                    .addCategory(ShortcutInfo.SHORTCUT_CATEGORY_CONVERSATION)
-                    )
-                    .build();
-            ShortcutInfo scanCode = new ShortcutInfo.Builder(this, "shortcut_scan_code")
-                    .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_filter_center_focus))
-                    .setLongLabel(getString(R.string.shortcut_label_scan_code))
-                    .setShortLabel(getString(R.string.shortcut_label_scan_code))
-                    .setIntent(
-                            new Intent(OnboardingActivity.this, AddQuestionActivity.class)
-                                    .setAction("ru.shtrm.serviceman.mvp.addpackage.ImagesActivity")
-                                    .addCategory(ShortcutInfo.SHORTCUT_CATEGORY_CONVERSATION)
-                    )
-                    .build();
-            ShortcutInfo search = new ShortcutInfo.Builder(this, "shortcut_search")
-                    .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_search))
-                    .setLongLabel(getString(R.string.shortcut_label_search))
-                    .setShortLabel(getString(R.string.shortcut_label_search))
-                    .setIntent(
-                            new Intent(OnboardingActivity.this, SearchActivity.class)
-                                    .setAction(Intent.ACTION_VIEW)
-                                    .addCategory(ShortcutInfo.SHORTCUT_CATEGORY_CONVERSATION)
-                    )
-                    .build();
-            manager.setDynamicShortcuts(Arrays.asList(addPkg, scanCode, search));
-        }
-
     }
 
     private void navigateToMainActivity() {

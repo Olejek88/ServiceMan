@@ -47,30 +47,12 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
     }
 
     private void fetchUserData() {
-        Observable<User> user = usersRepository.getUser(userId);
-        if (user==null) return;
-
-        Disposable disposable = user.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<User>() {
-                    @Override
-                    public void onNext(User value) {
-                        if (value != null) {
-                            view.setUserName(value.getName());
-                            view.setUserAddress(value.getAddress());
-                            view.setUserWebsite(value.getWebsite());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-        compositeDisposable.add(disposable);
+        User user = usersRepository.getUser(userId);
+        if (user == null) return;
+/*
+        view.setUserName(value.getName());
+        view.setUserAddress(value.getAddress());
+        view.setUserWebsite(value.getWebsite());
+*/
     }
 }

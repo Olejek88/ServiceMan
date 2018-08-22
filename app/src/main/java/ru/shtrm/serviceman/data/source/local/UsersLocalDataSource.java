@@ -5,17 +5,11 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.realm.Case;
 import io.realm.Realm;
 import io.realm.Sort;
-import ru.shtrm.serviceman.data.Answer;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Question;
-import ru.shtrm.serviceman.data.Trick;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersDataSource;
-import ru.shtrm.serviceman.realm.RealmHelper;
 
 public class UsersLocalDataSource implements UsersDataSource {
 
@@ -36,13 +30,13 @@ public class UsersLocalDataSource implements UsersDataSource {
 
     @Override
     public List<User> getUsers() {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
                         realm.where(User.class).findAllSorted("name", Sort.ASCENDING));
     }
 
     public User getLastUser() {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         User user = realm.copyFromRealm(realm.where(User.class).findFirst());
         realm.close();
         return user;
@@ -50,7 +44,7 @@ public class UsersLocalDataSource implements UsersDataSource {
 
     @Override
     public User getUser(@NonNull String id) {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).equalTo("id", id).findFirst();
         if (user!=null)
             return realm.copyFromRealm(user);
@@ -59,7 +53,7 @@ public class UsersLocalDataSource implements UsersDataSource {
     }
 
     public User getAuthorisedUser() {
-        Realm realm = RealmHelper.newRealmInstance();
+        Realm realm = Realm.getDefaultInstance();
         AuthorizedUser aUser = AuthorizedUser.getInstance();
         if (aUser!=null) {
             User user = realm.where(User.class).equalTo("id",

@@ -7,7 +7,6 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
 
-import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.R;
 
 public class AboutFragment extends PreferenceFragmentCompat {
@@ -23,7 +22,7 @@ public class AboutFragment extends PreferenceFragmentCompat {
 
         initPrefs();
 
-        prefVersion.setSummary(BuildConfig.VERSION_NAME);
+        prefVersion.setSummary("1");
 
         // Rate
         prefRate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

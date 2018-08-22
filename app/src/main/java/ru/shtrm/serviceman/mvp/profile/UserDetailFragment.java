@@ -24,7 +24,6 @@ import ru.shtrm.serviceman.customtabs.CustomTabsHelper;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.mvp.profileedit.UserEditActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.profile.UserDetailActivity.USER_ID;
@@ -65,38 +64,14 @@ public class UserDetailFragment extends Fragment
         if (b!=null) {
             String userUuid = b.getString(USER_ID);
             if (userUuid!=null)
-                user = UsersLocalDataSource.getInstance().getUserById(userUuid);
+                user = UsersLocalDataSource.getInstance().getUser(userUuid);
         }
         if (user==null)
             user = UsersLocalDataSource.
-                getInstance().getUserById(AuthorizedUser.getInstance().getId());
-
-        if (user == null) {
-            Intent intent = new Intent(getContext(), UserEditActivity.class);
-            startActivity(intent);
-            return null;
-        }
+                getInstance().getUser(AuthorizedUser.getInstance().getId());
 
         view = inflater.inflate(R.layout.fragment_view_user, container, false);
         initViews(view);
-
-        editUser.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), UserEditActivity.class);
-                    intent.putExtra(USER_ID, user.getId());
-                    startActivity(intent);
-                }
-            });
-
-        textViewWebsite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (website != null) {
-                    CustomTabsHelper.openUrl(getContext(), website);
-                }
-            }
-        });
 
         setHasOptionsMenu(true);
         return view;
@@ -134,15 +109,6 @@ public class UserDetailFragment extends Fragment
         editUser = view.findViewById(R.id.editUser);
 
         textViewName.setText(user.getName());
-        textViewAddress.setText(user.getAddress());
-        textViewWebsite.setText(user.getWebsite());
-        textViewPhone.setText(user.getPhone());
-        String path = MainUtil.getPicturesDirectory(mainActivityConnector.getApplicationContext());
-        if (path != null) {
-            String avatar = user.getAvatar();
-            if (avatar != null)
-                imageView.setImageBitmap(MainUtil.getBitmapByPath(path, avatar));
-        }
     }
 
     @Override

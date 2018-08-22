@@ -9,6 +9,27 @@
     <string name="activity_references">Справочники</string>
     <!--activities end-->
 
+    <!--onboarding-->
+    <string name="onboarding_next_button_description">Дальше</string>
+    <string name="onboarding_finish_button_description">Закончить</string>
+    <string name="onboarding_pre_button_description">Назад</string>
+    <string name="onboarding_section_1">Войдите в приложение</string>
+    <string name="onboarding_intro_1">Выберите свой профиль в списке пользователей и введите Ваш пин-код</string>
+    <string name="onboarding_section_2">Синхронизируйте данные</string>
+    <string name="onboarding_intro_2">Проверьте, что приложение загрузило все справочники и данные</string>
+    <string name="onboarding_section_3">Снимите контрольную точку</string>
+    <string name="onboarding_intro_3">Последовательно делайте фото объектов, квартир и оборудования, которые будут являться отметками вашего присутствия</string>
+    <string name="onboarding_section_4">Фиксируйте аварии и неисправности</string>
+    <string name="onboarding_intro_4">Вводите в систему все, что обнаружили</string>
+    <string name="onboarding_section_5">Заносите в систему показания приборов</string>
+    <string name="onboarding_intro_5">После выбора в списке расходомера - вводите данные</string>
+    <string name="onboarding_finish_button_description_wait">Пожалуйста подождите…</string>
+    <!--onboarding end-->
+
+    <!--messages-->
+    <string name="message_no_write_permission">Нет разрешений на запись</string>
+
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -152,19 +173,6 @@
     <!--widget-->
     <string name="all_packages_are_delivered">All packages are delivered.</string>
     <!--widget end-->
-
-    <!--onboarding-->
-    <string name="onboarding_next_button_description">Дальше</string>
-    <string name="onboarding_finish_button_description">Закончить</string>
-    <string name="onboarding_pre_button_description">Назад</string>
-    <string name="onboarding_section_1">Добавляйте свои вопросы в любой непонятной ситуации</string>
-    <string name="onboarding_intro_1">Сопровождайте свои проблемы фото с места событий</string>
-    <string name="onboarding_section_2">Мастера своего дела обязательно ответят Вам</string>
-    <string name="onboarding_intro_2">И дадут свои рекомендации и советы</string>
-    <string name="onboarding_section_3">Голосуйте за хорошие советы и повышайте рейтинг</string>
-    <string name="onboarding_intro_3">Получайте уведомления об ответах на свои вопросы</string>
-    <string name="onboarding_finish_button_description_wait">Пожалуйста подождите…</string>
-    <!--onboarding end-->
 
     <!--search-->
     <string name="no_result">NO RESULT</string>

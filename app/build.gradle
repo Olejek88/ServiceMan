@@ -80,6 +80,10 @@ dependencies {
 
     testImplementation "junit:junit:$junitVersion"
 
+    // Stetho
+    implementation "com.facebook.stetho:stetho:1.5.0"
+    implementation "com.uphyca:stetho_realm:2.1.0"
+
     // Espresso
     androidTestImplementation "com.android.support:support-annotations:$supportLibVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
@@ -93,4 +97,5 @@ dependencies {
     // Runner and rules
     androidTestImplementation "com.android.support.test:runner:$runnerRulesVersion"
     androidTestImplementation "com.android.support.test:rules:$runnerRulesVersion"
+
 }

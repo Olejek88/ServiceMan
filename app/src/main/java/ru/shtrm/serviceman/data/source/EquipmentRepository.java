@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.AlarmType;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Flat;

@@ -29,6 +29,12 @@
     <!--messages-->
     <string name="message_no_write_permission">Нет разрешений на запись</string>
 
+    <!--login-->
+    <string name="user_select">Автор</string>
+    <string name="user_login">Войти</string>
+    <string name="user_pin">Пин-код</string>
+    <string name="user_pin_default">****</string>
+
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -38,10 +44,10 @@
 
     <!--navigation drawer-->
     <string name="nav_profile">Профиль</string>
-    <string name="nav_users">Пользователи</string>
-    <string name="nav_questions">Вопросы</string>
-    <string name="nav_gallery">Галерея</string>
-    <string name="nav_tricks">Трюки</string>
+    <string name="nav_users">Абоненты</string>
+    <string name="nav_map">Карта</string>
+    <string name="nav_checkin">Работа</string>
+    <string name="nav_alarms">Аварии</string>
     <string name="nav_switch_theme">Режим день/ночь</string>
     <string name="nav_settings">Настройки</string>
     <string name="nav_about">О сервисе</string>

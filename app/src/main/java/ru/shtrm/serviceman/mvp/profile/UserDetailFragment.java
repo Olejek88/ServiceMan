@@ -2,16 +2,11 @@ package ru.shtrm.serviceman.mvp.profile;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.URLSpan;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +15,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.customtabs.CustomTabsHelper;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.profile.UserDetailActivity.USER_ID;
 
@@ -114,24 +107,6 @@ public class UserDetailFragment extends Fragment
     @Override
     public void setPresenter(@NonNull UserDetailContract.Presenter presenter) {
         this.presenter = presenter;
-    }
-
-    @Override
-    public void setUserName(String name) {
-        textViewName.setText(name);
-    }
-
-    @Override
-    public void setUserAddress(String address) {
-        textViewAddress.setText(address);
-    }
-
-    @Override
-    public void setUserWebsite(String website) {
-        this.website = website;
-        Spannable spannable = new SpannableStringBuilder(website);
-        spannable.setSpan(new URLSpan(website), 0, website.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textViewWebsite.setText(spannable);
     }
 
     @Override

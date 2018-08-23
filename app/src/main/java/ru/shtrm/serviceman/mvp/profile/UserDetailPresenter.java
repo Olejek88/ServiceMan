@@ -2,12 +2,7 @@ package ru.shtrm.serviceman.mvp.profile;
 
 import android.support.annotation.NonNull;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 

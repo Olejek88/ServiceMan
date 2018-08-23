@@ -4,11 +4,10 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.Street;
 
-public interface MeasureDataSource {
+public interface StreetDataSource {
 
-    List<Measure> getMeasuresByEquipment(Equipment equipment);
-
-    List<Measure> getMeasures();
+    List<Street> getStreets();
 
 }

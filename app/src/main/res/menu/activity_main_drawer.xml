@@ -12,17 +12,17 @@
             android:icon="@drawable/baseline_group_black_24dp"
             android:title="@string/nav_users" />
         <item
-            android:id="@+id/nav_questions"
-            android:icon="@drawable/baseline_contact_support_black_24dp"
-            android:title="@string/nav_questions" />
+            android:id="@+id/nav_map"
+            android:icon="@drawable/baseline_add_location_black_24dp"
+            android:title="@string/nav_map" />
         <item
-            android:id="@+id/nav_tricks"
-            android:icon="@drawable/baseline_sentiment_very_satisfied_black_24dp"
-            android:title="@string/nav_tricks" />
-        <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_checkin"
             android:icon="@drawable/baseline_photo_library_black_24dp"
-            android:title="@string/nav_gallery" />
+            android:title="@string/nav_checkin" />
+        <item
+            android:id="@+id/nav_alarms"
+            android:icon="@drawable/baseline_notification_important_black_24dp"
+            android:title="@string/nav_alarms" />
 
     </group>
 

@@ -1,10 +1,13 @@
 package ru.shtrm.serviceman.app;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatDelegate;
 
 import io.realm.Realm;
+import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.db.AppRealm;
 import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class App extends Application {
@@ -20,6 +23,15 @@ public class App extends Application {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
+
+        /*PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).
+                getString(SettingsUtil.SERVER_URL, "http://shtrm.ru/api")*/
+
+        // инициализируем синглтон с данными о активном пользователе на уровне приложения
+        AuthorizedUser authorizedUser = AuthorizedUser.getInstance();
+
+        // инициализируем базу данных Realm
+        AppRealm.init(this);
     }
 
 }

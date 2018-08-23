@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmSchema;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AlarmStatus;

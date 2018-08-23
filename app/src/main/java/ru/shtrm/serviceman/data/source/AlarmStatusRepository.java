@@ -5,9 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AlarmStatus;
-import ru.shtrm.serviceman.data.AlarmType;
 
 public class AlarmStatusRepository implements AlarmStatusDataSource {
 

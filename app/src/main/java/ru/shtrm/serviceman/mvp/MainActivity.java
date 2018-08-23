@@ -21,11 +21,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
@@ -40,9 +43,13 @@ import ru.shtrm.serviceman.util.SettingsUtil;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_WRITE_STORAGE = 2;
+    private static final String TAG = "Main";
+
+    private Realm realmDB;
 
     private Toolbar toolbar;
     private BottomNavigationView navigation;
+    public static boolean isLogged = false;
 
     private NavigationView navigationView;
     private DrawerLayout drawer;
@@ -67,6 +74,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (savedInstanceState != null) {
+            isLogged = savedInstanceState.getBoolean("isLogged");
             AuthorizedUser aUser = AuthorizedUser.getInstance();
             aUser.setToken(savedInstanceState.getString("token"));
             aUser.setId(savedInstanceState.getString("userId"));
@@ -80,7 +88,20 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        initViews();
+        // обнуляем текущего активного пользователя
+        AuthorizedUser.getInstance().reset();
+
+        if (!initDB()) {
+            // принудительное обновление приложения
+            finish();
+        }
+
+        if (isLogged) {
+            initViews();
+        } else {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+        }
 
         if (savedInstanceState != null) {
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
@@ -159,17 +180,17 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_profile:
                 showProfileFragment();
                 break;
-            case R.id.nav_questions:
+            case R.id.nav_map:
                 //showQuestionsFragment();
                 break;
             case R.id.nav_users:
                 //showUsersFragment();
                 break;
-            case R.id.nav_gallery:
+            case R.id.nav_alarms:
                 //showGalleryFragment();
                 break;
-            case R.id.nav_tricks:
-                //showTricksFragment();
+            case R.id.nav_checkin:
+                //showGalleryFragment();
                 break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -264,16 +285,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.nav_profile:
-                        showProfileFragment();
-                        break;
-                    case R.id.nav_questions:
+                    case R.id.nav_alarms:
                         break;
                     case R.id.nav_users:
                         break;
-                    case R.id.nav_tricks:
+                    case R.id.nav_checkin:
                         break;
-                    case R.id.nav_gallery:
+                    case R.id.nav_map:
                         break;
                 }
                 return true;
@@ -331,4 +349,35 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+    public boolean initDB() {
+        boolean success = false;
+        try {
+            // получаем базу realm
+            realmDB = Realm.getDefaultInstance();
+            //LoadTestData.LoadAllTestData();
+            Log.d(TAG, "Realm DB schema version = " + realmDB.getVersion());
+            Log.d(TAG, "db.version=" + realmDB.getVersion());
+            if (realmDB.getVersion() == 0) {
+                Toast toast = Toast.makeText(this, "База данных не актуальна!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+                success = true;
+            } else {
+                Toast toast = Toast.makeText(this, "База данных актуальна!", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+                success = true;
+            }
+        } catch (Exception e) {
+            Toast toast = Toast.makeText(this,
+                    "Не удалось открыть/обновить базу данных!",
+                    Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.BOTTOM, 0, 0);
+            toast.show();
+        }
+
+        return success;
+    }
+
 }

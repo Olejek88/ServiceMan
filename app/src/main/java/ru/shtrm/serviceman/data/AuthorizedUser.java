@@ -47,4 +47,12 @@ public class AuthorizedUser {
 	public String getBearer() {
 		return "bearer " + mToken;
 	}
+
+	/**
+	 * Обнуляем информацию о текущем пользователе.
+	 */
+	public void reset() {
+		mToken = null;
+		mUuid = null;
+	}
 }

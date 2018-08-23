@@ -4,30 +4,26 @@
     <group android:checkableBehavior="single"
         android:enabled="true">
 
-        <item android:id="@+id/nav_profile"
-            android:icon="@drawable/baseline_person_black_24dp"
+        <item android:id="@+id/nav_map"
+            android:icon="@drawable/baseline_place_black_24dp"
             android:enabled="true"
-            android:title="@string/nav_profile" />
+            android:title="@string/nav_map" />
 
         <item android:id="@+id/nav_users"
             android:icon="@drawable/baseline_group_black_24dp"
             android:enabled="true"
             android:title="@string/nav_users" />
 
-        <item android:id="@+id/nav_questions"
-            android:icon="@drawable/baseline_contact_support_black_24dp"
+        <item android:id="@+id/nav_alarms"
+            android:icon="@drawable/baseline_notification_important_black_24dp"
             android:enabled="true"
-            android:title="@string/nav_questions" />
+            android:title="@string/nav_alarms" />
 
-        <item android:id="@+id/nav_gallery"
+        <item android:id="@+id/nav_checkin"
             android:icon="@drawable/baseline_photo_library_black_24dp"
             android:enabled="true"
-            android:title="@string/nav_gallery" />
+            android:title="@string/nav_checkin" />
 
-        <item android:id="@+id/nav_tricks"
-            android:icon="@drawable/baseline_sentiment_very_satisfied_black_24dp"
-            android:enabled="true"
-            android:title="@string/nav_tricks" />
     </group>
 
 </menu>

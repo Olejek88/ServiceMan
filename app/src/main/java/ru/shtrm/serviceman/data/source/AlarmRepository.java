@@ -8,7 +8,6 @@ import java.util.List;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AlarmStatus;
 import ru.shtrm.serviceman.data.AlarmType;
-import ru.shtrm.serviceman.data.User;
 
 public class AlarmRepository implements AlarmDataSource {
 

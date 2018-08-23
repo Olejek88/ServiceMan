@@ -27,6 +27,13 @@ public class HouseLocalDataSource implements HouseDataSource {
     }
 
     @Override
+    public List<House> getHouses() {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.copyFromRealm(
+                realm.where(House.class).findAllSorted("title"));
+    }
+
+    @Override
     public List<House> getHousesByStreet(Street street) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(

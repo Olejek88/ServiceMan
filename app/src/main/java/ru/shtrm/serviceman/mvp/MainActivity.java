@@ -34,6 +34,8 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
+import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.ui.PrefsActivity;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
+    private MapFragment mapFragment;
+    private AbonentsFragment abonentsFragment;
 
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
     private static final String CURRENT_FILTERING_KEY = "CURRENT_FILTERING_KEY";
@@ -106,18 +110,42 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "UserDetailFragment");
+            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "AbonentsFragment");
+            mapFragment = (MapFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "MapFragment");
             selectedNavItem = savedInstanceState.getInt(KEY_NAV_ITEM);
         } else {
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
                     findFragmentById(R.id.content_main);
+            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
+            mapFragment = (MapFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
             if (profileFragment == null) {
                 profileFragment = UserDetailFragment.newInstance();
+            }
+            if (abonentsFragment == null) {
+                abonentsFragment = AbonentsFragment.newInstance();
+            }
+            if (mapFragment == null) {
+                mapFragment = MapFragment.newInstance();
             }
         }
 
         if (profileFragment!=null && !profileFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, profileFragment, "UserDetailFragment")
+                    .commit();
+        }
+        if (mapFragment!=null && !mapFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_main, mapFragment, "MapFragment")
+                    .commit();
+        }
+        if (abonentsFragment!=null && !abonentsFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_main, abonentsFragment, "AbonentsFragment")
                     .commit();
         }
         CheckPermission();
@@ -138,11 +166,11 @@ public class MainActivity extends AppCompatActivity
         if (selectedNavItem == 0) {
             //showAlarmFragment();
         } else if (selectedNavItem == 1) {
-            //showMapFragment();
+            showMapFragment();
         } else if (selectedNavItem == 2) {
             //showCheckinFragment();
         } else if (selectedNavItem == 3) {
-            //showReferencesFragment();
+            showAbonentsFragment();
         }
     }
 
@@ -181,10 +209,10 @@ public class MainActivity extends AppCompatActivity
                 showProfileFragment();
                 break;
             case R.id.nav_map:
-                //showQuestionsFragment();
+                showMapFragment();
                 break;
             case R.id.nav_users:
-                //showUsersFragment();
+                showAbonentsFragment();
                 break;
             case R.id.nav_alarms:
                 //showGalleryFragment();
@@ -309,13 +337,19 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_profile);
     }
 
-    private void showReferencesFragment() {
+    private void showAbonentsFragment() {
+        changeFragment(abonentsFragment);
+        toolbar.setTitle(getResources().getString(R.string.nav_users));
+        navigationView.setCheckedItem(R.id.nav_users);
     }
 
     private void showCheckinFragment() {
     }
 
     private void showMapFragment() {
+        changeFragment(mapFragment);
+        toolbar.setTitle(getResources().getString(R.string.nav_map));
+        navigationView.setCheckedItem(R.id.nav_map);
     }
 
     void changeFragment(Fragment selectedFragment) {

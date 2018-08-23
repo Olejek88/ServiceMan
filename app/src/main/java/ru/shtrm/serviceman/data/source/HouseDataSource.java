@@ -7,5 +7,7 @@ import ru.shtrm.serviceman.data.Street;
 
 public interface HouseDataSource {
 
+    List<House> getHouses();
+
     List<House> getHousesByStreet(Street street);
 }

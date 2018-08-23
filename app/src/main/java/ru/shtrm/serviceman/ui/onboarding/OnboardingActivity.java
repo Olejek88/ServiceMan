@@ -56,7 +56,7 @@ public class OnboardingActivity extends AppCompatActivity {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     int colorUpdate = (Integer) new ArgbEvaluator().
-                            evaluate(positionOffset, bgColors[position], bgColors[position == 2 ? position : position + 1]);
+                            evaluate(positionOffset, bgColors[position], bgColors[position == 4 ? position : position + 1]);
                     viewPager.setBackgroundColor(colorUpdate);
                 }
 
@@ -66,8 +66,8 @@ public class OnboardingActivity extends AppCompatActivity {
                     updateIndicators(position);
                     viewPager.setBackgroundColor(bgColors[position]);
                     buttonPre.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
-                    buttonNext.setVisibility(position == 2 ? View.GONE : View.VISIBLE);
-                    buttonFinish.setVisibility(position == 2 ? View.VISIBLE : View.GONE);
+                    buttonNext.setVisibility(position == 4 ? View.GONE : View.VISIBLE);
+                    buttonFinish.setVisibility(position == 4 ? View.VISIBLE : View.GONE);
                 }
 
                 @Override
@@ -123,7 +123,9 @@ public class OnboardingActivity extends AppCompatActivity {
         indicators = new ImageView[] {
                 findViewById(R.id.imageViewIndicator0),
                 findViewById(R.id.imageViewIndicator1),
-                findViewById(R.id.imageViewIndicator2) };
+                findViewById(R.id.imageViewIndicator2),
+                findViewById(R.id.imageViewIndicator3),
+                findViewById(R.id.imageViewIndicator4) };
     }
 
     private void initData() {

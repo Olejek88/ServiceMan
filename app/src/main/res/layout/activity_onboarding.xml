@@ -53,6 +53,10 @@
                 android:id="@+id/imageViewIndicator0"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
+                android:layout_marginEnd="@dimen/activity_margin_half"
+                android:layout_marginRight="@dimen/activity_margin_half"
+                android:layout_marginLeft="@dimen/activity_margin_half"
+                android:layout_marginStart="@dimen/activity_margin_half"
                 android:background="@drawable/onboarding_indicator_selected" />
 
             <ImageView
@@ -67,7 +71,31 @@
 
             <ImageView
                 android:id="@+id/imageViewIndicator2"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="@dimen/activity_margin_half"
+                android:layout_marginRight="@dimen/activity_margin_half"
+                android:layout_marginLeft="@dimen/activity_margin_half"
+                android:layout_marginStart="@dimen/activity_margin_half"
+                android:background="@drawable/onboarding_indicator_unselected" />
+
+            <ImageView
+                android:id="@+id/imageViewIndicator3"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="@dimen/activity_margin_half"
+                android:layout_marginRight="@dimen/activity_margin_half"
+                android:layout_marginLeft="@dimen/activity_margin_half"
+                android:layout_marginStart="@dimen/activity_margin_half"
+                android:background="@drawable/onboarding_indicator_unselected" />
+
+            <ImageView
+                android:id="@+id/imageViewIndicator4"
                 style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_marginEnd="@dimen/activity_margin_half"
+                android:layout_marginRight="@dimen/activity_margin_half"
+                android:layout_marginLeft="@dimen/activity_margin_half"
+                android:layout_marginStart="@dimen/activity_margin_half"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:background="@drawable/onboarding_indicator_unselected" />

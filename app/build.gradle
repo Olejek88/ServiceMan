@@ -47,10 +47,11 @@ ext {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
     // Support libraries
     //noinspection GradleDependency
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    //noinspection GradleDependency
+    //implementation "com.android.support:recyclerview-v7:27.0.1"
     //noinspection GradleDependency
     implementation "com.android.support:support-v4:$supportLibVersion"
     //noinspection GradleDependency
@@ -62,9 +63,6 @@ dependencies {
     //noinspection GradleDependency
     implementation "com.android.support:customtabs:$supportLibVersion"
 
-    // ReactiveX series
-    implementation "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxjavaVersion"
     // Retrofit series
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
@@ -87,6 +85,9 @@ dependencies {
     // OSM
     implementation "org.osmdroid:osmdroid-android:6.0.1"
 
+    // Widgets
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
+
     // Espresso
     androidTestImplementation "com.android.support:support-annotations:$supportLibVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
@@ -100,5 +101,4 @@ dependencies {
     // Runner and rules
     androidTestImplementation "com.android.support.test:runner:$runnerRulesVersion"
     androidTestImplementation "com.android.support.test:rules:$runnerRulesVersion"
-
 }

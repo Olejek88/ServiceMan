@@ -32,4 +32,9 @@ public class HouseRepository implements HouseDataSource {
     public List<House> getHousesByStreet(Street street) {
         return localDataSource.getHousesByStreet(street);
     }
+
+    @Override
+    public List<House> getHouses() {
+        return localDataSource.getHouses();
+    }
 }

@@ -224,7 +224,7 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
         }
-        showEmptyView(list.isEmpty());
+        //showEmptyView(list.isEmpty());
     }
 
     public void showStreets(@NonNull final List<Street> list) {

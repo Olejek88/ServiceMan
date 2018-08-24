@@ -4,4 +4,4 @@
     android:layout_height="wrap_content"
     android:adjustViewBounds="true"
     android:id="@+id/gridViewImage"
-    android:contentDescription="@string/app_name" />
+    android:contentDescription="@string/service_app_name" />

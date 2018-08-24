@@ -51,14 +51,17 @@ import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsContract;
 import ru.shtrm.serviceman.mvp.abonents.FlatAdapter;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 import ru.shtrm.serviceman.mvp.abonents.StreetAdapter;
+import ru.shtrm.serviceman.mvp.alarm.AlarmAdapter;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -196,6 +199,20 @@ public class MapFragment extends Fragment implements MapContract.View {
         waypoints.add(currentPoint);
         */
 
+        List<Alarm> alarms = AlarmLocalDataSource.getInstance().getAlarms();
+        for (int i=0; i<alarms.size(); i++) {
+            Alarm alarm = alarms.get(i);
+            curLatitude = alarm.getLatitude();
+            curLongitude = alarm.getLongitude();
+
+            OverlayItem olItem = new OverlayItem(alarm.getComment(),
+                    "Alarm", new GeoPoint(curLatitude, curLongitude));
+            Drawable newMarker;
+            newMarker = this.getResources().getDrawable(R.drawable.baseline_add_location_black_24dp);
+            olItem.setMarker(newMarker);
+            aOverlayItemArray.add(olItem);
+        }
+
 /*
         houseListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -307,6 +324,9 @@ public class MapFragment extends Fragment implements MapContract.View {
             houseAdapter.updateData(list);
         }
         //showEmptyView(list.isEmpty());
+    }
+
+    public void showAlarms(@NonNull final List<Alarm> list) {
     }
 
     @Override

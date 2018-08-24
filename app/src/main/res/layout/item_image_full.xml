@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:contentDescription="@string/app_name" />
+                android:contentDescription="@string/service_app_name" />
         </FrameLayout>
 
     </android.support.design.widget.AppBarLayout>

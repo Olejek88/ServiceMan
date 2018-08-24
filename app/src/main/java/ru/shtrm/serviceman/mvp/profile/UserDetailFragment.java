@@ -25,17 +25,8 @@ public class UserDetailFragment extends Fragment
         implements UserDetailContract.View {
     private Activity mainActivityConnector = null;
 
-    // View references.
-    private TextView textViewName;
-    private TextView textViewAddress;
-    private TextView textViewWebsite;
-    private FloatingActionButton editUser;
-
     private UserDetailContract.Presenter presenter;
-
-    private String website;
     private User user;
-    private boolean owner = true;
 
     public UserDetailFragment() {}
 
@@ -53,18 +44,10 @@ public class UserDetailFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View view;
-        Bundle b = getArguments();
-        if (b!=null) {
-            String userUuid = b.getString(USER_ID);
-            if (userUuid!=null)
-                user = UsersLocalDataSource.getInstance().getUser(userUuid);
-        }
-        if (user==null)
-            user = UsersLocalDataSource.
-                getInstance().getUser(AuthorizedUser.getInstance().getId());
-
+        user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
         view = inflater.inflate(R.layout.fragment_view_user, container, false);
-        initViews(view);
+        if (user!=null)
+            initViews(view);
 
         setHasOptionsMenu(true);
         return view;
@@ -94,14 +77,10 @@ public class UserDetailFragment extends Fragment
 
     @Override
     public void initViews(View view) {
-        textViewName = view.findViewById(R.id.profile_add_name);
-        textViewAddress = view.findViewById(R.id.profile_add_address);
-        textViewWebsite = view.findViewById(R.id.profile_add_website);
-        TextView textViewPhone = view.findViewById(R.id.profile_add_phone);
-        ImageView imageView = view.findViewById(R.id.profile_add_image);
-        editUser = view.findViewById(R.id.editUser);
-
+        TextView textViewName = view.findViewById(R.id.profile_name);
+        TextView textViewContact = view.findViewById(R.id.profile_contact);
         textViewName.setText(user.getName());
+        textViewContact.setText(user.getContact());
     }
 
     @Override

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Service Man</string>
+    <string name="service_app_name">Service Man</string>
 
     <!--activities-->
     <string name="activity_add_alarm">Добавить проблему</string>
@@ -78,7 +78,6 @@
     <string name="package_removed_msg">has been removed.</string>
     <string name="undo">UNDO</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="to_add_question">Нажмите кнопку, чтобы добавить вопрос</string>
     <string name="latest_status">Latest status:&#160;</string>
 
     <string-array name="question_status">

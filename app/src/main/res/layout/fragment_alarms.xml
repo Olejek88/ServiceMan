@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_questions"
+    android:id="@+id/fragment_alarms"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -34,19 +34,9 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="invisible">
-
             </LinearLayout>
 
         </FrameLayout>
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_chevron_left_white_24dp"
-            app:backgroundTint="@color/colorPrimary"
-            app:fabSize="normal" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
@@ -55,7 +45,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_plus_white_36dp"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@color/red"
             app:fabSize="normal" />
 
     </android.support.design.widget.CoordinatorLayout>

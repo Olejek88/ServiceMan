@@ -1,141 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_questions"
+    android:id="@+id/fragment_user"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:textColor="#333333">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:background="@color/colorPrimary"
+        android:gravity="top"
+        android:src="@drawable/user_random_icon_5"
+        app:civ_border_color="@color/colorPrimaryDark"
+        app:civ_border_width="2dp" />
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="70dp">
+    <ImageView
+        android:id="@+id/profile_user_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/profile_image"
+        android:layout_marginStart="15dp"
+        android:contentDescription="@string/service_app_name"
+        android:src="@drawable/baseline_person_black_24dp" />
 
-            <RelativeLayout
-                android:id="@+id/RelativeLayout01"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#333333">
+    <TextView
+        android:id="@+id/profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/profile_image"
+        android:layout_gravity="start|center_vertical"
+        android:layout_toEndOf="@+id/profile_user_icon"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingStart="10dp"
+        android:textColor="#000000"
+        android:textSize="16sp" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profile_add_image"
-                    android:layout_width="fill_parent"
-                    android:layout_height="200dp"
-                    android:background="@color/colorPrimary"
-                    android:gravity="top"
-                    android:src="@drawable/user_no_image"
-                    app:civ_border_color="@color/colorPrimaryDark"
-                    app:civ_border_width="2dp" />
+    <ImageView
+        android:id="@+id/profile_user_icon2"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/profile_user_icon"
+        android:layout_marginStart="15dp"
+        android:contentDescription="@string/service_app_name"
+        android:src="@drawable/baseline_place_black_24dp" />
 
-                <ImageView
-                    android:id="@+id/profile_add_user_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_image"
-                    android:layout_marginStart="15dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/baseline_person_black_24dp" />
-
-                <TextView
-                    android:id="@+id/profile_add_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_image"
-                    android:layout_gravity="start|center_vertical"
-                    android:layout_toEndOf="@+id/profile_add_user_icon"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingStart="10dp"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:id="@+id/profile_add_user_icon2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_user_icon"
-                    android:layout_marginStart="15dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/baseline_add_location_black_24dp" />
-
-                <TextView
-                    android:id="@+id/profile_add_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_user_icon"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@+id/profile_add_user_icon2"
-                    android:gravity="center_vertical"
-                    android:textColor="#111111"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:id="@+id/profile_add_user_icon3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_user_icon2"
-                    android:layout_marginStart="15dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/baseline_sentiment_very_satisfied_black_24dp" />
-
-                <TextView
-                    android:id="@+id/profile_add_website"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_user_icon2"
-                    android:layout_gravity="start"
-                    android:layout_toEndOf="@+id/profile_add_user_icon3"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingStart="10dp"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:id="@+id/profile_add_user_icon4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_user_icon3"
-                    android:layout_marginStart="15dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/baseline_thumb_up_alt_black_24dp" />
-
-                <TextView
-                    android:id="@+id/profile_add_phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/profile_add_user_icon3"
-                    android:layout_gravity="start"
-                    android:layout_toEndOf="@+id/profile_add_user_icon4"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingStart="10dp"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
-
-            </RelativeLayout>
-        </ScrollView>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/editUser"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_mode_edit_white_24dp"
-            android:tint="@android:color/white"
-            app:backgroundTint="@color/colorPrimary"
-            app:layout_anchor="@id/profile_add_image"
-            app:layout_anchorGravity="bottom|end" />
-
-    </android.support.design.widget.CoordinatorLayout>
+    <TextView
+        android:id="@+id/profile_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/profile_user_icon"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/profile_user_icon2"
+        android:gravity="center_vertical"
+        android:textColor="#111111"
+        android:textSize="16sp" />
 
 </RelativeLayout>

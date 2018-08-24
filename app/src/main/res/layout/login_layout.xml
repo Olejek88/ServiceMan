@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/app_name"
+        android:contentDescription="@string/service_app_name"
         android:src="@drawable/buildtools" />
 
     <TextView

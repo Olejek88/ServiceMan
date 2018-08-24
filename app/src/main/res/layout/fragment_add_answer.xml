@@ -55,7 +55,7 @@
                         android:layout_height="100dp"
                         android:layout_gravity="center"
                         android:background="@color/colorPrimary"
-                        android:contentDescription="@string/app_name"
+                        android:contentDescription="@string/service_app_name"
                         android:src="@drawable/question" />
 
 <!--

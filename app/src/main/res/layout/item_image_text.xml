@@ -15,7 +15,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:src="@drawable/question"
-        android:contentDescription="@string/app_name" />
+        android:contentDescription="@string/service_app_name" />
 
     <TextView
         android:id="@+id/gridViewText"

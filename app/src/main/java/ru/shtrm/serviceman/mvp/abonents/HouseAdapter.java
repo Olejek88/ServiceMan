@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,8 +60,13 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
         else pvh.textViewDate.setText(R.string.no_last_time);
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
-        pvh.textViewTitle.setText(item.getTitle());
-        pvh.textViewImage.setText(item.getTitle().substring(0,1));
+        pvh.textViewStatus.setText(item.getHouseStatus().getTitle());
+        pvh.textViewTitle.setText(item.getStreet().getTitle().concat(", ").concat(item.getTitle()));
+        if (item.getTitle().length()>1) {
+            pvh.textViewImage.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16.0f);
+            pvh.textViewImage.setText(item.getTitle().substring(0, 2));
+        }
+        else pvh.textViewImage.setText(item.getTitle().substring(0, 1));
         // TODO выдергивать последнее фото из фото?
 /*
         if (item.getUser()!=null)
@@ -116,7 +122,6 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             this.listener = listener;
             itemView.setOnClickListener(this);
             itemView.setOnCreateContextMenuListener(this);
-
         }
 
         @Override

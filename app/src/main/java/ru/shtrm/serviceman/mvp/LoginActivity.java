@@ -4,11 +4,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -32,6 +36,11 @@ import ru.shtrm.serviceman.mvp.user.UserPresenter;
 public class LoginActivity  extends AppCompatActivity{
 
     private UserContract.Presenter presenter;
+    private UsersLocalDataSource usersLocalDataSource;
+
+    private Spinner userSelect;
+    private EditText pinCode;
+    private TextView loginError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +56,32 @@ public class LoginActivity  extends AppCompatActivity{
         Button loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                checkUser();
+                User user = (User)userSelect.getSelectedItem();
+                checkUser(user.getUuid(), pinCode.getText().toString());
             }
         });
     }
 
     public void initViews() {
-        Spinner userSelect = findViewById(R.id.user_select);
-        EditText pinCode = findViewById(R.id.login_pin);
+        userSelect = findViewById(R.id.user_select);
+        pinCode = findViewById(R.id.login_pin);
+        loginError = findViewById(R.id.login_error);
+        loginError.setBackgroundColor(getResources().getColor(R.color.red));
 
         presenter = new UserPresenter(UsersRepository.getInstance(UsersLocalDataSource.getInstance()));
+
+        pinCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                loginError.setVisibility(View.GONE);
+            }
+        });
 
         List<User> users = presenter.loadUsers();
         UserListAdapter adapter = new UserListAdapter(this,
@@ -64,8 +89,14 @@ public class LoginActivity  extends AppCompatActivity{
         userSelect.setAdapter(adapter);
     }
 
-    void checkUser () {
+    void checkUser (String userUuid, String pin) {
         setResult(RESULT_OK);
-        finish();
+        usersLocalDataSource = UsersLocalDataSource.getInstance();
+        if (usersLocalDataSource!=null) {
+            if (usersLocalDataSource.checkUser(userUuid, pin))
+                finish();
+            else
+                loginError.setVisibility(View.VISIBLE);
+        }
     }
 }

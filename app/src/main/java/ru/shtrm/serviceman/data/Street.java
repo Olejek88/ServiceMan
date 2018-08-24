@@ -11,8 +11,17 @@ public class Street extends RealmObject {
     private String _id;
     private String uuid;
     private String title;
+    private City city;
     private Date createdAt;
     private Date changedAt;
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
 
     public String get_id() {
         return _id;

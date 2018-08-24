@@ -43,7 +43,7 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new StreetsViewHolder(inflater.inflate(R.layout.item_abonent,
+        return new StreetsViewHolder(inflater.inflate(R.layout.item_street,
                 parent, false), listener);
     }
 
@@ -51,24 +51,9 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Street item = list.get(position);
         StreetsViewHolder pvh = (StreetsViewHolder) holder;
-        pvh.textViewStatus.setText("");
-        if (item.getChangedAt()!=null) {
-            String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
-            pvh.textViewDate.setText(sDate);
-        }
-        else pvh.textViewDate.setText(R.string.no_last_time);
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
-        pvh.textViewTitle.setText(item.getTitle());
+        pvh.textViewTitle.setText(item.getCity().getTitle().concat(", ул.").concat(item.getTitle()));
         pvh.textViewImage.setText(item.getTitle().substring(0,1));
-        // TODO выдергивать последнее фото из фото?
-/*
-        if (item.getUser()!=null)
-            if (item.getUser().getAvatar()!=null)
-                pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-                    MainUtil.getPicturesDirectory(context),item.getUser().getAvatar()));
-            else
-                pvh.textViewAvatar.setText(item.getTitle().substring(0,1));
-*/
     }
 
     @Override
@@ -97,8 +82,6 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             implements View.OnClickListener, View.OnCreateContextMenuListener {
 
         AppCompatTextView textViewTitle;
-        AppCompatTextView textViewDate;
-        AppCompatTextView textViewStatus;
         AppCompatTextView textViewImage;
         CircleImageView circleImageView;
 
@@ -107,8 +90,6 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public StreetsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
-            textViewStatus = itemView.findViewById(R.id.textObjectStatus);
-            textViewDate = itemView.findViewById(R.id.textObjectTime);
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
 

@@ -34,6 +34,7 @@
     <string name="user_login">Войти</string>
     <string name="user_pin">Пин-код</string>
     <string name="user_pin_default">****</string>
+    <string name="login_error">! Ошибка ввода пин-кода для данного пользователя</string>
 
     <!--abonents-->
     <string name="no_last_time">Нет даты обслуживания</string>

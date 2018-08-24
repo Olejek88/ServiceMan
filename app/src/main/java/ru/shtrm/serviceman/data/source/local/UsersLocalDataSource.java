@@ -67,4 +67,10 @@ public class UsersLocalDataSource implements UsersDataSource {
         return null;
     }
 
+    @Override
+    public boolean checkUser(@NonNull String userUuid, @NonNull String pin) {
+        Realm realm = Realm.getDefaultInstance();
+        User user = realm.where(User.class).equalTo("uuid", userUuid).findFirst();
+        return user != null && user.getPin().equals(pin);
+    }
 }

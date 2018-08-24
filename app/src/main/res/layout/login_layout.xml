@@ -61,7 +61,7 @@
         android:layout_gravity="start"
         android:gravity="center_vertical"
         android:hint="@string/user_pin_default"
-        android:inputType="numberPassword"
+        android:inputType="number"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
@@ -85,5 +85,26 @@
         android:background="@color/colorPrimary"
         android:textColor="@color/mdtp_white"
         android:text="@string/user_login" />
+
+    <TextView
+        android:id="@+id/login_error"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/loginButton"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/mdtp_white"
+        android:background="@color/mdtp_red"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="@string/login_error"
+        android:visibility="gone"
+        android:textSize="14sp" />
 
 </RelativeLayout>

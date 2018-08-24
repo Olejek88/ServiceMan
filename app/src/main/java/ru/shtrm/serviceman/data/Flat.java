@@ -11,9 +11,18 @@ public class Flat extends RealmObject {
     private String _id;
     private String uuid;
     private String title;
+    private House house;
     private FlatStatus flatStatus;
     private Date createdAt;
     private Date changedAt;
+
+    public House getHouse() {
+        return house;
+    }
+
+    public void setHouse(House house) {
+        this.house = house;
+    }
 
     public FlatStatus getFlatStatus() {
         return flatStatus;

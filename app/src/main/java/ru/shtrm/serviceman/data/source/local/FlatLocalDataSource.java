@@ -30,6 +30,7 @@ public class FlatLocalDataSource implements FlatDataSource {
     public List<Flat> getFlatsByHouse(House house) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(Flat.class).equalTo("house", house.getUuid()).findAllSorted("title"));
+                realm.where(Flat.class).equalTo("house.uuid", house.getUuid()).
+                        findAllSorted("title"));
     }
 }

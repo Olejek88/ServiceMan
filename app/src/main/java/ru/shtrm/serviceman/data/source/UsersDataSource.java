@@ -12,4 +12,6 @@ public interface UsersDataSource {
 
     User getUser(@NonNull String userUuid);
 
+    boolean checkUser(@NonNull String userUuid, String pin);
+
 }

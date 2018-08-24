@@ -17,8 +17,8 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circleImageView"
             android:src="@color/colorPrimary"
-            android:layout_width="64dp"
-            android:layout_height="64dp" />
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/textViewImage"
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@android:color/white"
-            android:textSize="32sp" />
+            android:textSize="16sp" />
 
     </FrameLayout>
 
@@ -41,24 +41,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:layout_marginTop="5dp"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="@color/colorPrimaryText" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/textObjectStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorSecondaryText" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/textObjectTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorSecondaryText" />
 
     </LinearLayout>
 

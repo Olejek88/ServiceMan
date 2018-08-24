@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity
         // обнуляем текущего активного пользователя
         AuthorizedUser.getInstance().reset();
         if (!isLogged) {
-            //Intent loginIntent = new Intent(this, LoginActivity.class);
-            //startActivityForResult(loginIntent, LOGIN);
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivityForResult(loginIntent, LOGIN);
         }
         initViews();
         initFragments(currentSavedInstanceState);
@@ -167,10 +167,10 @@ public class MainActivity extends AppCompatActivity
                 showAbonentsFragment();
                 break;
             case R.id.nav_alarms:
-                //showGalleryFragment();
+                showAlarmsFragment();
                 break;
             case R.id.nav_checkin:
-                //showGalleryFragment();
+                showCheckinFragment();
                 break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -237,6 +237,9 @@ public class MainActivity extends AppCompatActivity
         // Store the fragments' states.
         if (mapFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "MapFragment", mapFragment);
+        }
+        if (abonentsFragment.isAdded()) {
+            getSupportFragmentManager().putFragment(outState, "AbonentsFragment", abonentsFragment);
         }
     }
 
@@ -316,13 +319,13 @@ public class MainActivity extends AppCompatActivity
 
         // Show the default fragment.
         if (selectedNavItem == 0) {
-            //showAlarmFragment();
-        } else if (selectedNavItem == 1) {
             showMapFragment();
-        } else if (selectedNavItem == 2) {
-            //showCheckinFragment();
-        } else if (selectedNavItem == 3) {
+        } else if (selectedNavItem == 1) {
             showAbonentsFragment();
+        } else if (selectedNavItem == 2) {
+            showAlarmsFragment();
+        } else if (selectedNavItem == 3) {
+            showCheckinFragment();
         }
     }
 
@@ -352,12 +355,16 @@ public class MainActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_alarms:
+                        showAlarmsFragment();
                         break;
                     case R.id.nav_users:
+                        showAbonentsFragment();
                         break;
                     case R.id.nav_checkin:
+                        showCheckinFragment();
                         break;
                     case R.id.nav_map:
+                        showMapFragment();
                         break;
                 }
                 return true;
@@ -392,10 +399,13 @@ public class MainActivity extends AppCompatActivity
 
     void changeFragment(Fragment selectedFragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.hide(profileFragment);
+        fragmentTransaction.hide(mapFragment);
+        fragmentTransaction.hide(abonentsFragment);
 
-        if (selectedFragment==profileFragment)
-            fragmentTransaction.show(profileFragment);
+        if (selectedFragment==mapFragment)
+            fragmentTransaction.show(mapFragment);
+        if (selectedFragment==abonentsFragment)
+            fragmentTransaction.show(abonentsFragment);
         fragmentTransaction.commit();
     }
 

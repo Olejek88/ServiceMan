@@ -58,7 +58,9 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         else pvh.textViewDate.setText(R.string.no_last_time);
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
-        pvh.textViewTitle.setText(item.getTitle());
+        pvh.textViewStatus.setText(item.getFlatStatus().getTitle());
+        pvh.textViewTitle.setText(item.getHouse().getStreet().getTitle().concat(", ").
+                concat(item.getHouse().getTitle()).concat(", ").concat(item.getTitle()));
         pvh.textViewImage.setText(item.getTitle().substring(0,1));
         // TODO выдергивать последнее фото из фото?
 /*

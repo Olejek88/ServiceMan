@@ -37,4 +37,8 @@ public class UsersRepository implements UsersDataSource {
         return localDataSource.getUser(userUuid);
     }
 
+    @Override
+    public boolean checkUser(@NonNull String userUuid, @NonNull String pin) {
+        return localDataSource.checkUser(userUuid, pin);
+    }
 }

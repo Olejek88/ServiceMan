@@ -11,9 +11,18 @@ public class House extends RealmObject {
     private String _id;
     private String uuid;
     private String title;
+    private Street street;
     private HouseStatus houseStatus;
     private Date createdAt;
     private Date changedAt;
+
+    public Street getStreet() {
+        return street;
+    }
+
+    public void setStreet(Street street) {
+        this.street = street;
+    }
 
     public HouseStatus getHouseStatus() {
         return houseStatus;

@@ -153,7 +153,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     @Override
     public void initViews(View view) {
         Location location;
-        double curLatitude=0.0, curLongitude=0.0;
+        double curLatitude=55.5, curLongitude=55.5;
 
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         emptyView =  view.findViewById(R.id.emptyView);
@@ -177,7 +177,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setBuiltInZoomControls(true);
         IMapController mapController = mapView.getController();
-        mapController.setZoom(17.0);
+        mapController.setZoom(15.0);
         GeoPoint point2 = new GeoPoint(curLatitude, curLongitude);
         mapController.setCenter(point2);
 

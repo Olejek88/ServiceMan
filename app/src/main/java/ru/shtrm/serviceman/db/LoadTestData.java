@@ -1,6 +1,7 @@
 package ru.shtrm.serviceman.db;
 
 import io.realm.Realm;
+import ru.shtrm.serviceman.data.City;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
@@ -13,6 +14,7 @@ import ru.shtrm.serviceman.data.User;
 
 public class LoadTestData {
     public static User user;
+    public static City city;
     public static Street street;
     public static House house1;
     public static House house2;
@@ -32,7 +34,7 @@ public class LoadTestData {
         realmDB = Realm.getDefaultInstance();
 
         final String userTestUuid = "4462ed77-9bf0-4542-b127-f4ecefce49da";
-        final String streetTestUuid = "5562ed77-9bf0-4542-b127-f4ecefce49da";
+        final String cityUuid = "5562ed77-9bf0-4542-b127-ffffefce49da";
         final String streetUuid = "1dd8d4f8-5c98-4444-86ed-97dddde";
         final String houseUuid1 = "1dd8d4f8-5c98-4444-86ed-97ddddf";
         final String houseUuid2 = "00000000-5c98-4444-86ed-97dddde";
@@ -57,6 +59,14 @@ public class LoadTestData {
                 user.setName("Иванов О.А.");
                 user.setPin("1234");
                 user.setContact("+79227000285 Иван");
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                city = realmDB.createObject(City.class,"1");
+                city.setTitle("Нязепетровск");
             }
         });
 
@@ -101,6 +111,7 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 street = realmDB.createObject(Street.class,"1");
                 street.setUuid(streetUuid);
+                street.setCity(city);
                 street.setTitle("Воронежская");
             }
         });
@@ -110,6 +121,7 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 house1 = realmDB.createObject(House.class,"1");
                 house1.setUuid(houseUuid1);
+                house1.setStreet(street);
                 house1.setTitle("8А");
                 house1.setHouseStatus(houseStatus);
             }
@@ -119,6 +131,7 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 house2 = realmDB.createObject(House.class,"2");
                 house2.setUuid(houseUuid2);
+                house2.setStreet(street);
                 house2.setTitle("6");
                 house2.setHouseStatus(houseStatus);
             }
@@ -129,6 +142,7 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 flat = realmDB.createObject(Flat.class,"1");
                 flat.setUuid(flatUuid);
+                flat.setHouse(house1);
                 flat.setTitle("8");
                 flat.setFlatStatus(flatStatus);
             }

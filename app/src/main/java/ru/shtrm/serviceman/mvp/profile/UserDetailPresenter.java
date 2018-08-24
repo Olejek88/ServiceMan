@@ -17,9 +17,6 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
     @NonNull
     private String userId;
 
-    @NonNull
-    private CompositeDisposable compositeDisposable;
-
     public UserDetailPresenter(@NonNull UserDetailContract.View view,
                                @NonNull UsersRepository usersRepository,
                                @NonNull String userId) {
@@ -28,7 +25,6 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
         this.userId = userId;
         if (this.view!=null)
             this.view.setPresenter(this);
-        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -38,7 +34,6 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
 
     @Override
     public void unsubscribe() {
-        compositeDisposable.clear();
     }
 
     private void fetchUserData() {

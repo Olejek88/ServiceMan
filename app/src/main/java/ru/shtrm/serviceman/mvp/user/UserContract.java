@@ -1,0 +1,20 @@
+package ru.shtrm.serviceman.mvp.user;
+
+import android.support.annotation.NonNull;
+
+import java.util.List;
+
+import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.mvp.BasePresenter;
+import ru.shtrm.serviceman.mvp.BaseView;
+
+public interface UserContract {
+
+    interface View extends BaseView<Presenter> {
+        void showUsers(@NonNull List<User> list);
+    }
+
+    interface Presenter extends BasePresenter {
+        List<User> loadUsers();
+    }
+}

@@ -131,6 +131,8 @@ public class OnboardingActivity extends AppCompatActivity {
     private void initData() {
         bgColors = new int[]{ContextCompat.getColor(this, R.color.colorPrimary),
                 ContextCompat.getColor(this, R.color.cyan_500),
+                ContextCompat.getColor(this, R.color.amber_500),
+                ContextCompat.getColor(this, R.color.green_500),
                 ContextCompat.getColor(this, R.color.light_blue_500)};
     }
 

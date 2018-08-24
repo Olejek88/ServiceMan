@@ -32,10 +32,19 @@ import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.source.FlatRepository;
+import ru.shtrm.serviceman.data.source.HouseRepository;
+import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.UsersRepository;
+import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
+import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
 import ru.shtrm.serviceman.mvp.map.MapFragment;
+import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.ui.PrefsActivity;
@@ -52,21 +61,22 @@ public class MainActivity extends AppCompatActivity
     private Toolbar toolbar;
     private BottomNavigationView navigation;
     public static boolean isLogged = false;
+    private static final int LOGIN = 0;
 
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
     private MapFragment mapFragment;
     private AbonentsFragment abonentsFragment;
-
+    private Bundle currentSavedInstanceState;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
-    private static final String CURRENT_FILTERING_KEY = "CURRENT_FILTERING_KEY";
 
     private int selectedNavItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        currentSavedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_main);
 
         if (PreferenceManager.getDefaultSharedPreferences(this).
@@ -75,6 +85,11 @@ public class MainActivity extends AppCompatActivity
                 getWindow().setNavigationBarColor(
                         ContextCompat.getColor(this, R.color.colorPrimaryDark));
             }
+        }
+
+        if (!initDB()) {
+            // принудительное обновление приложения
+            finish();
         }
 
         if (savedInstanceState != null) {
@@ -94,83 +109,20 @@ public class MainActivity extends AppCompatActivity
 
         // обнуляем текущего активного пользователя
         AuthorizedUser.getInstance().reset();
-
-        if (!initDB()) {
-            // принудительное обновление приложения
-            finish();
+        if (!isLogged) {
+            //Intent loginIntent = new Intent(this, LoginActivity.class);
+            //startActivityForResult(loginIntent, LOGIN);
         }
+        initViews();
+        initFragments(currentSavedInstanceState);
+    }
 
-        if (isLogged) {
-            initViews();
-        } else {
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivity(loginIntent);
-        }
-
-        if (savedInstanceState != null) {
-            profileFragment = (UserDetailFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "UserDetailFragment");
-            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "AbonentsFragment");
-            mapFragment = (MapFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "MapFragment");
-            selectedNavItem = savedInstanceState.getInt(KEY_NAV_ITEM);
-        } else {
-            profileFragment = (UserDetailFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            mapFragment = (MapFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            if (profileFragment == null) {
-                profileFragment = UserDetailFragment.newInstance();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOGIN) {
+            if (resultCode == RESULT_OK) {
+                isLogged = true;
             }
-            if (abonentsFragment == null) {
-                abonentsFragment = AbonentsFragment.newInstance();
-            }
-            if (mapFragment == null) {
-                mapFragment = MapFragment.newInstance();
-            }
-        }
-
-        if (profileFragment!=null && !profileFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, profileFragment, "UserDetailFragment")
-                    .commit();
-        }
-        if (mapFragment!=null && !mapFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, mapFragment, "MapFragment")
-                    .commit();
-        }
-        if (abonentsFragment!=null && !abonentsFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, abonentsFragment, "AbonentsFragment")
-                    .commit();
-        }
-        CheckPermission();
-
-/*
-        QuestionsRepository.destroyInstance();
-        // Init the presenters.
-        questionsPresenter = new QuestionsPresenter(questionsFragment,
-                QuestionsRepository.getInstance(
-                        QuestionsRemoteDataSource.getInstance(),
-                        QuestionsLocalDataSource.getInstance()));
-*/
-        new UserDetailPresenter(profileFragment,
-                UsersRepository.getInstance(UsersLocalDataSource.getInstance()),
-                "");
-
-        // Show the default fragment.
-        if (selectedNavItem == 0) {
-            //showAlarmFragment();
-        } else if (selectedNavItem == 1) {
-            showMapFragment();
-        } else if (selectedNavItem == 2) {
-            //showCheckinFragment();
-        } else if (selectedNavItem == 3) {
-            showAbonentsFragment();
         }
     }
 
@@ -283,8 +235,94 @@ public class MainActivity extends AppCompatActivity
             outState.putInt(KEY_NAV_ITEM, 1);
         }
         // Store the fragments' states.
-        if (profileFragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "ProfileFragment", profileFragment);
+        if (mapFragment.isAdded()) {
+            getSupportFragmentManager().putFragment(outState, "MapFragment", mapFragment);
+        }
+    }
+
+    private void initFragments(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+/*
+            profileFragment = (UserDetailFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "UserDetailFragment");
+*/
+            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "AbonentsFragment");
+            mapFragment = (MapFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "MapFragment");
+            selectedNavItem = savedInstanceState.getInt(KEY_NAV_ITEM);
+        } else {
+/*
+            profileFragment = (UserDetailFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
+*/
+            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
+            mapFragment = (MapFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
+/*
+            if (profileFragment == null) {
+                profileFragment = UserDetailFragment.newInstance();
+            }
+*/
+            if (abonentsFragment == null) {
+                abonentsFragment = AbonentsFragment.newInstance();
+            }
+            if (mapFragment == null) {
+                mapFragment = MapFragment.newInstance();
+            }
+        }
+
+/*
+        if (profileFragment!=null && !profileFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_main, profileFragment, "UserDetailFragment")
+                    .commit();
+        }
+*/
+        if (mapFragment!=null && !mapFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_main, mapFragment, "MapFragment")
+                    .commit();
+        }
+        if (abonentsFragment!=null && !abonentsFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_main, abonentsFragment, "AbonentsFragment")
+                    .commit();
+        }
+        CheckPermission();
+
+/*
+        QuestionsRepository.destroyInstance();
+        // Init the presenters.
+        questionsPresenter = new QuestionsPresenter(questionsFragment,
+                QuestionsRepository.getInstance(
+                        QuestionsRemoteDataSource.getInstance(),
+                        QuestionsLocalDataSource.getInstance()));
+*/
+/*
+        new UserDetailPresenter(profileFragment,
+                UsersRepository.getInstance(UsersLocalDataSource.getInstance()),
+                "");
+*/
+        new MapPresenter(mapFragment,
+                HouseRepository.getInstance(HouseLocalDataSource.getInstance()));
+
+        new AbonentsPresenter(abonentsFragment,
+                StreetRepository.getInstance(StreetLocalDataSource.getInstance()),
+                HouseRepository.getInstance(HouseLocalDataSource.getInstance()),
+                FlatRepository.getInstance(FlatLocalDataSource.getInstance())
+        );
+
+        // Show the default fragment.
+        if (selectedNavItem == 0) {
+            //showAlarmFragment();
+        } else if (selectedNavItem == 1) {
+            showMapFragment();
+        } else if (selectedNavItem == 2) {
+            //showCheckinFragment();
+        } else if (selectedNavItem == 3) {
+            showAbonentsFragment();
         }
     }
 
@@ -411,6 +449,7 @@ public class MainActivity extends AppCompatActivity
             toast.show();
         }
 
+        //LoadTestData.LoadAllTestData();
         return success;
     }
 

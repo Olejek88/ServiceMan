@@ -18,10 +18,10 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 
-public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @NonNull
     private final Context context;
@@ -30,12 +30,12 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private final LayoutInflater inflater;
 
     @NonNull
-    private List<Street> list;
+    private List<Flat> list;
 
     @Nullable
     private OnRecyclerViewItemClickListener listener;
-    
-    StreetAdapter(@NonNull Context context, @NonNull List<Street> list) {
+
+    FlatAdapter(@NonNull Context context, @NonNull List<Flat> list) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.list = list;
@@ -43,15 +43,15 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new StreetsViewHolder(inflater.inflate(R.layout.item_abonent,
+        return new FlatsViewHolder(inflater.inflate(R.layout.item_abonent,
                 parent, false), listener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Street item = list.get(position);
-        StreetsViewHolder pvh = (StreetsViewHolder) holder;
-        pvh.textViewStatus.setText("");
+        Flat item = list.get(position);
+        FlatsViewHolder pvh = (FlatsViewHolder) holder;
+        pvh.textViewStatus.setText(item.getFlatStatus().getTitle());
         if (item.getChangedAt()!=null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
             pvh.textViewDate.setText(sDate);
@@ -84,7 +84,7 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
      * Update the data. Keep the data is the latest.
      * @param list The data.
      */
-    public void updateData(@NonNull List<Street> list) {
+    public void updateData(@NonNull List<Flat> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
@@ -93,7 +93,7 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     /**
      * The view holder of package in home list.
      */
-    public class StreetsViewHolder extends RecyclerView.ViewHolder
+    public class FlatsViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnCreateContextMenuListener {
 
         AppCompatTextView textViewTitle;
@@ -104,7 +104,7 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         private OnRecyclerViewItemClickListener listener;
 
-        public StreetsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+        public FlatsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
             textViewStatus = itemView.findViewById(R.id.textObjectStatus);

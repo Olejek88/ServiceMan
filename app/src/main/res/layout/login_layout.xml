@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/login_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/buildtools" />
+
+    <TextView
+        android:id="@+id/login_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/login_header"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/user_select"
+        android:textColor="#757575"
+        android:textSize="14sp" />
+
+    <Spinner
+        android:id="@+id/user_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/login_label"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:gravity="center"
+        android:spinnerMode="dropdown"
+        android:textColor="@color/mdtp_accent_color_dark" />
+
+
+    <TextView
+        android:id="@+id/user_pin_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/user_select"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#757575"
+        android:layout_marginTop="20dp"
+        android:text="@string/user_pin"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/login_pin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_pin_label"
+        android:layout_gravity="start"
+        android:gravity="center_vertical"
+        android:hint="@string/user_pin_default"
+        android:inputType="numberPassword"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:height="35dp"
+        android:minHeight="0dp"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_below="@+id/login_pin"
+        android:layout_centerHorizontal="true"
+        android:tint="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/mdtp_white"
+        android:text="@string/user_login" />
+
+</RelativeLayout>

@@ -30,11 +30,13 @@
     <string name="message_no_write_permission">Нет разрешений на запись</string>
 
     <!--login-->
-    <string name="user_select">Автор</string>
+    <string name="user_select">Оператор</string>
     <string name="user_login">Войти</string>
     <string name="user_pin">Пин-код</string>
     <string name="user_pin_default">****</string>
 
+    <!--abonents-->
+    <string name="no_last_time">Нет даты обслуживания</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

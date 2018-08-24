@@ -103,13 +103,6 @@ public class MapFragment extends Fragment implements MapContract.View {
 
         initViews(contentView);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //startActivity(new Intent(getContext(), AddQuestionActivity.class));
-            }
-        });
-
         // The function of BottomNavigationView is just as a filter.
         // We need not to build a fragment for each option.
         // Filter the data in presenter and then show it.
@@ -162,7 +155,6 @@ public class MapFragment extends Fragment implements MapContract.View {
         Location location;
         double curLatitude=0.0, curLongitude=0.0;
 
-        fab =  view.findViewById(R.id.fab);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         emptyView =  view.findViewById(R.id.emptyView);
         recyclerView =  view.findViewById(R.id.recyclerView);

@@ -53,11 +53,14 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         House item = list.get(position);
         HousesViewHolder pvh = (HousesViewHolder) holder;
         pvh.textViewStatus.setText("");
-        String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
-        pvh.textViewDate.setText(sDate);
+        if (item.getChangedAt()!=null) {
+            String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
+            pvh.textViewDate.setText(sDate);
+        }
+        else pvh.textViewDate.setText(R.string.no_last_time);
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
         pvh.textViewTitle.setText(item.getTitle());
-        pvh.textViewAvatar.setText(item.getTitle().substring(0,1));
+        pvh.textViewImage.setText(item.getTitle().substring(0,1));
         // TODO выдергивать последнее фото из фото?
 /*
         if (item.getUser()!=null)
@@ -97,7 +100,7 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         AppCompatTextView textViewTitle;
         AppCompatTextView textViewDate;
         AppCompatTextView textViewStatus;
-        AppCompatTextView textViewAvatar;
+        AppCompatTextView textViewImage;
         CircleImageView circleImageView;
 
         private OnRecyclerViewItemClickListener listener;
@@ -107,7 +110,7 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
             textViewStatus = itemView.findViewById(R.id.textObjectStatus);
             textViewDate = itemView.findViewById(R.id.textObjectTime);
-            textViewAvatar = itemView.findViewById(R.id.textViewAvatar);
+            textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
 
             this.listener = listener;

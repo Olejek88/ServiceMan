@@ -17,6 +17,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.FlatRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
@@ -93,8 +94,11 @@ public class LoginActivity  extends AppCompatActivity{
         setResult(RESULT_OK);
         usersLocalDataSource = UsersLocalDataSource.getInstance();
         if (usersLocalDataSource!=null) {
-            if (usersLocalDataSource.checkUser(userUuid, pin))
+            if (usersLocalDataSource.checkUser(userUuid, pin)) {
+                AuthorizedUser aUser = AuthorizedUser.getInstance();
+                aUser.setId(userUuid);
                 finish();
+            }
             else
                 loginError.setVisibility(View.VISIBLE);
         }

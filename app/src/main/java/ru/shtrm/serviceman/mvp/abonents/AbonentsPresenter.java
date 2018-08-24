@@ -47,21 +47,24 @@ public class AbonentsPresenter implements AbonentsContract.Presenter {
     }
 
     @Override
-    public void loadStreets() {
+    public List<Street> loadStreets() {
         List<Street> streets = streetRepository.getStreets();
         view.showStreets(streets);
+        return streets;
     }
 
     @Override
-    public void loadHouses(Street street) {
+    public List<House> loadHouses(Street street) {
         List<House> houses = houseRepository.getHousesByStreet(street);
         view.showHouses(houses);
+        return houses;
     }
 
     @Override
-    public void loadFlats(House house) {
+    public List<Flat> loadFlats(House house) {
         List<Flat> flats = flatRepository.getFlatsByHouse(house);
         view.showFlats(flats);
+        return flats;
     }
 
     @Override

@@ -23,11 +23,11 @@ public interface AbonentsContract {
 
     interface Presenter extends BasePresenter {
 
-        void loadStreets();
+        List<Street> loadStreets();
 
-        void loadHouses(Street street);
+        List<House> loadHouses(Street street);
 
-        void loadFlats(House house);
+        List<Flat> loadFlats(House house);
 
         void updateAbonent(Flat flat, Equipment equipment);
 

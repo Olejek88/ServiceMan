@@ -45,9 +45,9 @@ public class UsersLocalDataSource implements UsersDataSource {
     }
 
     @Override
-    public User getUser(@NonNull String id) {
+    public User getUser(@NonNull String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        User user = realm.where(User.class).equalTo("_id", id).findFirst();
+        User user = realm.where(User.class).equalTo("uuid", uuid).findFirst();
         if (user!=null)
             return realm.copyFromRealm(user);
         else

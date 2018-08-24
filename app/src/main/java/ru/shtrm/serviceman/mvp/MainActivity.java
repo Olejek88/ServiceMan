@@ -26,6 +26,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import io.realm.Realm;
@@ -94,9 +96,6 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
             isLogged = savedInstanceState.getBoolean("isLogged");
-            AuthorizedUser aUser = AuthorizedUser.getInstance();
-            aUser.setToken(savedInstanceState.getString("token"));
-            aUser.setId(savedInstanceState.getString("userId"));
         }
         else {
             User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
@@ -130,6 +129,18 @@ public class MainActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         //sendBroadcast(AppWidgetProvider.getRefreshBroadcastIntent(getApplicationContext()));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (AuthorizedUser.getInstance().getId()!=null) {
+            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+            if (user != null) {
+                TextView profileName = navigationView.getHeaderView(0).findViewById(R.id.name);
+                profileName.setText(user.getName());
+            }
+        }
     }
 
     /**
@@ -348,6 +359,8 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        ImageView profileImage = navigationView.getHeaderView(0).findViewById(R.id.user_image);
+        profileImage.setImageResource(R.drawable.user_random_icon_6);
 
         navigation = findViewById(R.id.bottomNavigationView);
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -462,5 +475,4 @@ public class MainActivity extends AppCompatActivity
         //LoadTestData.LoadAllTestData();
         return success;
     }
-
 }

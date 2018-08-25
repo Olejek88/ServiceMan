@@ -35,7 +35,7 @@
 
             <include
                 android:id="@+id/user_detail"
-                layout="@layout/user_info"
+                layout="@layout/object_info"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

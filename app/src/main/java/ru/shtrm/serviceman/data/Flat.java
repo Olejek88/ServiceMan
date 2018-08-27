@@ -71,4 +71,9 @@ public class Flat extends RealmObject {
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
     }
+
+    public String getFullTitle() {
+        return getHouse().getStreet().getTitle().concat(", ").
+                concat(getHouse().getTitle()).concat(", ").concat(getTitle());
+    }
 }

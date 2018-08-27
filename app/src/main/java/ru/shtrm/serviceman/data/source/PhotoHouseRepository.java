@@ -5,9 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.PhotoHouse;
 
 public class PhotoHouseRepository implements PhotoHouseDataSource {

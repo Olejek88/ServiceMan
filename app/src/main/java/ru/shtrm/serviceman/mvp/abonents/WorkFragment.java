@@ -5,28 +5,43 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Image;
+import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.source.HouseRepository;
+import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
+import ru.shtrm.serviceman.data.source.PhotoHouseRepository;
+import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.util.MainUtil;
 
-public class AbonentsFragment extends Fragment implements AbonentsContract.View {
+public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener{
     private Activity mainActivityConnector = null;
 
     private static final int LEVEL_CITY = 0;
@@ -46,18 +61,35 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
     private StreetAdapter streetAdapter;
     private HouseAdapter houseAdapter;
 
+    private PhotoHouseRepository photoHouseRepository;
+
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
     private Street currentStreet;
     private Flat currentFlat;
 
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR  = 0.9f;
+    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS     = 0.3f;
+    private static final int ALPHA_ANIMATIONS_DURATION              = 200;
+
+    private boolean mIsTheTitleVisible          = false;
+    private boolean mIsTheTitleContainerVisible = true;
+
+    private LinearLayout mTitleContainer;
+    private TextView mTitle;
+    private TextView mObjectTitle;
+    private TextView mObjectDate;
+    private ImageView mImage;
+    private AppBarLayout mAppBarLayout;
+    private Toolbar mToolbar;
+
     private AbonentsContract.Presenter presenter;
 
     // As a fragment, default constructor is needed.
-    public AbonentsFragment() {}
+    public WorkFragment() {}
 
-    public static AbonentsFragment newInstance() {
-        return new AbonentsFragment();
+    public static WorkFragment newInstance() {
+        return new WorkFragment();
     }
 
     @Override
@@ -69,27 +101,23 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.fragment_streets, container, false);
+        View contentView = inflater.inflate(R.layout.fragment_objects, container, false);
 
         initViews(contentView);
+
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 switch (currentLevel) {
                     case LEVEL_INFO:
-                        //showStreets(list);
                         presenter.loadFlats(currentHouse);
-                        //recyclerView.setAdapter(flatAdapter);
                         break;
                     case LEVEL_FLAT:
                         presenter.loadHouses(currentStreet);
-                        //recyclerView.setAdapter(houseAdapter);
                         break;
                     case LEVEL_HOUSE:
-                        //presenter.loadStreets();
                         presenter.loadStreets();
-                        //recyclerView.setAdapter(streetAdapter);
                         break;
                     case LEVEL_STREET:
                         break;
@@ -97,10 +125,7 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
                 }
             }
         });
-
-        // The function of BottomNavigationView is just as a filter.
-        // We need not to build a fragment for each option.
-        // Filter the data in presenter and then show it.
+/*
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -114,12 +139,14 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
                     case R.id.nav_alarms:
                         break;
                 }
-                //presenter.loadAbonents();
                 return true;
             }
         });
+*/
 
-        // Set true to inflate the options menu.
+        mAppBarLayout.addOnOffsetChangedListener(this);
+        startAlphaAnimation(mTitle, 0, View.INVISIBLE);
+
         setHasOptionsMenu(true);
         return contentView;
     }
@@ -128,6 +155,9 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
     public void onResume() {
         super.onResume();
         presenter.subscribe();
+        if (photoHouseRepository==null)
+            photoHouseRepository = PhotoHouseRepository.getInstance
+                    (PhotoHouseLocalDataSource.getInstance());
     }
 
     @Override
@@ -144,7 +174,7 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO здесь будет фильтрация и все такое из меню
+        // TODO добавить реакцию на добавление изображения и изменение статуса
         return true;
     }
 
@@ -172,6 +202,14 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
         emptyView =  view.findViewById(R.id.emptyView);
         recyclerView =  view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mToolbar        = view.findViewById(R.id.main_toolbar);
+        mTitle          = view.findViewById(R.id.main_textview_title);
+        mImage          = view.findViewById(R.id.main_imageview_placeholder);
+        mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
+        mObjectTitle = view.findViewById(R.id.object_name);
+        mObjectDate = view.findViewById(R.id.object_date);
+        mAppBarLayout = view.findViewById(R.id.main_appbar);
     }
 
     /**
@@ -219,6 +257,20 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
                 }
             });
             recyclerView.setAdapter(flatAdapter);
+            mTitle.setText(currentHouse.getFullTitle());
+            mObjectTitle.setText(currentHouse.getFullTitle());
+
+            List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
+            if (photos.size() > 0) {
+                String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(photos.get(0).getChangedAt());
+                mObjectDate.setText(sDate);
+                mObjectDate.setVisibility(View.VISIBLE);
+                mImage.setImageBitmap(MainUtil.getBitmapByPath(MainUtil.getPicturesDirectory(mainActivityConnector),
+                        photos.get(0).getUuid().concat(".jpg")));
+            } else {
+                mObjectDate.setText("фото не было");
+                mObjectDate.setVisibility(View.VISIBLE);
+            }
         } else {
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
@@ -234,16 +286,21 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
                 @Override
                 public void OnItemClick(View v, int position) {
                     Street street = list.get(position);
-                    presenter.loadHouses(street);
                     currentStreet = street;
+                    presenter.loadHouses(street);
                 }
             });
             recyclerView.setAdapter(streetAdapter);
+            if (streetAdapter.getItemCount()>0) {
+                mTitle.setText(list.get(0).getCity().getTitle());
+                mObjectTitle.setText(list.get(0).getCity().getTitle());
+                mObjectDate.setVisibility(View.GONE);
+            }
+            mImage.setImageResource(R.drawable.city);
         } else {
             streetAdapter.updateData(list);
             recyclerView.setAdapter(streetAdapter);
         }
-
         //showEmptyView(list.isEmpty());
     }
 
@@ -255,11 +312,15 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
                 @Override
                 public void OnItemClick(View v, int position) {
                     House house = list.get(position);
-                    presenter.loadFlats(house);
                     currentHouse = house;
+                    presenter.loadFlats(house);
                 }
             });
             recyclerView.setAdapter(houseAdapter);
+            mTitle.setText(currentStreet.getFullTitle());
+            mObjectTitle.setText(currentStreet.getFullTitle());
+            mObjectDate.setVisibility(View.GONE);
+            mImage.setImageResource(R.drawable.street);
         } else {
             houseAdapter.updateData(list);
             recyclerView.setAdapter(houseAdapter);
@@ -274,6 +335,58 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
         // TODO решить что делать если контекст не приехал
         if (mainActivityConnector==null)
             onDestroyView();
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+        int maxScroll = appBarLayout.getTotalScrollRange();
+        float percentage = (float) Math.abs(offset) / (float) maxScroll;
+
+        handleAlphaOnTitle(percentage);
+        handleToolbarTitleVisibility(percentage);
+    }
+
+    private void handleToolbarTitleVisibility(float percentage) {
+        if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
+
+            if(!mIsTheTitleVisible) {
+                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                mIsTheTitleVisible = true;
+            }
+
+        } else {
+
+            if (mIsTheTitleVisible) {
+                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                mIsTheTitleVisible = false;
+            }
+        }
+    }
+
+    private void handleAlphaOnTitle(float percentage) {
+        if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
+            if(mIsTheTitleContainerVisible) {
+                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                mIsTheTitleContainerVisible = false;
+            }
+
+        } else {
+
+            if (!mIsTheTitleContainerVisible) {
+                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                mIsTheTitleContainerVisible = true;
+            }
+        }
+    }
+
+    public static void startAlphaAnimation (View v, long duration, int visibility) {
+        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
+                ? new AlphaAnimation(0f, 1f)
+                : new AlphaAnimation(1f, 0f);
+
+        alphaAnimation.setDuration(duration);
+        alphaAnimation.setFillAfter(true);
+        v.startAnimation(alphaAnimation);
     }
 }
 

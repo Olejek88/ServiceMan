@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 
 public class PhotoEquipmentRepository implements PhotoEquipmentDataSource {

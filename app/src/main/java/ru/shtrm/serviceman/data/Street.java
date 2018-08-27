@@ -62,4 +62,8 @@ public class Street extends RealmObject {
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
     }
+
+    public String getFullTitle() {
+        return getCity().getTitle().concat(", ул.").concat(getTitle());
+    }
 }

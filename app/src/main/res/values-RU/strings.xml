@@ -39,6 +39,10 @@
     <!--abonents-->
     <string name="no_last_time">Нет даты обслуживания</string>
 
+    <!--menu-->
+    <string name="action_add_image">Добавить изображение</string>
+    <string name="action_set_status">Установить статус</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

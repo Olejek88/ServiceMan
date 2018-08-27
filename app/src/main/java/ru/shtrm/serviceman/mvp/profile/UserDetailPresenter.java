@@ -2,7 +2,6 @@ package ru.shtrm.serviceman.mvp.profile;
 
 import android.support.annotation.NonNull;
 
-import io.reactivex.disposables.CompositeDisposable;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 

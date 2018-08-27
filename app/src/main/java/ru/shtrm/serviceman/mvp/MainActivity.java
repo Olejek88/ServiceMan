@@ -44,9 +44,9 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
+import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.alarm.AlarmFragment;
 import ru.shtrm.serviceman.mvp.alarm.AlarmPresenter;
 import ru.shtrm.serviceman.mvp.map.MapFragment;
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     private MapFragment mapFragment;
     private AbonentsFragment abonentsFragment;
     private AlarmFragment alarmsFragment;
+    private WorkFragment workFragment;
     private Bundle currentSavedInstanceState;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
 
@@ -260,6 +261,9 @@ public class MainActivity extends AppCompatActivity
         if (abonentsFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "AbonentFragment", abonentsFragment);
         }
+        if (workFragment.isAdded()) {
+            getSupportFragmentManager().putFragment(outState, "WorkFragment", workFragment);
+        }
     }
 
     private void initFragments(Bundle savedInstanceState) {
@@ -282,6 +286,8 @@ public class MainActivity extends AppCompatActivity
                     findFragmentById(R.id.content_main);
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
                     findFragmentById(R.id.content_main);
+            workFragment = (WorkFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
 
             if (profileFragment == null)
                 profileFragment = UserDetailFragment.newInstance();
@@ -291,6 +297,8 @@ public class MainActivity extends AppCompatActivity
                 mapFragment = MapFragment.newInstance();
             if (alarmsFragment == null)
                 alarmsFragment = AlarmFragment.newInstance();
+            if (workFragment == null)
+                workFragment = WorkFragment.newInstance();
         }
 
         if (profileFragment!=null && !profileFragment.isAdded()) {
@@ -313,6 +321,11 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.content_main, abonentsFragment, "AbonentFragment")
                     .commit();
         }
+        if (workFragment!=null && !workFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_main, workFragment, "WorkFragment")
+                    .commit();
+        }
 
         CheckPermission();
 
@@ -326,6 +339,11 @@ public class MainActivity extends AppCompatActivity
                 AlarmRepository.getInstance(AlarmLocalDataSource.getInstance()));
 
         new AbonentsPresenter(abonentsFragment,
+                StreetRepository.getInstance(StreetLocalDataSource.getInstance()),
+                HouseRepository.getInstance(HouseLocalDataSource.getInstance()),
+                FlatRepository.getInstance(FlatLocalDataSource.getInstance()));
+
+        new AbonentsPresenter(workFragment,
                 StreetRepository.getInstance(StreetLocalDataSource.getInstance()),
                 HouseRepository.getInstance(HouseLocalDataSource.getInstance()),
                 FlatRepository.getInstance(FlatLocalDataSource.getInstance())
@@ -408,6 +426,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showCheckinFragment() {
+        changeFragment(workFragment);
+        toolbar.setTitle(getResources().getString(R.string.nav_checkin));
+        navigationView.setCheckedItem(R.id.nav_checkin);
     }
 
     private void showMapFragment() {
@@ -422,6 +443,7 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.hide(abonentsFragment);
         fragmentTransaction.hide(alarmsFragment);
         fragmentTransaction.hide(profileFragment);
+        fragmentTransaction.hide(workFragment);
 
         if (selectedFragment==mapFragment)
             fragmentTransaction.show(mapFragment);
@@ -431,6 +453,8 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.show(alarmsFragment);
         if (selectedFragment==profileFragment)
             fragmentTransaction.show(profileFragment);
+        if (selectedFragment==workFragment)
+            fragmentTransaction.show(workFragment);
         fragmentTransaction.commit();
     }
 

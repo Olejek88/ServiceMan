@@ -6,9 +6,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.source.MeasureDataSource;
 import ru.shtrm.serviceman.data.source.PhotoEquipmentDataSource;
 
 public class PhotoEquipmentLocalDataSource implements PhotoEquipmentDataSource {
@@ -33,13 +31,13 @@ public class PhotoEquipmentLocalDataSource implements PhotoEquipmentDataSource {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
                 realm.where(PhotoEquipment.class).equalTo("equipment", equipment.getUuid()).
-                        findAllSorted("date"));
+                        findAllSorted("createdAt"));
     }
 
     @Override
     public List<PhotoEquipment> getPhotoEquipment() {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(PhotoEquipment.class).findAllSorted("date"));
+                realm.where(PhotoEquipment.class).findAllSorted("createdAt"));
     }
 }

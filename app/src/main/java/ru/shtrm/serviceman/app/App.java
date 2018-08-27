@@ -1,7 +1,6 @@
 package ru.shtrm.serviceman.app;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatDelegate;
 

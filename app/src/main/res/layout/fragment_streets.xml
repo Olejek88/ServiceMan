@@ -10,10 +10,16 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="56dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="#0000"
+            android:orientation="vertical"
+            app:layout_collapseMode="none"/>
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/RelativeHeaderLayout"
             android:clickable="true"
             android:focusable="true">
 

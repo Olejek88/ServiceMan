@@ -3,14 +3,10 @@ package ru.shtrm.serviceman.mvp.map;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,17 +17,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -39,29 +29,18 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.mvp.abonents.AbonentsContract;
-import ru.shtrm.serviceman.mvp.abonents.FlatAdapter;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
-import ru.shtrm.serviceman.mvp.abonents.StreetAdapter;
-import ru.shtrm.serviceman.mvp.alarm.AlarmAdapter;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -109,6 +88,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         // The function of BottomNavigationView is just as a filter.
         // We need not to build a fragment for each option.
         // Filter the data in presenter and then show it.
+/*
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -125,6 +105,7 @@ public class MapFragment extends Fragment implements MapContract.View {
                 return true;
             }
         });
+*/
 
         // Set true to inflate the options menu.
         setHasOptionsMenu(true);

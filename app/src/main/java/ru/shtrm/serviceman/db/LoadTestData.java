@@ -3,7 +3,6 @@ package ru.shtrm.serviceman.db;
 import java.util.Date;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AlarmStatus;
 import ru.shtrm.serviceman.data.AlarmType;

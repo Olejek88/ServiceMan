@@ -6,11 +6,8 @@ import java.util.List;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.PhotoFlat;
-import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.PhotoFlatDataSource;
-import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
 
 public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
 
@@ -33,14 +30,14 @@ public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
     public List<PhotoFlat> getPhotoByFlat(Flat flat) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(PhotoFlat.class).equalTo("flat", flat.getUuid()).
-                        findAllSorted("date"));
+                realm.where(PhotoFlat.class).equalTo("flat.uuid", flat.getUuid()).
+                        findAllSorted("createdAt"));
     }
 
     @Override
     public List<PhotoFlat> getPhotosFlats() {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(PhotoFlat.class).findAllSorted("date"));
+                realm.where(PhotoFlat.class).findAllSorted("createdAt"));
     }
 }

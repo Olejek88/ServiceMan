@@ -6,9 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.PhotoFlat;
-import ru.shtrm.serviceman.data.PhotoHouse;
 
 public class PhotoFlatRepository implements PhotoFlatDataSource {
 

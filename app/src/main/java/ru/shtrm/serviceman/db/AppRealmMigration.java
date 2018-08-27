@@ -19,7 +19,6 @@ import io.realm.RealmMigration;
 import io.realm.RealmObject;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
-import io.realm.exceptions.RealmException;
 import ru.shtrm.serviceman.db.migration.Migration1;
 
 class AppRealmMigration implements RealmMigration {

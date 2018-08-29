@@ -20,6 +20,7 @@ import io.realm.RealmObject;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 import ru.shtrm.serviceman.db.migration.Migration1;
+import ru.shtrm.serviceman.db.migration.Migration2;
 
 class AppRealmMigration implements RealmMigration {
     private final String TAG = this.getClass().getName();
@@ -47,6 +48,11 @@ class AppRealmMigration implements RealmMigration {
 
         if (oldVersion == 0) {
             new Migration1().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 1) {
+            new Migration2().migration(realm);
             oldVersion++;
         }
         //testPropsFields(realm);

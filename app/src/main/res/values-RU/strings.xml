@@ -130,8 +130,9 @@
 
     <!--Settings-->
     <string name="notifications">Оповещения</string>
-    <string name="alert">Сообщения</string>
-    <string name="alert_desc">Посылать мне оповещения когда на мой вопрос появятся ответы</string>
+    <string name="gps">Сбор данных GPS</string>
+    <string name="gps_desc">Необходимость сбора данных координат</string>
+
     <string name="do_not_disturb_mode">Режим не беспокоить</string>
     <string name="do_not_disturb_mode_desc">Не оповещать меня в эти часы</string>
     <string name="start_time">Начало</string>

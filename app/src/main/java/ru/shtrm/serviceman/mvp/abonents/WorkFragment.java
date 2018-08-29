@@ -1,14 +1,29 @@
 package ru.shtrm.serviceman.mvp.abonents;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,27 +34,41 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.app.App;
+import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Image;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
 import ru.shtrm.serviceman.data.source.PhotoHouseRepository;
+import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.util.MainUtil;
+
+import static android.app.Activity.RESULT_OK;
 
 public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener{
     private Activity mainActivityConnector = null;
@@ -49,6 +78,9 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private static final int LEVEL_HOUSE = 2;
     private static final int LEVEL_FLAT = 3;
     private static final int LEVEL_INFO = 4;
+
+    public final static int ACTIVITY_PHOTO = 100;
+    public final static int REQUEST_CAMERA_PERMISSION_CODE = 0;
 
     // View references
     private BottomNavigationView bottomNavigationView;
@@ -62,6 +94,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private HouseAdapter houseAdapter;
 
     private PhotoHouseRepository photoHouseRepository;
+    private GpsTrackRepository gpsTrackRepository;
 
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
@@ -80,6 +113,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private TextView mObjectTitle;
     private TextView mObjectDate;
     private ImageView mImage;
+    private ImageView objectIcon;
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
 
@@ -105,7 +139,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
         initViews(contentView);
 
-
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,28 +158,19 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 }
             }
         });
-/*
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_checkin:
-                        break;
-                    case R.id.nav_users:
-                        break;
-                    case R.id.nav_map:
-                        break;
-                    case R.id.nav_alarms:
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                checkPermissionCamera();
             }
         });
-*/
+
 
         mAppBarLayout.addOnOffsetChangedListener(this);
         startAlphaAnimation(mTitle, 0, View.INVISIBLE);
-
+        presenter.loadStreets();
         setHasOptionsMenu(true);
         return contentView;
     }
@@ -158,6 +182,9 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         if (photoHouseRepository==null)
             photoHouseRepository = PhotoHouseRepository.getInstance
                     (PhotoHouseLocalDataSource.getInstance());
+        if (gpsTrackRepository==null)
+            gpsTrackRepository = GpsTrackRepository.getInstance
+                    (GpsTrackLocalDataSource.getInstance());
     }
 
     @Override
@@ -202,7 +229,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         emptyView =  view.findViewById(R.id.emptyView);
         recyclerView =  view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        objectIcon = view.findViewById(R.id.object_icon);
         mToolbar        = view.findViewById(R.id.main_toolbar);
         mTitle          = view.findViewById(R.id.main_textview_title);
         mImage          = view.findViewById(R.id.main_imageview_placeholder);
@@ -262,19 +289,27 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
             List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
             if (photos.size() > 0) {
-                String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(photos.get(0).getChangedAt());
-                mObjectDate.setText(sDate);
-                mObjectDate.setVisibility(View.VISIBLE);
-                mImage.setImageBitmap(MainUtil.getBitmapByPath(MainUtil.getPicturesDirectory(mainActivityConnector),
-                        photos.get(0).getUuid().concat(".jpg")));
+                if (photos.get(0).getChangedAt()!=null) {
+                    String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(photos.get(0).getChangedAt());
+                    mObjectDate.setText(sDate);
+                }
+                else mObjectDate.setText("фото не было");
+                Bitmap bitmap = MainUtil.getBitmapByPath(MainUtil.getPicturesDirectory(mainActivityConnector),
+                        photos.get(0).getUuid().concat(".jpg"));
+                if (bitmap!=null) {
+                    mImage.setImageBitmap(bitmap);
+                    objectIcon.setImageBitmap(bitmap);
+                }
             } else {
                 mObjectDate.setText("фото не было");
-                mObjectDate.setVisibility(View.VISIBLE);
             }
+            mObjectDate.setVisibility(View.VISIBLE);
         } else {
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
         }
+        fab.setVisibility(View.VISIBLE);
+        back.setVisibility(View.VISIBLE);
         //showEmptyView(list.isEmpty());
     }
 
@@ -296,12 +331,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 mObjectTitle.setText(list.get(0).getCity().getTitle());
                 mObjectDate.setVisibility(View.GONE);
             }
-            mImage.setImageResource(R.drawable.city);
         } else {
             streetAdapter.updateData(list);
             recyclerView.setAdapter(streetAdapter);
         }
-        //showEmptyView(list.isEmpty());
+        mImage.setImageResource(R.drawable.city);
+        fab.setVisibility(View.GONE);
+        back.setVisibility(View.GONE);
     }
 
     public void showHouses(@NonNull final List<House> list) {
@@ -320,12 +356,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             mTitle.setText(currentStreet.getFullTitle());
             mObjectTitle.setText(currentStreet.getFullTitle());
             mObjectDate.setVisibility(View.GONE);
-            mImage.setImageResource(R.drawable.street);
         } else {
             houseAdapter.updateData(list);
             recyclerView.setAdapter(houseAdapter);
         }
-        //showEmptyView(list.isEmpty());
+        mImage.setImageResource(R.drawable.street);
+        fab.setVisibility(View.GONE);
+        back.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -388,5 +425,169 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         alphaAnimation.setFillAfter(true);
         v.startAnimation(alphaAnimation);
     }
+
+    /**
+     * Check whether the camera permission has been granted.
+     */
+    private void checkPermissionCamera() {
+        if (ContextCompat.checkSelfPermission(mainActivityConnector, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.CAMERA }, REQUEST_CAMERA_PERMISSION_CODE);
+        } else {
+            startPhotoActivity();
+        }
+    }
+
+    /**
+     * Launch the camera
+     */
+    private void startPhotoActivity() {
+        try {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(intent, ACTIVITY_PHOTO);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * To handle the permission grant result.
+     * If the user denied the permission, show a dialog to explain
+     * the reason why the app need such permission and lead he/her
+     * to the system settings to grant permission.
+     * @param requestCode The request code.
+     * @param permissions The wanted permissions.
+     * @param grantResults The results.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CAMERA_PERMISSION_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startPhotoActivity();
+                } else {
+                    hideImm();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityConnector);
+                    builder.setTitle(R.string.require_permission);
+                    builder.setMessage(R.string.require_permission);
+                    builder.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Go to the detail settings of our application
+                            Intent intent = new Intent();
+                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package",
+                                    mainActivityConnector.getPackageName(), null);
+                            intent.setData(uri);
+                            startActivity(intent);
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+                break;
+            default:
+        }
+    }
+
+    /**
+     * Сохраняем фото
+     * @param requestCode The request code. See at {@link WorkFragment}.
+     * @param resultCode The result code.
+     * @param data The result.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ACTIVITY_PHOTO:
+                if (resultCode == Activity.RESULT_OK) {
+                    switch (currentLevel) {
+                        case LEVEL_FLAT:
+                            String uuid = java.util.UUID.randomUUID().toString();
+                            // TODO сделать красиво
+                            if (data != null && data.getExtras() != null) {
+                                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                                if (bitmap != null) {
+                                    MainUtil.storeNewImage(bitmap, getContext(),
+                                            800, uuid.concat(".jpg"));
+                                    PhotoHouse photoHouse = new PhotoHouse();
+                                    User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+                                    photoHouse.setHouse(currentHouse);
+                                    photoHouse.setUuid(uuid);
+                                    photoHouse.setCreatedAt(new Date());
+                                    photoHouse.setChangedAt(new Date());
+                                    photoHouse.setUser(user);
+                                    if (gpsTrackRepository.getLastTrack()!=null) {
+                                        photoHouse.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
+                                        photoHouse.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
+                                    }
+                                    else {
+                                        photoHouse.setLattitude(App.defaultLatitude);
+                                        photoHouse.setLongitude(App.defaultLongitude);
+                                    }
+                                    photoHouseRepository.savePhotoHouse(photoHouse);
+                                    objectIcon.setImageBitmap(bitmap);
+                                    mImage.setImageBitmap(bitmap);
+                                    String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
+                                            format(photoHouse.getCreatedAt());
+                                    mObjectDate.setText(sDate);
+                                }
+                            }
+                            break;
+                        case LEVEL_INFO:
+                            break;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Hide the input method like soft keyboard, etc... when they are active.
+     */
+    private void hideImm() {
+        InputMethodManager imm = (InputMethodManager)
+                mainActivityConnector.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm!=null && imm.isActive()) {
+            imm.hideSoftInputFromWindow(fab.getWindowToken(), 0);
+        }
+    }
+    
+    public String getLastPhotoFilePath() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return null;
+        }
+        String[] projection = {
+                MediaStore.Images.Media.DATA,
+        };
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        ContentResolver resolver = activity.getContentResolver();
+        String orderBy = android.provider.MediaStore.Video.Media.DATE_TAKEN + " DESC";
+        Cursor cursor = resolver.query(uri, projection, null, null, orderBy);
+        // TODO: реализовать удаление записи о фотке котрую мы "забрали"
+        // resolver.delete(uri,);
+        String result;
+        if (cursor != null && cursor.moveToFirst()) {
+            int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            result = cursor.getString(column_index_data);
+            cursor.close();
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
 }
 

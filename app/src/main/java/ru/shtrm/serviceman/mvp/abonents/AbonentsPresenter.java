@@ -39,7 +39,6 @@ public class AbonentsPresenter implements AbonentsContract.Presenter {
 
     @Override
     public void subscribe() {
-        loadStreets();
     }
 
     @Override

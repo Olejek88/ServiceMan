@@ -10,6 +10,8 @@ import ru.shtrm.serviceman.db.AppRealm;
 import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class App extends Application {
+    public static double defaultLatitude = 56.06;
+    public static double defaultLongitude = 59.58;
 
     @Override
     public void onCreate() {

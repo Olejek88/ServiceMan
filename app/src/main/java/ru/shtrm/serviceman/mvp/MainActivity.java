@@ -1,13 +1,16 @@
 package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -44,6 +47,8 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.db.LoadTestData;
+import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
@@ -78,6 +83,10 @@ public class MainActivity extends AppCompatActivity
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
 
     private int selectedNavItem = 0;
+
+    private LocationManager _locationManager;
+    private GPSListener _gpsListener;
+    private Thread checkGPSThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +131,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LOGIN) {
             if (resultCode == RESULT_OK) {
                 isLogged = true;
@@ -132,6 +142,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        if (checkGPSThread != null) {
+            checkGPSThread.interrupt();
+        }
         //sendBroadcast(AppWidgetProvider.getRefreshBroadcastIntent(getApplicationContext()));
     }
 
@@ -145,6 +158,7 @@ public class MainActivity extends AppCompatActivity
                 profileName.setText(user.getName());
             }
         }
+        CheckRunGPSListener();
     }
 
     /**
@@ -359,6 +373,8 @@ public class MainActivity extends AppCompatActivity
         } else if (selectedNavItem == 3) {
             showCheckinFragment();
         }
+
+        toolbar.setTitle(getResources().getString(R.string.nav_map));
     }
 
     /**
@@ -486,7 +502,6 @@ public class MainActivity extends AppCompatActivity
         try {
             // получаем базу realm
             Realm realmDB = Realm.getDefaultInstance();
-            //LoadTestData.LoadAllTestData();
             Log.d(TAG, "Realm DB schema version = " + realmDB.getVersion());
             Log.d(TAG, "db.version=" + realmDB.getVersion());
             if (realmDB.getVersion() == 0) {
@@ -509,9 +524,62 @@ public class MainActivity extends AppCompatActivity
             toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
         }
-
-        //LoadTestData.DeleteSomeData();
+        //LoadTestData.LoadAllTestData();
         //LoadTestData.LoadAllTestData2();
         return success;
     }
+    
+    void CheckRunGPSListener() {
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                boolean isRun = true;
+                while (isRun) {
+                    try {
+                        Thread.sleep(5000);
+                        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                        if (!isSkipGPS()) {
+                            boolean gpsEnabled = lm != null && lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                            if (!gpsEnabled) {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(intent);
+                                Toast.makeText(getApplicationContext(), "GPS должен быть включен",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } catch (Exception e) {
+                        isRun = false;
+                    }
+                }
+            }
+        };
+        checkGPSThread = new Thread(run);
+        checkGPSThread.start();
+
+        _locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (_locationManager != null && permission == PackageManager.PERMISSION_GRANTED) {
+            _gpsListener = new GPSListener();
+            _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, _gpsListener);
+        }
+    }
+    /**
+     * Проверка включен ли GPS.
+     *
+     * @return boolean
+     */
+    private boolean isGpsOn() {
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return lm != null && lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    /**
+     * Проверка на необходимость GPS
+     */
+    private boolean isSkipGPS() {
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        return sp.getBoolean(getString(R.string.gps), false);
+    }
+
 }

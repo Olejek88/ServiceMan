@@ -37,4 +37,10 @@ public class PhotoHouseRepository implements PhotoHouseDataSource {
     public List<PhotoHouse> getPhotosHouses() {
         return localDataSource.getPhotosHouses();
     }
+
+    @Override
+    public void savePhotoHouse(PhotoHouse photoHouse) {
+        localDataSource.savePhotoHouse(photoHouse);
+    }
+
 }

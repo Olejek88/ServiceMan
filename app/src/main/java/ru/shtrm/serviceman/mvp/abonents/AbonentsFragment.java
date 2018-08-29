@@ -121,6 +121,7 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
 
         // Set true to inflate the options menu.
         setHasOptionsMenu(true);
+        presenter.loadStreets();
         return contentView;
     }
 

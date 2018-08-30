@@ -14,7 +14,7 @@ public class Image extends RealmObject {
     @PrimaryKey
     @Expose
     @SerializedName("id")
-    private String id;
+    private long id;
 
     @Expose
     @SerializedName("title")
@@ -36,11 +36,11 @@ public class Image extends RealmObject {
     @SerializedName("date")
     private Date date;
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

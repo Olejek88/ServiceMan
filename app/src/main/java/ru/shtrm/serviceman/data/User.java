@@ -5,18 +5,18 @@ import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
     @PrimaryKey
-    private String _id;
+    private long _id;
     private String uuid;
     private String name;
     private String pin;
     private String image;
     private String contact;
 
-    public String get_id() {
+    public long get_id() {
         return _id;
     }
 
-    public void set_id(String _id) {
+    public void set_id(long _id) {
         this._id = _id;
     }
 

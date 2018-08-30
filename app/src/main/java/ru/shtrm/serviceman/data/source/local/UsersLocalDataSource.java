@@ -58,7 +58,7 @@ public class UsersLocalDataSource implements UsersDataSource {
         Realm realm = Realm.getDefaultInstance();
         AuthorizedUser aUser = AuthorizedUser.getInstance();
         if (aUser!=null) {
-            User user = realm.where(User.class).equalTo("_id",
+            User user = realm.where(User.class).equalTo("uuid",
                     aUser.getId()).findFirst();
             if (user!=null) {
                 return realm.copyFromRealm(user);

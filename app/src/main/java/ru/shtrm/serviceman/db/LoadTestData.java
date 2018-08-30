@@ -69,7 +69,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                user = realmDB.createObject(User.class, "1");
+                user = realmDB.createObject(User.class, 1);
                 user.setUuid(userTestUuid);
                 user.setName("Иванов О.А.");
                 user.setPin("1234");
@@ -80,7 +80,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                city = realmDB.createObject(City.class, "1");
+                city = realmDB.createObject(City.class, 1);
                 city.setTitle("Нязепетровск");
             }
         });
@@ -88,7 +88,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                houseStatus = realmDB.createObject(HouseStatus.class, "1");
+                houseStatus = realmDB.createObject(HouseStatus.class, 1);
                 houseStatus.setUuid(houseStatusUuid);
                 houseStatus.setTitle("Все в порядке");
             }
@@ -97,7 +97,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                flatStatus = realmDB.createObject(FlatStatus.class, "1");
+                flatStatus = realmDB.createObject(FlatStatus.class, 1);
                 flatStatus.setUuid(flatStatusUuid);
                 flatStatus.setTitle("Все в порядке");
             }
@@ -106,7 +106,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipmentStatus = realmDB.createObject(EquipmentStatus.class, "1");
+                equipmentStatus = realmDB.createObject(EquipmentStatus.class, 1);
                 equipmentStatus.setUuid(equipmentStatusUuid);
                 equipmentStatus.setTitle("Работоспособно");
             }
@@ -115,7 +115,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipmentType = realmDB.createObject(EquipmentType.class, "1");
+                equipmentType = realmDB.createObject(EquipmentType.class, 1);
                 equipmentType.setUuid(equipmentTypeUuid);
                 equipmentType.setTitle("Датчик расхода ХВ");
             }
@@ -124,7 +124,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                street = realmDB.createObject(Street.class, "1");
+                street = realmDB.createObject(Street.class, 1);
                 street.setUuid(streetUuid);
                 street.setCity(city);
                 street.setTitle("Воронежская");
@@ -134,7 +134,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                house1 = realmDB.createObject(House.class, "1");
+                house1 = realmDB.createObject(House.class, 1);
                 house1.setUuid(houseUuid1);
                 house1.setStreet(street);
                 house1.setTitle("8А");
@@ -144,7 +144,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                house2 = realmDB.createObject(House.class, "2");
+                house2 = realmDB.createObject(House.class, 2);
                 house2.setUuid(houseUuid2);
                 house2.setStreet(street);
                 house2.setTitle("6");
@@ -155,7 +155,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                flat = realmDB.createObject(Flat.class, "1");
+                flat = realmDB.createObject(Flat.class, 1);
                 flat.setUuid(flatUuid);
                 flat.setHouse(house1);
                 flat.setTitle("8");
@@ -167,7 +167,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipment1 = realmDB.createObject(Equipment.class, "1");
+                equipment1 = realmDB.createObject(Equipment.class, 1);
                 equipment1.setUuid(equipmentUuid1);
                 equipment1.setFlat(flat);
                 equipment1.setHouse(house1);
@@ -194,7 +194,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                alarmStatus = realmDB.createObject(AlarmStatus.class, "1");
+                alarmStatus = realmDB.createObject(AlarmStatus.class, 1);
                 alarmStatus.setUuid(alarmTypeUuid);
                 alarmStatus.setTitle("Зафиксирован/Не устранен");
             }
@@ -203,7 +203,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                alarmType = realmDB.createObject(AlarmType.class, "1");
+                alarmType = realmDB.createObject(AlarmType.class, 1);
                 alarmType.setUuid(alarmTypeUuid);
                 alarmType.setTitle("Незаконная врезка");
             }
@@ -212,7 +212,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                alarmType2 = realmDB.createObject(AlarmType.class, "2");
+                alarmType2 = realmDB.createObject(AlarmType.class, 2);
                 alarmType2.setUuid(alarmTypeUuid);
                 alarmType2.setTitle("Протечка");
             }
@@ -221,7 +221,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                alarm1 = realmDB.createObject(Alarm.class, "1");
+                alarm1 = realmDB.createObject(Alarm.class, 1);
                 alarm1.setUuid(alarmUuid1);
                 alarm1.setAlarmStatus(alarmStatus);
                 alarm1.setAlarmType(alarmType);
@@ -236,7 +236,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                alarm2 = realmDB.createObject(Alarm.class, "2");
+                alarm2 = realmDB.createObject(Alarm.class, 2);
                 alarm2.setUuid(alarmUuid2);
                 alarm2.setAlarmStatus(alarmStatus);
                 alarm2.setAlarmType(alarmType);

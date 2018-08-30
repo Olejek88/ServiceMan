@@ -8,7 +8,7 @@ import io.realm.annotations.PrimaryKey;
 public class PhotoHouse extends RealmObject {
 
     @PrimaryKey
-    private String _id;
+    private long _id;
     private String uuid;
     private House house;
     private User user;
@@ -17,11 +17,11 @@ public class PhotoHouse extends RealmObject {
     private Date createdAt;
     private Date changedAt;
 
-    public String get_id() {
+    public long get_id() {
         return _id;
     }
 
-    public void set_id(String _id) {
+    public void set_id(long _id) {
         this._id = _id;
     }
 

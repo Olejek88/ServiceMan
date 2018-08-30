@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity
             if (user==null) {
                 user = UsersLocalDataSource.getInstance().getLastUser();
                 if (user != null)
-                    AuthorizedUser.getInstance().setId(user.get_id());
+                    AuthorizedUser.getInstance().setId(user.getUuid());
             }
         }
 

@@ -6,7 +6,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -23,7 +26,7 @@ import ru.shtrm.serviceman.mvp.user.UserContract;
 import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
 
-public class LoginActivity  extends AppCompatActivity{
+public class LoginActivity extends AppCompatActivity {
 
     private UserContract.Presenter presenter;
     private UsersLocalDataSource usersLocalDataSource;
@@ -46,7 +49,7 @@ public class LoginActivity  extends AppCompatActivity{
         Button loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                User user = (User)userSelect.getSelectedItem();
+                User user = (User) userSelect.getSelectedItem();
                 checkUser(user.getUuid(), pinCode.getText().toString());
             }
         });
@@ -60,18 +63,41 @@ public class LoginActivity  extends AppCompatActivity{
 
         presenter = new UserPresenter(UsersRepository.getInstance(UsersLocalDataSource.getInstance()));
 
+        pinCode.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    Button b = findViewById(R.id.loginButton);
+                    b.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
         pinCode.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 loginError.setVisibility(View.GONE);
             }
+
         });
+        pinCode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
+        pinCode.requestFocus();
 
         List<User> users = presenter.loadUsers();
         UserListAdapter adapter = new UserListAdapter(this,
@@ -79,16 +105,15 @@ public class LoginActivity  extends AppCompatActivity{
         userSelect.setAdapter(adapter);
     }
 
-    void checkUser (String userUuid, String pin) {
+    void checkUser(String userUuid, String pin) {
         setResult(RESULT_OK);
         usersLocalDataSource = UsersLocalDataSource.getInstance();
-        if (usersLocalDataSource!=null) {
+        if (usersLocalDataSource != null) {
             if (usersLocalDataSource.checkUser(userUuid, pin)) {
                 AuthorizedUser aUser = AuthorizedUser.getInstance();
                 aUser.setId(userUuid);
                 finish();
-            }
-            else
+            } else
                 loginError.setVisibility(View.VISIBLE);
         }
     }

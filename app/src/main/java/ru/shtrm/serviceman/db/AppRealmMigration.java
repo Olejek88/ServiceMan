@@ -36,15 +36,13 @@ class AppRealmMigration implements RealmMigration {
         Log.d(TAG, "oldVersion = " + oldVersion);
         Log.d(TAG, "newVersion = " + newVersion);
 
-/*
         if (oldVersion == newVersion) {
-            if (!testPropsFields(realm)) {
-                throw new RealmException("Классы и схема не идентичны!!!");
-            }
+//            if (!testPropsFields(realm)) {
+//                throw new RealmException("Классы и схема не идентичны!!!");
+//            }
 
             return;
         }
-*/
 
         if (oldVersion == 0) {
             new Migration1().migration(realm);

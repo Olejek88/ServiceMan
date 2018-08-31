@@ -109,10 +109,9 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
             isLogged = savedInstanceState.getBoolean("isLogged");
-        }
-        else {
+        } else {
             User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
-            if (user==null) {
+            if (user == null) {
                 user = UsersLocalDataSource.getInstance().getLastUser();
                 if (user != null)
                     AuthorizedUser.getInstance().setId(user.getUuid());
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (AuthorizedUser.getInstance().getId()!=null) {
+        if (AuthorizedUser.getInstance().getId() != null) {
             User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
             if (user != null) {
                 TextView profileName = navigationView.getHeaderView(0).findViewById(R.id.name);
@@ -176,6 +175,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Handle different items of the navigation drawer
+     *
      * @param item The selected item.
      * @return Selected or not.
      */
@@ -250,6 +250,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Store the state when the activity may be recycled.
+     *
      * @param outState The state data.
      */
     @Override
@@ -315,27 +316,27 @@ public class MainActivity extends AppCompatActivity
                 workFragment = WorkFragment.newInstance();
         }
 
-        if (profileFragment!=null && !profileFragment.isAdded()) {
+        if (profileFragment != null && !profileFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, profileFragment, "UserFragment")
                     .commit();
         }
-        if (mapFragment!=null && !mapFragment.isAdded()) {
+        if (mapFragment != null && !mapFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, mapFragment, "MapFragment")
                     .commit();
         }
-        if (alarmsFragment!=null && !alarmsFragment.isAdded()) {
+        if (alarmsFragment != null && !alarmsFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, alarmsFragment, "AlarmFragment")
                     .commit();
         }
-        if (abonentsFragment!=null && !abonentsFragment.isAdded()) {
+        if (abonentsFragment != null && !abonentsFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, abonentsFragment, "AbonentFragment")
                     .commit();
         }
-        if (workFragment!=null && !workFragment.isAdded()) {
+        if (workFragment != null && !workFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, workFragment, "WorkFragment")
                     .commit();
@@ -461,20 +462,20 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.hide(profileFragment);
         fragmentTransaction.hide(workFragment);
 
-        if (selectedFragment==mapFragment)
+        if (selectedFragment == mapFragment)
             fragmentTransaction.show(mapFragment);
-        if (selectedFragment==abonentsFragment)
+        if (selectedFragment == abonentsFragment)
             fragmentTransaction.show(abonentsFragment);
-        if (selectedFragment==alarmsFragment)
+        if (selectedFragment == alarmsFragment)
             fragmentTransaction.show(alarmsFragment);
-        if (selectedFragment==profileFragment)
+        if (selectedFragment == profileFragment)
             fragmentTransaction.show(profileFragment);
-        if (selectedFragment==workFragment)
+        if (selectedFragment == workFragment)
             fragmentTransaction.show(workFragment);
         fragmentTransaction.commit();
     }
 
-    private void CheckPermission () {
+    private void CheckPermission() {
         // Create the storage directory if it does not exist
         if (MainUtil.isExternalStorageWritable()) {
             ActivityCompat.requestPermissions(this,
@@ -484,8 +485,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult ( int requestCode,
-                                             @NonNull String permissions[], @NonNull int[] grantResults){
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_WRITE_STORAGE:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
@@ -528,7 +529,7 @@ public class MainActivity extends AppCompatActivity
         //LoadTestData.LoadAllTestData2();
         return success;
     }
-    
+
     void CheckRunGPSListener() {
         Runnable run = new Runnable() {
             @Override
@@ -563,6 +564,7 @@ public class MainActivity extends AppCompatActivity
             _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, _gpsListener);
         }
     }
+
     /**
      * Проверка включен ли GPS.
      *

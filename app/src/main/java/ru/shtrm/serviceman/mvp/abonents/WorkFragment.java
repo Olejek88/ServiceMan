@@ -70,7 +70,7 @@ import ru.shtrm.serviceman.util.MainUtil;
 
 import static android.app.Activity.RESULT_OK;
 
-public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener{
+public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener {
     private Activity mainActivityConnector = null;
 
     private static final int LEVEL_CITY = 0;
@@ -101,11 +101,11 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private Street currentStreet;
     private Flat currentFlat;
 
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR  = 0.9f;
-    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS     = 0.3f;
-    private static final int ALPHA_ANIMATIONS_DURATION              = 200;
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
+    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
+    private static final int ALPHA_ANIMATIONS_DURATION = 200;
 
-    private boolean mIsTheTitleVisible          = false;
+    private boolean mIsTheTitleVisible = false;
     private boolean mIsTheTitleContainerVisible = true;
 
     private LinearLayout mTitleContainer;
@@ -120,7 +120,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private AbonentsContract.Presenter presenter;
 
     // As a fragment, default constructor is needed.
-    public WorkFragment() {}
+    public WorkFragment() {
+    }
 
     public static WorkFragment newInstance() {
         return new WorkFragment();
@@ -179,10 +180,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     public void onResume() {
         super.onResume();
         presenter.subscribe();
-        if (photoHouseRepository==null)
+        if (photoHouseRepository == null)
             photoHouseRepository = PhotoHouseRepository.getInstance
                     (PhotoHouseLocalDataSource.getInstance());
-        if (gpsTrackRepository==null)
+        if (gpsTrackRepository == null)
             gpsTrackRepository = GpsTrackRepository.getInstance
                     (GpsTrackLocalDataSource.getInstance());
     }
@@ -219,20 +220,21 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     /**
      * Init the views by findViewById.
+     *
      * @param view The container view.
      */
     @Override
     public void initViews(View view) {
-        fab =  view.findViewById(R.id.fab);
-        back =  view.findViewById(R.id.back);
+        fab = view.findViewById(R.id.fab);
+        back = view.findViewById(R.id.back);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
-        emptyView =  view.findViewById(R.id.emptyView);
-        recyclerView =  view.findViewById(R.id.recyclerView);
+        emptyView = view.findViewById(R.id.emptyView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         objectIcon = view.findViewById(R.id.object_icon);
-        mToolbar        = view.findViewById(R.id.main_toolbar);
-        mTitle          = view.findViewById(R.id.main_textview_title);
-        mImage          = view.findViewById(R.id.main_imageview_placeholder);
+        mToolbar = view.findViewById(R.id.main_toolbar);
+        mTitle = view.findViewById(R.id.main_textview_title);
+        mImage = view.findViewById(R.id.main_imageview_placeholder);
         mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
         mObjectTitle = view.findViewById(R.id.object_name);
         mObjectDate = view.findViewById(R.id.object_date);
@@ -241,6 +243,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     /**
      * Set a presenter for this fragment(View),
+     *
      * @param presenter The presenter.
      */
     @Override
@@ -251,6 +254,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     /**
      * Hide a RecyclerView when it is empty and show a empty view
      * to tell the uses that there is no data currently.
+     *
      * @param toShow Hide or show.
      */
     @Override
@@ -266,6 +270,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     /**
      * Show flats with recycler view.
+     *
      * @param list The data.
      */
     @Override
@@ -289,14 +294,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
             List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
             if (photos.size() > 0) {
-                if (photos.get(0).getChangedAt()!=null) {
+                if (photos.get(0).getChangedAt() != null) {
                     String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(photos.get(0).getChangedAt());
                     mObjectDate.setText(sDate);
-                }
-                else mObjectDate.setText("фото не было");
+                } else mObjectDate.setText("фото не было");
                 Bitmap bitmap = MainUtil.getBitmapByPath(MainUtil.getPicturesDirectory(mainActivityConnector),
                         photos.get(0).getUuid().concat(".jpg"));
-                if (bitmap!=null) {
+                if (bitmap != null) {
                     mImage.setImageBitmap(bitmap);
                     objectIcon.setImageBitmap(bitmap);
                 }
@@ -326,7 +330,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 }
             });
             recyclerView.setAdapter(streetAdapter);
-            if (streetAdapter.getItemCount()>0) {
+            if (streetAdapter.getItemCount() > 0) {
                 mTitle.setText(list.get(0).getCity().getTitle());
                 mObjectTitle.setText(list.get(0).getCity().getTitle());
                 mObjectDate.setVisibility(View.GONE);
@@ -370,7 +374,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         super.onAttach(context);
         mainActivityConnector = getActivity();
         // TODO решить что делать если контекст не приехал
-        if (mainActivityConnector==null)
+        if (mainActivityConnector == null)
             onDestroyView();
     }
 
@@ -386,7 +390,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private void handleToolbarTitleVisibility(float percentage) {
         if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
 
-            if(!mIsTheTitleVisible) {
+            if (!mIsTheTitleVisible) {
                 startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleVisible = true;
             }
@@ -402,7 +406,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     private void handleAlphaOnTitle(float percentage) {
         if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
-            if(mIsTheTitleContainerVisible) {
+            if (mIsTheTitleContainerVisible) {
                 startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 mIsTheTitleContainerVisible = false;
             }
@@ -416,7 +420,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         }
     }
 
-    public static void startAlphaAnimation (View v, long duration, int visibility) {
+    public static void startAlphaAnimation(View v, long duration, int visibility) {
         AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
                 ? new AlphaAnimation(0f, 1f)
                 : new AlphaAnimation(1f, 0f);
@@ -432,7 +436,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private void checkPermissionCamera() {
         if (ContextCompat.checkSelfPermission(mainActivityConnector, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[] {Manifest.permission.CAMERA }, REQUEST_CAMERA_PERMISSION_CODE);
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION_CODE);
         } else {
             startPhotoActivity();
         }
@@ -455,8 +459,9 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
      * If the user denied the permission, show a dialog to explain
      * the reason why the app need such permission and lead he/her
      * to the system settings to grant permission.
-     * @param requestCode The request code.
-     * @param permissions The wanted permissions.
+     *
+     * @param requestCode  The request code.
+     * @param permissions  The wanted permissions.
      * @param grantResults The results.
      */
     @Override
@@ -500,9 +505,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     /**
      * Сохраняем фото
+     *
      * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode The result code.
-     * @param data The result.
+     * @param resultCode  The result code.
+     * @param data        The result.
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -526,11 +532,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                                     photoHouse.setCreatedAt(new Date());
                                     photoHouse.setChangedAt(new Date());
                                     photoHouse.setUser(user);
-                                    if (gpsTrackRepository.getLastTrack()!=null) {
+                                    if (gpsTrackRepository.getLastTrack() != null) {
                                         photoHouse.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
                                         photoHouse.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-                                    }
-                                    else {
+                                    } else {
                                         photoHouse.setLattitude(App.defaultLatitude);
                                         photoHouse.setLongitude(App.defaultLongitude);
                                     }
@@ -559,11 +564,11 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private void hideImm() {
         InputMethodManager imm = (InputMethodManager)
                 mainActivityConnector.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm!=null && imm.isActive()) {
+        if (imm != null && imm.isActive()) {
             imm.hideSoftInputFromWindow(fab.getWindowToken(), 0);
         }
     }
-    
+
     public String getLastPhotoFilePath() {
         Activity activity = getActivity();
         if (activity == null) {

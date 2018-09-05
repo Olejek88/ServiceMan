@@ -16,6 +16,22 @@ public class Resident extends RealmObject {
     private Date createdAt;
     private Date changedAt;
 
+    public Flat getFlat() {
+        return flat;
+    }
+
+    public void setFlat(Flat flat) {
+        this.flat = flat;
+    }
+
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
     public String getOwner() {
         return owner;
     }

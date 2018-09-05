@@ -84,7 +84,14 @@ public class ObjectImageBehavior extends CoordinatorLayout.Behavior<CircleImageV
             float distanceYToSubtract = ((mStartYPosition - mFinalYPosition)
                     * (1f - expandedPercentageFactor)) + (child.getHeight()/2);
 
+/*
             child.setX(mStartXPosition - distanceXToSubtract);
+            child.setY(mStartYPosition - distanceYToSubtract);
+*/
+
+            child.setX(mStartXPosition - distanceXToSubtract);
+            if (distanceYToSubtract > (mStartYPosition - mFinalYPosition) + (mCustomFinalHeight / 2))
+                distanceYToSubtract = (mStartYPosition - mFinalYPosition) + (mCustomFinalHeight / 2);
             child.setY(mStartYPosition - distanceYToSubtract);
 
             float heightToSubtract = ((mStartHeight - mCustomFinalHeight) * heightFactor);

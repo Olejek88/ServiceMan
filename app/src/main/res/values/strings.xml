@@ -39,6 +39,10 @@
     <!--abonents-->
     <string name="no_last_time">Нет даты обслуживания</string>
 
+    <!--flats-->
+    <string name="flat_abonent">Абонент:</string>
+    <string name="flat_inn">ИНН:</string>
+
     <!--menu-->
     <string name="action_add_image">Добавить изображение</string>
     <string name="action_set_status">Установить статус</string>

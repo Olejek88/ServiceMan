@@ -142,5 +142,4 @@ public class AddQuestionScreenTest {
                 withText(R.string.wrong_title)))
                 .check(matches(isDisplayed()));
     }
-
 }

@@ -43,6 +43,11 @@
     <string name="flat_abonent">Абонент:</string>
     <string name="flat_inn">ИНН:</string>
 
+    <!--equipments-->
+    <string name="equipment_serial">Серийный номер:</string>
+    <string name="equipment_date">Дата поверки:</string>
+    <string name="enter_measure">Введите показания счетчика</string>
+
     <!--menu-->
     <string name="action_add_image">Добавить изображение</string>
     <string name="action_set_status">Установить статус</string>
@@ -109,7 +114,6 @@
     <!--details end-->
 
     <!--add question-->
-    <string name="tint_question_title">Вопрос</string>
     <string name="tint_question_text">Описание</string>
     <string name="wrong_title">Вопрос не указан</string>
     <string name="require_permission">Нет разрешений на запись фотографий</string>

@@ -2,6 +2,7 @@ package ru.shtrm.serviceman.mvp.flat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -32,9 +34,13 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.FlatAdapter;
 import ru.shtrm.serviceman.mvp.alarm.AlarmAdapter;
+import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
+import ru.shtrm.serviceman.mvp.images.ImageGridAdapter;
+import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_ID;
 
@@ -74,7 +80,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         view = inflater.inflate(R.layout.fragment_flat, container, false);
         if (flat!=null) {
             resident = ResidentLocalDataSource.getInstance().getResidentByFlat(flat.getUuid());
-            photoFlat = PhotoFlatLocalDataSource.getInstance().getPhotoByFlat(flat.getUuid());
+            photoFlat = PhotoFlatLocalDataSource.getInstance().getLastPhotoByFlat(flat);
             initViews(view);
         }
 
@@ -106,16 +112,6 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
     @Override
     public void initViews(View view) {
-/*
-        android:id="@+id/imageViewFlat"
-        android:id="@+id/textViewFlat"
-        android:id="@+id/textViewPhotoDate"
-        android:id="@+id/textViewFlatTitle"
-        android:id="@+id/textViewFlatStatus"
-        android:id="@+id/textViewFlatAbonent"
-        android:id="@+id/textViewFlatInn"
-*/
-
         TextView textViewInn = view.findViewById(R.id.textViewFlatInn);
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
         TextView textViewStatus = view.findViewById(R.id.textViewFlatStatus);
@@ -123,6 +119,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         TextView textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         TextView textViewFlat = view.findViewById(R.id.textViewFlat);
         CircleImageView circleImageView = view.findViewById(R.id.imageViewFlat);
+        GridView gridView = view.findViewById(R.id.gridview);
 
         if (resident!=null) {
             textViewInn.setText(resident.getInn());
@@ -135,8 +132,20 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
                     format(photoFlat.getCreatedAt());
             textViewPhotoDate.setText(sDate);
-            //circleImageView
+            // TODO заменить на ?
+            circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
+                    MainUtil.getPicturesDirectory(mainActivityConnector),
+                    photoFlat.getUuid().concat(".jpg")));
         }
+        else {
+            circleImageView.setImageResource(R.drawable.flat);
+            textViewPhotoDate.setText("нет фото");
+        }
+
+        // TODO когда определимся с фото здесь будет грид с последними фото
+        //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
+        //gridView.invalidateViews();
+        gridView.setVisibility(View.INVISIBLE);
 
         recyclerView =  view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -169,6 +178,15 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             equipmentAdapter.updateData(list);
             recyclerView.setAdapter(equipmentAdapter);
         }
+        equipmentAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
+            @Override
+            public void OnItemClick(View v, int position) {
+                Equipment equipment = list.get(position);
+                Intent intent = new Intent(getContext(), EquipmentActivity.class);
+                intent.putExtra(EquipmentActivity.EQUIPMENT_ID, list.get(position).get_id());
+                startActivity(intent);
+            }
+        });
         //showEmptyView(list.isEmpty());
     }
 

@@ -11,4 +11,5 @@ public interface PhotoFlatDataSource {
 
     List<PhotoFlat> getPhotosFlats();
 
+    PhotoFlat getLastPhotoByFlat(Flat flat);
 }

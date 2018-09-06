@@ -40,4 +40,12 @@ public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
         return realm.copyFromRealm(
                 realm.where(PhotoFlat.class).findAllSorted("createdAt"));
     }
+
+    @Override
+    public PhotoFlat getLastPhotoByFlat(Flat flat) {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.copyFromRealm(
+                realm.where(PhotoFlat.class).equalTo("flat.uuid", flat.getUuid()).
+                        findAllSorted("createdAt DESC").first());
+        }
 }

@@ -12,8 +12,17 @@ public class Measure extends RealmObject {
     private Equipment equipment;
     private User user;
     private Date date;
+    private double value;
     private Date createdAt;
     private Date changedAt;
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
 
     public long get_id() {
         return _id;

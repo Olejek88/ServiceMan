@@ -6,8 +6,10 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.House;
 
 public class EquipmentRepository implements EquipmentDataSource {
@@ -55,5 +57,15 @@ public class EquipmentRepository implements EquipmentDataSource {
     @Override
     public List<Equipment> getEquipmentByType(EquipmentType equipmentType) {
         return localDataSource.getEquipmentByType(equipmentType);
+    }
+
+    @Override
+    public void addEquipment(Equipment equipment) {
+        localDataSource.addEquipment(equipment);
+    }
+
+    @Override
+    public void updateEquipmentStatus (Equipment equipment, EquipmentStatus equipmentStatus) {
+        localDataSource.updateEquipmentStatus(equipment, equipmentStatus);
     }
 }

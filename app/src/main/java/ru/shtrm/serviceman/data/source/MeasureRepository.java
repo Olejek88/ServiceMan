@@ -34,6 +34,11 @@ public class MeasureRepository implements MeasureDataSource {
     }
 
     @Override
+    public void addMeasure(Measure measure) {
+        localDataSource.addMeasure(measure);
+    }
+
+    @Override
     public List<Measure> getMeasures() {
         return localDataSource.getMeasures();
     }

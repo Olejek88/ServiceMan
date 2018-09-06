@@ -46,7 +46,7 @@ public class FlatRepository implements FlatDataSource {
 
     @Override
     public void updateFlatStatus (Flat flat, FlatStatus flatStatus) {
-        updateFlatStatus(flat, flatStatus);
+        localDataSource.updateFlatStatus(flat, flatStatus);
     }
 
 }

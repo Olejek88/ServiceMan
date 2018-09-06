@@ -11,4 +11,5 @@ public interface MeasureDataSource {
 
     List<Measure> getMeasures();
 
+    void addMeasure(Measure measure);
 }

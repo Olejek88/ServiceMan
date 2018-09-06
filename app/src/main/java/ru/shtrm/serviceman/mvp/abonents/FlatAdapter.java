@@ -116,7 +116,6 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.listener = listener;
             itemView.setOnClickListener(this);
             itemView.setOnCreateContextMenuListener(this);
-
         }
 
         @Override

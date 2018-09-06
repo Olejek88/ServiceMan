@@ -37,4 +37,9 @@ public class PhotoFlatRepository implements PhotoFlatDataSource {
     public List<PhotoFlat> getPhotosFlats() {
         return localDataSource.getPhotosFlats();
     }
+
+    @Override
+    public PhotoFlat getLastPhotoByFlat(Flat flat) {
+        return localDataSource.getLastPhotoByFlat(flat);
+    }
 }

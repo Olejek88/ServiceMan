@@ -51,6 +51,11 @@
             android:screenOrientation="portrait"
             android:label="@string/service_app_name"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".mvp.equipment.EquipmentActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/service_app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
         <!--
         <activity
             android:name=".mvp.addalarm.AddAlarmActivity"

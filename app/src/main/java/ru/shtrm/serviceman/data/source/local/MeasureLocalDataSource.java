@@ -1,11 +1,13 @@
 package ru.shtrm.serviceman.data.source.local;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.source.MeasureDataSource;
 
@@ -39,5 +41,17 @@ public class MeasureLocalDataSource implements MeasureDataSource {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
                 realm.where(Measure.class).findAllSorted("date"));
+    }
+
+    @Override
+    public void addMeasure(@NonNull final Measure measure) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(measure);
+            }
+        });
+        realm.close();
     }
 }

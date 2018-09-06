@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,27 +23,19 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Alarm;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.Resident;
-import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.PhotoFlatDataSource;
 import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.mvp.abonents.FlatAdapter;
-import ru.shtrm.serviceman.mvp.alarm.AlarmAdapter;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
-import ru.shtrm.serviceman.mvp.images.ImageGridAdapter;
 import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_ID;
+import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
 
 public class FlatFragment extends Fragment implements FlatContract.View {
     private Activity mainActivityConnector = null;
@@ -73,7 +66,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         View view;
         Bundle b = getArguments();
         if (b!=null) {
-            String flatUuid = b.getString(FLAT_ID);
+            String flatUuid = b.getString(FLAT_UUID);
             if (flatUuid!=null)
                 flat = FlatLocalDataSource.getInstance().getFlat(flatUuid);
         }
@@ -82,8 +75,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             resident = ResidentLocalDataSource.getInstance().getResidentByFlat(flat.getUuid());
             photoFlat = PhotoFlatLocalDataSource.getInstance().getLastPhotoByFlat(flat);
             initViews(view);
+            presenter.loadEquipmentsByFlat(flat);
         }
-
         setHasOptionsMenu(true);
         return view;
     }
@@ -120,12 +113,21 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         TextView textViewFlat = view.findViewById(R.id.textViewFlat);
         CircleImageView circleImageView = view.findViewById(R.id.imageViewFlat);
         GridView gridView = view.findViewById(R.id.gridview);
+        Toolbar mToolbar = view.findViewById(R.id.toolbar);
+
+        if (mToolbar !=null) {
+            mToolbar.setSubtitle(flat.getFullTitle());
+        }
 
         if (resident!=null) {
             textViewInn.setText(resident.getInn());
             textViewAbonent.setText(resident.getOwner());
+            if (mToolbar !=null)
+                mToolbar.setTitle("Квартира ".concat(flat.getTitle()));
         }
-        textViewStatus.setText(flat.getFlatStatus().getTitle());
+        if (flat.getFlatStatus()!=null)
+            textViewStatus.setText(flat.getFlatStatus().getTitle());
+
         textViewTitle.setText(flat.getFullTitle());
         textViewFlat.setText(flat.getTitle().substring(0,1));
         if (photoFlat!=null) {
@@ -145,7 +147,6 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         // TODO когда определимся с фото здесь будет грид с последними фото
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
         //gridView.invalidateViews();
-        gridView.setVisibility(View.INVISIBLE);
 
         recyclerView =  view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -181,9 +182,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         equipmentAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
             @Override
             public void OnItemClick(View v, int position) {
-                Equipment equipment = list.get(position);
                 Intent intent = new Intent(getContext(), EquipmentActivity.class);
-                intent.putExtra(EquipmentActivity.EQUIPMENT_ID, list.get(position).get_id());
+                intent.putExtra(EquipmentActivity.EQUIPMENT_ID, String.valueOf(list.get(position).getUuid()));
                 startActivity(intent);
             }
         });

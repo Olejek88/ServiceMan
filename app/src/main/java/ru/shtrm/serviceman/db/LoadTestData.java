@@ -14,6 +14,7 @@ import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
+import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.User;
 
@@ -38,6 +39,23 @@ public class LoadTestData {
     public static AlarmType alarmType;
     public static AlarmType alarmType2;
 
+    public static Resident resident;
+
+    final static String flatUuid = "1dd4d4f8-5c98-4444-86ed-97ddddf";
+    final static String flatUuid2 = "1dd4d4f8-5c98-4444-86ed-97deedf";
+
+    final static String equipmentUuid1 = "1dd8d4f8-5c98-4444-86ed-97ddbc2059f6";
+    final static String equipmentUuid2 = "1dd8d4f8-5c98-4444-86ed-97aabc2059f6";
+    final static String equipmentUuid3 = "1dd8d4f8-5c98-5445-86ed-97ddbc2059f6";
+
+    final static String houseStatusUuid = "1dd8d4f8-5c98-4444-86ed-97dddd2059f6";
+    final static String flatStatusUuid = "1dd8d4f8-5c98-4444-86ed-97dddd2019f6";
+
+    final static String equipmentStatusUuid = "1dd8d4f8-5c98-4444-86ed-973332123213";
+    final static String equipmentTypeUuid = "1dd8d4f8-5c98-4444-86ed-971212121212";
+
+    final static String residentUuid = "1dd8d4f8-5c98-5885-86ed-97ddbc2059f6";
+
     public static void LoadAllTestData() {
 
         final Realm realmDB;
@@ -53,17 +71,6 @@ public class LoadTestData {
         final String streetUuid = "1dd8d4f8-5c98-4444-86ed-97dddde";
         final String houseUuid1 = "1dd8d4f8-5c98-4444-86ed-97ddddf";
         final String houseUuid2 = "00000000-5c98-4444-86ed-97dddde";
-        final String flatUuid = "1dd4d4f8-5c98-4444-86ed-97ddddf";
-
-        final String equipmentUuid1 = "1dd8d4f8-5c98-4444-86ed-97ddbc2059f6";
-        final String equipmentUuid2 = "1dd8d4f8-5c98-4444-86ed-97aabc2059f6";
-        final String equipmentUuid3 = "1dd8d4f8-5c98-5445-86ed-97ddbc2059f6";
-
-        final String houseStatusUuid = "1dd8d4f8-5c98-4444-86ed-97dddd2059f6";
-        final String flatStatusUuid = "1dd8d4f8-5c98-4444-86ed-97dddd2019f6";
-
-        final String equipmentStatusUuid = "1dd8d4f8-5c98-4444-86ed-973332123213";
-        final String equipmentTypeUuid = "1dd8d4f8-5c98-4444-86ed-971212121212";
 
         // User --------------------
         realmDB.executeTransaction(new Realm.Transaction() {
@@ -245,6 +252,77 @@ public class LoadTestData {
                 alarm2.setDate(new Date());
                 alarm2.setLatitude(56.02);
                 alarm2.setLongitude(59.36);
+            }
+        });
+
+        realmDB.close();
+    }
+
+    public static void LoadAllTestData3() {
+        final Realm realmDB;
+        realmDB = Realm.getDefaultInstance();
+
+        user = realmDB.where(User.class).findFirst();
+        house1 = realmDB.where(House.class).findFirst();
+        flatStatus = realmDB.where(FlatStatus.class).findFirst();
+        equipmentType = realmDB.where(EquipmentType.class).findFirst();
+        equipmentStatus = realmDB.where(EquipmentStatus.class).findFirst();
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                flat = realmDB.createObject(Flat.class, 3);
+                flat.setUuid(flatUuid2);
+                flat.setHouse(house1);
+                flat.setTitle("12");
+                flat.setFlatStatus(flatStatus);
+                flat.setCreatedAt(new Date());
+                flat.setChangedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                equipment1 = realmDB.createObject(Equipment.class, 2);
+                equipment1.setUuid(equipmentUuid2);
+                equipment1.setFlat(flat);
+                equipment1.setHouse(house1);
+                equipment1.setSerial("123459876");
+                equipment1.setEquipmentType(equipmentType);
+                equipment1.setEquipmentStatus(equipmentStatus);
+                equipment1.setTestDate(new Date());
+                equipment1.setChangedAt(new Date());
+                equipment1.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                equipment1 = realmDB.createObject(Equipment.class, 3);
+                equipment1.setUuid(equipmentUuid3);
+                equipment1.setFlat(flat);
+                equipment1.setHouse(house1);
+                equipment1.setSerial("523459876");
+                equipment1.setEquipmentType(equipmentType);
+                equipment1.setEquipmentStatus(equipmentStatus);
+                equipment1.setTestDate(new Date());
+                equipment1.setChangedAt(new Date());
+                equipment1.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                resident = realmDB.createObject(Resident.class, 1);
+                resident.setUuid(residentUuid);
+                resident.setFlat(flat);
+                resident.setInn("652839378161");
+                resident.setOwner("Иванов О.А.");
+                resident.setChangedAt(new Date());
+                resident.setCreatedAt(new Date());
             }
         });
 

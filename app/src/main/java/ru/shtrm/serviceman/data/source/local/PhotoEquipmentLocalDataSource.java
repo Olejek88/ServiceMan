@@ -6,7 +6,10 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.PhotoHouse;
@@ -46,10 +49,15 @@ public class PhotoEquipmentLocalDataSource implements PhotoEquipmentDataSource {
     @Override
     public PhotoEquipment getLastPhotoByEquipment(Equipment equipment) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(PhotoEquipment.class).equalTo("equipment.uuid", equipment.getUuid()).
-                        findAllSorted("createdAt DESC").first());
+        RealmResults<PhotoEquipment> photoEquipments = realm.where(PhotoEquipment.class).
+                equalTo("equipment.uuid", equipment.getUuid()).
+                findAllSorted("createdAt", Sort.DESCENDING);
+        if (!photoEquipments.isEmpty())
+            return realm.copyFromRealm(photoEquipments.first());
+        else
+            return null;
     }
+
 
     /**
      * Save a photo of equipment to database.

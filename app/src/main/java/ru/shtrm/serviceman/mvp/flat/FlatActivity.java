@@ -1,5 +1,6 @@
 package ru.shtrm.serviceman.mvp.flat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +25,7 @@ public class FlatActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
     private FlatFragment fragment;
 
-    public static final String FLAT_ID = "FLAT_ID";
+    public static final String FLAT_UUID = "FLAT_UUID";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,10 +42,10 @@ public class FlatActivity extends AppCompatActivity
         }
 
         if (!fragment.isAdded()) {
+            String flat_id = getIntent().getStringExtra("FLAT_UUID");
             Bundle b = new Bundle();
-            b.putString(FLAT_ID, getIntent().getStringExtra(FLAT_ID));
+            b.putString(FLAT_UUID, flat_id);
             fragment.setArguments(b);
-
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.view_pager, fragment, "FlatFragment")
                     .commit();
@@ -54,8 +55,7 @@ public class FlatActivity extends AppCompatActivity
                 fragment,
                 FlatRepository.getInstance(FlatLocalDataSource.getInstance()),
                 EquipmentRepository.getInstance(EquipmentLocalDataSource.getInstance()),
-                FlatStatusRepository.getInstance(FlatStatusLocalDataSource.getInstance()),
-                getIntent().getStringExtra(FLAT_ID));
+                FlatStatusRepository.getInstance(FlatStatusLocalDataSource.getInstance()));
     }
 
     @Override

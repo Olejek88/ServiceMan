@@ -11,8 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,7 +18,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -39,9 +36,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -51,24 +45,18 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.Image;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
-import ru.shtrm.serviceman.data.source.HouseRepository;
-import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
 import ru.shtrm.serviceman.data.source.PhotoHouseRepository;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.mvp.flat.FlatActivity;
 import ru.shtrm.serviceman.util.MainUtil;
-
-import static android.app.Activity.RESULT_OK;
 
 public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener {
     private Activity mainActivityConnector = null;
@@ -82,8 +70,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     public final static int ACTIVITY_PHOTO = 100;
     public final static int REQUEST_CAMERA_PERMISSION_CODE = 0;
 
-    // View references
-    private BottomNavigationView bottomNavigationView;
     private FloatingActionButton fab;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
@@ -227,7 +213,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     public void initViews(View view) {
         fab = view.findViewById(R.id.fab);
         back = view.findViewById(R.id.back);
-        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -282,9 +267,9 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 @Override
                 public void OnItemClick(View v, int position) {
                     Flat flat = list.get(position);
-                    //                   Intent intent = new Intent(getContext(), FlatActivity.class);
-//                    intent.putExtra(FlatActivity.FLAT_ID, list.get(position).get_id());
-//                    startActivity(intent);
+                    Intent intent = new Intent(getActivity(), FlatActivity.class);
+                    intent.putExtra("FLAT_UUID", String.valueOf(list.get(position).getUuid()));
+                    startActivity(intent);
                     currentFlat = flat;
                 }
             });

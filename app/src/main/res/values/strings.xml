@@ -40,13 +40,14 @@
     <string name="no_last_time">Нет даты обслуживания</string>
 
     <!--flats-->
-    <string name="flat_abonent">Абонент:</string>
-    <string name="flat_inn">ИНН:</string>
+    <string name="flat_abonent">Абонент</string>
+    <string name="flat_inn">ИНН</string>
 
     <!--equipments-->
     <string name="equipment_serial">Серийный номер:</string>
     <string name="equipment_date">Дата поверки:</string>
     <string name="enter_measure">Введите показания счетчика</string>
+    <string name="equipment_status">Статус</string>
 
     <!--menu-->
     <string name="action_add_image">Добавить изображение</string>

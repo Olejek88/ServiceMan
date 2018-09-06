@@ -5,8 +5,12 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.PhotoFlat;
+import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.PhotoFlatDataSource;
 
 public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
@@ -44,8 +48,11 @@ public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
     @Override
     public PhotoFlat getLastPhotoByFlat(Flat flat) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(PhotoFlat.class).equalTo("flat.uuid", flat.getUuid()).
-                        findAllSorted("createdAt DESC").first());
-        }
+        RealmResults<PhotoFlat> photoFlats = realm.where(PhotoFlat.class).equalTo("flat.uuid", flat.getUuid()).
+                findAllSorted("createdAt", Sort.DESCENDING);
+        if (!photoFlats.isEmpty())
+            return realm.copyFromRealm(photoFlats.first());
+        else
+            return null;
+    }
 }

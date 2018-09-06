@@ -50,14 +50,14 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Flat item = list.get(position);
         FlatsViewHolder pvh = (FlatsViewHolder) holder;
-        pvh.textViewStatus.setText(item.getFlatStatus().getTitle());
+        if (item.getFlatStatus()!=null)
+            pvh.textViewStatus.setText(item.getFlatStatus().getTitle());
         if (item.getChangedAt()!=null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
             pvh.textViewDate.setText(sDate);
         }
         else pvh.textViewDate.setText(R.string.no_last_time);
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
-        pvh.textViewStatus.setText(item.getFlatStatus().getTitle());
         pvh.textViewTitle.setText(item.getHouse().getStreet().getTitle().concat(", ").
                 concat(item.getHouse().getTitle()).concat(", ").concat(item.getTitle()));
         pvh.textViewImage.setText(item.getTitle().substring(0,1));

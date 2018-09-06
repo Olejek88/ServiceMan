@@ -19,6 +19,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -61,11 +62,17 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             pvh.textViewEquipmentLastMeasure.setText(sDate);
         }
         else pvh.textViewEquipmentLastMeasure.setText(R.string.no_last_time);
-        pvh.textViewImage.setText(item.getEquipmentType().getTitle().substring(0,1));
+        // пока убрал
+        // pvh.textViewImage.setText(item.getEquipmentType().getTitle().substring(0,1));
         // TODO выдергивать последнее фото из фото?
-        pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-                MainUtil.getPicturesDirectory(context),
-                PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(item).getUuid()));
+        PhotoEquipment photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(item);
+        if (photoEquipment!=null) {
+            pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
+                    MainUtil.getPicturesDirectory(context), photoEquipment.getUuid()));
+        }
+        else {
+            pvh.circleImageView.setImageResource(R.drawable.counter);
+        }
     }
 
     @Override
@@ -101,8 +108,8 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             textViewEquipmentTitle = itemView.findViewById(R.id.textViewEquipmentTitle);
             textViewEquipmentSerial = itemView.findViewById(R.id.textViewEquipmentSerial);
             textViewEquipmentLastMeasure = itemView.findViewById(R.id.textViewEquipmentLastMeasure);
-            textViewImage = itemView.findViewById(R.id.textViewImage);
-            circleImageView = itemView.findViewById(R.id.circleImageView);
+            textViewImage = itemView.findViewById(R.id.textViewEquipment);
+            circleImageView = itemView.findViewById(R.id.imageViewEquipment);
 
             this.listener = listener;
             itemView.setOnClickListener(this);

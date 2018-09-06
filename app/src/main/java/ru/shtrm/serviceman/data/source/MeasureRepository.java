@@ -42,4 +42,9 @@ public class MeasureRepository implements MeasureDataSource {
     public List<Measure> getMeasures() {
         return localDataSource.getMeasures();
     }
+
+    @Override
+    public long getLastId() {
+        return localDataSource.getLastId();
+    }
 }

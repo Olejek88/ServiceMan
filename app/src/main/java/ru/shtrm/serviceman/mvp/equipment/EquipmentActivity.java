@@ -37,8 +37,9 @@ public class EquipmentActivity extends AppCompatActivity
         }
 
         if (!fragment.isAdded()) {
+            String equipment_id = getIntent().getStringExtra(EQUIPMENT_ID);
             Bundle b = new Bundle();
-            b.putString(EQUIPMENT_ID, getIntent().getStringExtra(EQUIPMENT_ID));
+            b.putString(EQUIPMENT_ID, equipment_id);
             fragment.setArguments(b);
 
             getSupportFragmentManager().beginTransaction()

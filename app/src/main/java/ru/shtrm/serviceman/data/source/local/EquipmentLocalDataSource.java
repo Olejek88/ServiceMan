@@ -59,7 +59,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     public List<Equipment> getEquipmentByFlat(Flat flat) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(Equipment.class).equalTo("flat", flat.getUuid()).findAll());
+                realm.where(Equipment.class).equalTo("flat.uuid", flat.getUuid()).findAll());
     }
 
     @Override

@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +31,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -56,30 +57,20 @@ import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.PhotoFlat;
-import ru.shtrm.serviceman.data.PhotoHouse;
-import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
+import ru.shtrm.serviceman.data.source.MeasureRepository;
 import ru.shtrm.serviceman.data.source.PhotoEquipmentRepository;
-import ru.shtrm.serviceman.data.source.PhotoHouseRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.REQUEST_CAMERA_PERMISSION_CODE;
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_ID;
-import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_ID;
 
 public class EquipmentFragment extends Fragment implements EquipmentContract.View {
     private Activity mainActivityConnector = null;
@@ -91,10 +82,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     private GpsTrackRepository gpsTrackRepository;
     private PhotoEquipmentRepository photoEquipmentRepository;
+    private MeasureRepository measureRepository;
 
     private CircleImageView circleImageView;
-    private EquipmentAdapter equipmentAdapter;
-    private RecyclerView recyclerView;
     private TextInputEditText textInputMeasure;
     private TextView textViewPhotoDate;
 
@@ -129,30 +119,30 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (equipment != null) {
             photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(equipment);
             initViews(view);
+            enter_measure.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Measure measure = new Measure();
+                    measure.set_id(measureRepository.getLastId()+1);
+                    measure.setValue(Double.valueOf(textInputMeasure.getText().toString()));
+                    measure.setChangedAt(new Date());
+                    measure.setCreatedAt(new Date());
+                    measure.setDate(new Date());
+                    measure.setEquipment(equipment);
+                    measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId()));
+                    measure.setUuid(java.util.UUID.randomUUID().toString());
+                    MeasureLocalDataSource.getInstance().addMeasure(measure);
+                    Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
+                }
+            });
+            make_photo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkPermissionCamera();
+                }
+            });
         }
 
-        enter_measure.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Measure measure = new Measure();
-                measure.setValue(Double.valueOf(textInputMeasure.getText().toString()));
-                measure.setChangedAt(new Date());
-                measure.setCreatedAt(new Date());
-                measure.setDate(new Date());
-                measure.setEquipment(equipment);
-                measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId()));
-                measure.setUuid(java.util.UUID.randomUUID().toString());
-                MeasureLocalDataSource.getInstance().addMeasure(measure);
-            }
-        });
-
-
-        make_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionCamera();
-            }
-        });
 
         setHasOptionsMenu(true);
         return view;
@@ -169,7 +159,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (gpsTrackRepository == null)
             gpsTrackRepository = GpsTrackRepository.getInstance
                     (GpsTrackLocalDataSource.getInstance());
-
+        if (measureRepository == null)
+            measureRepository = MeasureRepository.getInstance
+                    (MeasureLocalDataSource.getInstance());
     }
 
     @Override
@@ -210,6 +202,15 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
         textViewEquipment.setText(equipment.getEquipmentType().getTitle().substring(0, 1));
 
+        Toolbar mToolbar = view.findViewById(R.id.toolbar);
+
+        if (mToolbar !=null) {
+            Flat flat = equipment.getFlat();
+            if (flat!=null) {
+                mToolbar.setSubtitle(flat.getFullTitle());
+                mToolbar.setTitle(equipment.getEquipmentType().getTitle());
+            }
+        }
         if (photoEquipment != null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
                     format(photoEquipment.getCreatedAt());
@@ -231,10 +232,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         // TODO когда определимся с фото здесь будет грид с последними фото
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
         //gridView.invalidateViews();
-        gridView.setVisibility(View.INVISIBLE);
-
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //gridView.setVisibility(View.INVISIBLE);
+        //recyclerView = view.findViewById(R.id.recyclerView);
+        //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     @Override
@@ -255,23 +255,14 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         mChart = view.findViewById(R.id.chart1);
         mChart.setDrawBarShadow(false);
         mChart.setDrawValueAboveBar(true);
-        //mChart.setDescription("");
         mChart.setMaxVisibleValueCount(30);
-        // scaling can now only be done on x- and y-axis separately
         mChart.setPinchZoom(false);
-        // draw shadows for each bar that show the maximum value
-        // mChart.setDrawBarShadow(true);
-        // mChart.setDrawXLabels(false);
         mChart.setDrawGridBackground(false);
-        // mChart.setDrawYLabels(false);
-
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //xAxis.setTypeface(mTf);
         xAxis.setDrawGridLines(false);
 
         YAxis leftAxis = mChart.getAxisLeft();
-        //leftAxis.setTypeface(mTf);
         leftAxis.setLabelCount(8);
         //leftAxis.setValueFormatter();
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
@@ -279,30 +270,30 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setDrawGridLines(false);
-        //rightAxis.setTypeface(mTf);
         rightAxis.setLabelCount(8);
         rightAxis.setTextColor(Color.WHITE);
         //rightAxis.setValueFormatter(custom);
         rightAxis.setSpaceTop(15f);
-
         setData();
     }
 
     private void setData() {
         int count;
-        String[] xVals = new String[]{};
+        ArrayList <String> xVals = new ArrayList<>();
         XAxis xAxis = mChart.getXAxis();
 
         List<Measure> measures = MeasureLocalDataSource.getInstance().getMeasuresByEquipment(equipment);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy", Locale.US);
+
         count = measures.size();
         for (int i = 0; i < count; i++) {
             Measure val = measures.get(i);
             if (val != null) {
                 Date dateVal = val.getDate();
                 if (dateVal != null) {
-                    xVals[i] = dateVal.toString();
+                    xVals.add(simpleDateFormat.format(dateVal));
                 } else {
-                    xVals[i] = "0000-00-00 00:00:01";
+                    xVals.add("00.00.00");
                 }
             }
         }
@@ -323,15 +314,15 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
-        private String[] mValues;
+        private ArrayList <String>mValues;
 
-        public MyXAxisValueFormatter(String[] values) {
+        public MyXAxisValueFormatter(ArrayList<String> values) {
             this.mValues = values;
         }
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return mValues[(int) value];
+            return mValues.get((int) value);
         }
     }
 

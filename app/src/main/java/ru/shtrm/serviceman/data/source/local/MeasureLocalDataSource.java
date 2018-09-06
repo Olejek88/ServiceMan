@@ -32,7 +32,7 @@ public class MeasureLocalDataSource implements MeasureDataSource {
     public List<Measure> getMeasuresByEquipment(Equipment equipment) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(Measure.class).equalTo("equipment", equipment.getUuid()).
+                realm.where(Measure.class).equalTo("equipment.uuid", equipment.getUuid()).
                         findAllSorted("date"));
     }
 
@@ -54,4 +54,16 @@ public class MeasureLocalDataSource implements MeasureDataSource {
         });
         realm.close();
     }
+
+    @Override
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+        Number lastId = realm.where(Measure.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+        realm.close();
+        return lastId.longValue();
+    }
+
 }

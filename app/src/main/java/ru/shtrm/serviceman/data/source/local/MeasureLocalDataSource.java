@@ -56,7 +56,7 @@ public class MeasureLocalDataSource implements MeasureDataSource {
     }
 
     @Override
-    public static long getLastId() {
+    public long getLastId() {
         Realm realm = Realm.getDefaultInstance();
         Number lastId = realm.where(Measure.class).max("_id");
         if (lastId == null) {

@@ -55,4 +55,16 @@ public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
         else
             return null;
     }
+
+    @Override
+    public long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+        Number lastId = realm.where(PhotoFlat.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+        realm.close();
+        return lastId.longValue();
+    }
+
 }

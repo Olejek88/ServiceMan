@@ -12,4 +12,6 @@ public interface PhotoHouseDataSource {
     List<PhotoHouse> getPhotosHouses();
 
     void savePhotoHouse(PhotoHouse photoHouse);
+
+    long getLastId();
 }

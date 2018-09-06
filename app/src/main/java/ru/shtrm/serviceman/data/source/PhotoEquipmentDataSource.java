@@ -16,4 +16,6 @@ public interface PhotoEquipmentDataSource {
 
     void savePhotoEquipment(PhotoEquipment photoEquipment);
 
+    long getLastId();
+
 }

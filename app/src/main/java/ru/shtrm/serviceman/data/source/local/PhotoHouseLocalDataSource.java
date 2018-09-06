@@ -8,6 +8,7 @@ import java.util.List;
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
 
@@ -60,4 +61,16 @@ public class PhotoHouseLocalDataSource implements PhotoHouseDataSource {
         realm.close();
 
     }
+
+    @Override
+    public long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+        Number lastId = realm.where(PhotoHouse.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+        realm.close();
+        return lastId.longValue();
+    }
+
 }

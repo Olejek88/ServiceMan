@@ -17,4 +17,6 @@ public interface AlarmDataSource {
     List<Alarm> getAlarmsByStatus(AlarmStatus alarmStatus);
 
     Alarm getAlarm(@NonNull String uuid);
+
+    long getLastId();
 }

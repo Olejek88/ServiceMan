@@ -76,4 +76,14 @@ public class PhotoEquipmentLocalDataSource implements PhotoEquipmentDataSource {
 
     }
 
+    @Override
+    public long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+        Number lastId = realm.where(PhotoEquipment.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+        realm.close();
+        return lastId.longValue();
+    }
 }

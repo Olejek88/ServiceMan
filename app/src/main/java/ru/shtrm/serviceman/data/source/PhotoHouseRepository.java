@@ -5,7 +5,9 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
+import io.realm.Realm;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoHouse;
 
 public class PhotoHouseRepository implements PhotoHouseDataSource {
@@ -43,4 +45,8 @@ public class PhotoHouseRepository implements PhotoHouseDataSource {
         localDataSource.savePhotoHouse(photoHouse);
     }
 
+    @Override
+    public long getLastId() {
+        return localDataSource.getLastId();
+    }
 }

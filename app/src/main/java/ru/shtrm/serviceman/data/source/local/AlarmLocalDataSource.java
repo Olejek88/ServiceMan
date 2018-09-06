@@ -10,6 +10,7 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AlarmStatus;
 import ru.shtrm.serviceman.data.AlarmType;
+import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.AlarmDataSource;
 
 public class AlarmLocalDataSource implements AlarmDataSource {
@@ -56,5 +57,16 @@ public class AlarmLocalDataSource implements AlarmDataSource {
     public List<Alarm> getAlarmsByStatus(AlarmStatus alarmStatus) {
         Realm realm = Realm.getDefaultInstance();
         return realm.where(Alarm.class).equalTo("alarmStatus", alarmStatus.getUuid()).findAll();
+    }
+
+    @Override
+    public long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+        Number lastId = realm.where(Alarm.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+        realm.close();
+        return lastId.longValue();
     }
 }

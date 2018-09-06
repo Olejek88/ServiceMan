@@ -48,4 +48,9 @@ public class AlarmRepository implements AlarmDataSource {
     public List<Alarm> getAlarmsByStatus(AlarmStatus alarmStatus){
         return localDataSource.getAlarmsByStatus(alarmStatus);
     }
+
+    @Override
+    public long getLastId() {
+        return localDataSource.getLastId();
+    }
 }

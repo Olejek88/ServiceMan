@@ -44,6 +44,7 @@
                         android:id="@+id/imageViewFlat"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_gravity="center"
                         android:src="@color/colorPrimary" />
 
@@ -84,6 +85,7 @@
                         android:textColor="@color/mdtp_white"
                         android:textSize="16sp" />
 
+<!--
                     <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/textViewFlatStatus"
                         android:layout_width="wrap_content"
@@ -94,12 +96,24 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/mdtp_white"
                         android:textSize="16sp" />
+-->
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/spinnerFlatStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:background="@drawable/rounded"
+                        android:gravity="start|center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/mdtp_white"
+                        android:spinnerMode="dropdown"
+                        android:textSize="16sp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/labelFlatAbonent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="3dp"
                         android:gravity="start|center_vertical"
                         android:text="@string/flat_abonent"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -110,7 +124,7 @@
                         android:id="@+id/textViewFlatAbonent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="3dp"
                         android:gravity="start|center_vertical"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/mdtp_white"
@@ -120,7 +134,7 @@
                         android:id="@+id/labelFlatInn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="3dp"
                         android:gravity="start|center_vertical"
                         android:text="@string/flat_inn"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -131,7 +145,7 @@
                         android:id="@+id/textViewFlatInn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="3dp"
                         android:gravity="start|center_vertical"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/mdtp_white"

@@ -15,37 +15,33 @@ import java.util.List;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.EquipmentStatus;
-import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.EquipmentType;
 
 
-public class EquipmentStatusListAdapter extends ArrayAdapter<EquipmentStatus> {
+public class EquipmentTypeListAdapter extends ArrayAdapter<EquipmentType> {
 
-    private List<EquipmentStatus> equipmentStatuses;
+    private List<EquipmentType> equipmentTypes;
 
     private Context context;
     private final LayoutInflater flater;
     private final int mResource;
-    private final int color;
 
-    public EquipmentStatusListAdapter(Context context, @LayoutRes int resource,
-                                      List<EquipmentStatus> equipmentStatuses,
-                                      int color) {
-        super(context, resource, equipmentStatuses);
+    public EquipmentTypeListAdapter(Context context, @LayoutRes int resource, List<EquipmentType> equipmentTypes) {
+        super(context, resource, equipmentTypes);
         this.context = context;
         mResource = resource;
         flater = LayoutInflater.from(context);
-        this.equipmentStatuses = equipmentStatuses;
-        this.color = color;
+        this.equipmentTypes = equipmentTypes;
     }
 
     @Override
     public int getCount(){
-        return equipmentStatuses.size();
+        return equipmentTypes.size();
     }
 
     @Override
-    public EquipmentStatus getItem(int position){
-        return equipmentStatuses.get(position);
+    public EquipmentType getItem(int position){
+        return equipmentTypes.get(position);
     }
 
     @Override
@@ -65,11 +61,10 @@ public class EquipmentStatusListAdapter extends ArrayAdapter<EquipmentStatus> {
 
     private View createItemView(int position, View convertView, ViewGroup parent){
         final View view = flater.inflate(mResource, parent, false);
-        EquipmentStatus item = getItem(position);
+        EquipmentType item = getItem(position);
         AppCompatTextView textViewTitle;
         textViewTitle = view.findViewById(R.id.spinner_item);
         textViewTitle.setTypeface(null, Typeface.BOLD);
-        textViewTitle.setTextColor(context.getResources().getColor(color));
         if (item!=null) {
             textViewTitle.setText(item.getTitle());
         }

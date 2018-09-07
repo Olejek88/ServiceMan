@@ -26,6 +26,7 @@ public class FlatActivity extends AppCompatActivity
     private FlatFragment fragment;
 
     public static final String FLAT_UUID = "FLAT_UUID";
+    public static final String HOUSE_UUID = "HOUSE_UUID";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -512,6 +512,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                                             800, uuid.concat(".jpg"));
                                     PhotoHouse photoHouse = new PhotoHouse();
                                     User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+                                    photoHouse.set_id(photoHouseRepository.getLastId()+1);
                                     photoHouse.setHouse(currentHouse);
                                     photoHouse.setUuid(uuid);
                                     photoHouse.setCreatedAt(new Date());

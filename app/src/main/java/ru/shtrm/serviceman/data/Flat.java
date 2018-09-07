@@ -74,6 +74,6 @@ public class Flat extends RealmObject {
 
     public String getFullTitle() {
         return getHouse().getStreet().getTitle().concat(", ").
-                concat(getHouse().getTitle()).concat(", ").concat(getTitle());
+                concat(getHouse().getTitle()).concat(" - ").concat(getTitle());
     }
 }

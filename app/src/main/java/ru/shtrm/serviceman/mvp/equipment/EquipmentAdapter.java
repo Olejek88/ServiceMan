@@ -68,7 +68,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         PhotoEquipment photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(item);
         if (photoEquipment!=null) {
             pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-                    MainUtil.getPicturesDirectory(context), photoEquipment.getUuid()));
+                    MainUtil.getPicturesDirectory(context), photoEquipment.getUuid().concat(".jpg")));
         }
         else {
             pvh.circleImageView.setImageResource(R.drawable.counter);
@@ -103,7 +103,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         private OnRecyclerViewItemClickListener listener;
 
-        public EquipmentsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+        EquipmentsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewEquipmentTitle = itemView.findViewById(R.id.textViewEquipmentTitle);
             textViewEquipmentSerial = itemView.findViewById(R.id.textViewEquipmentSerial);

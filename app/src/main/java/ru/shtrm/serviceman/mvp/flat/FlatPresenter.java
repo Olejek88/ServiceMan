@@ -35,6 +35,7 @@ public class FlatPresenter implements FlatContract.Presenter {
                                 @NonNull FlatStatusRepository flatStatusRepository) {
         this.view = view;
         this.flatsRepository = flatsRepository;
+        this.flatStatusRepository = flatStatusRepository;
         this.equipmentRepository = equipmentRepository;
         this.view.setPresenter(this);
     }

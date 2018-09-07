@@ -12,6 +12,7 @@ import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.source.EquipmentDataSource;
 
 public class EquipmentLocalDataSource implements EquipmentDataSource {
@@ -71,7 +72,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     }
 
     @Override
-    public void addEquipment(final Equipment equipment) {
+    public int addEquipment(final Equipment equipment) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -80,6 +81,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
             }
         });
         realm.close();
+        return 0;
     }
 
     @Override
@@ -93,5 +95,16 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
             }
         });
         realm.close();
+    }
+
+    @Override
+    public long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+        Number lastId = realm.where(Equipment.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+        realm.close();
+        return lastId.longValue();
     }
 }

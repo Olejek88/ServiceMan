@@ -1,4 +1,4 @@
-package ru.shtrm.serviceman.mvp.equipment;
+package ru.shtrm.serviceman.mvp.flat;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -14,38 +14,37 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.EquipmentStatus;
-import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.FlatStatus;
 
 
-public class EquipmentStatusListAdapter extends ArrayAdapter<EquipmentStatus> {
+public class FlatStatusListAdapter extends ArrayAdapter<FlatStatus> {
 
-    private List<EquipmentStatus> equipmentStatuses;
+    private List<FlatStatus> FlatStatuses;
 
     private Context context;
     private final LayoutInflater flater;
     private final int mResource;
     private final int color;
 
-    public EquipmentStatusListAdapter(Context context, @LayoutRes int resource,
-                                      List<EquipmentStatus> equipmentStatuses,
-                                      int color) {
-        super(context, resource, equipmentStatuses);
+    public FlatStatusListAdapter(Context context, @LayoutRes int resource,
+                                 List<FlatStatus> FlatStatuses,
+                                 int color) {
+        super(context, resource, FlatStatuses);
         this.context = context;
         mResource = resource;
         flater = LayoutInflater.from(context);
-        this.equipmentStatuses = equipmentStatuses;
+        this.FlatStatuses = FlatStatuses;
         this.color = color;
     }
 
     @Override
     public int getCount(){
-        return equipmentStatuses.size();
+        return FlatStatuses.size();
     }
 
     @Override
-    public EquipmentStatus getItem(int position){
-        return equipmentStatuses.get(position);
+    public FlatStatus getItem(int position){
+        return FlatStatuses.get(position);
     }
 
     @Override
@@ -65,11 +64,11 @@ public class EquipmentStatusListAdapter extends ArrayAdapter<EquipmentStatus> {
 
     private View createItemView(int position, View convertView, ViewGroup parent){
         final View view = flater.inflate(mResource, parent, false);
-        EquipmentStatus item = getItem(position);
+        FlatStatus item = getItem(position);
         AppCompatTextView textViewTitle;
         textViewTitle = view.findViewById(R.id.spinner_item);
         textViewTitle.setTypeface(null, Typeface.BOLD);
-        textViewTitle.setTextColor(context.getResources().getColor(color));
+        textViewTitle.setTextColor(color);
         if (item!=null) {
             textViewTitle.setText(item.getTitle());
         }

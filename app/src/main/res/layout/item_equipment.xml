@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textViewEquipmentTitle"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="3dp"
             android:gravity="start|center_vertical"
             android:textColor="@color/colorPrimaryText"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textViewEquipmentSerial"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="3dp"
             android:gravity="start|center_vertical"
             android:textColor="@color/colorPrimaryText"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textViewEquipmentLastMeasure"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="3dp"
             android:gravity="start|center_vertical"
             android:textColor="@color/colorPrimaryText"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />

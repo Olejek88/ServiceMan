@@ -60,12 +60,16 @@ public class EquipmentRepository implements EquipmentDataSource {
     }
 
     @Override
-    public void addEquipment(Equipment equipment) {
-        localDataSource.addEquipment(equipment);
+    public int addEquipment(Equipment equipment) {
+        return localDataSource.addEquipment(equipment);
     }
 
     @Override
     public void updateEquipmentStatus (Equipment equipment, EquipmentStatus equipmentStatus) {
         localDataSource.updateEquipmentStatus(equipment, equipmentStatus);
+    }
+    @Override
+    public long getLastId() {
+        return localDataSource.getLastId();
     }
 }

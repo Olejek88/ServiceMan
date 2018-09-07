@@ -119,30 +119,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (equipment != null) {
             photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(equipment);
             initViews(view);
-            enter_measure.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Measure measure = new Measure();
-                    measure.set_id(measureRepository.getLastId()+1);
-                    measure.setValue(Double.valueOf(textInputMeasure.getText().toString()));
-                    measure.setChangedAt(new Date());
-                    measure.setCreatedAt(new Date());
-                    measure.setDate(new Date());
-                    measure.setEquipment(equipment);
-                    measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId()));
-                    measure.setUuid(java.util.UUID.randomUUID().toString());
-                    MeasureLocalDataSource.getInstance().addMeasure(measure);
-                    Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
-                }
-            });
-            make_photo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    checkPermissionCamera();
-                }
-            });
         }
-
 
         setHasOptionsMenu(true);
         return view;
@@ -187,7 +164,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         TextView textViewType = view.findViewById(R.id.textViewEquipmentTitle);
         TextView textViewEquipment = view.findViewById(R.id.textViewEquipment);
         Spinner statusSpinner = view.findViewById(R.id.equipment_status);
-        GridView gridView = view.findViewById(R.id.gridview);
+        //GridView gridView = view.findViewById(R.id.gridview);
 
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         textInputMeasure = view.findViewById(R.id.addMeasureValue);
@@ -200,7 +177,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         textViewSerial.setText(equipment.getSerial());
         textViewType.setText(equipment.getEquipmentType().getTitle());
         textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
-        textViewEquipment.setText(equipment.getEquipmentType().getTitle().substring(0, 1));
+        //textViewEquipment.setText(equipment.getEquipmentType().getTitle().substring(0, 1));
 
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
 
@@ -220,14 +197,28 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                     MainUtil.getPicturesDirectory(mainActivityConnector),
                     photoEquipment.getUuid().concat(".jpg")));
         } else {
-            circleImageView.setImageResource(R.drawable.flat);
+            circleImageView.setImageResource(R.drawable.counter);
             textViewPhotoDate.setText("нет фото");
         }
 
         List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
         EquipmentStatusListAdapter adapter = new EquipmentStatusListAdapter(mainActivityConnector,
-                R.layout.simple_spinner_item, equipmentStatuses);
+                R.layout.simple_spinner_item, equipmentStatuses,R.color.colorPrimaryDark);
         statusSpinner.setAdapter(adapter);
+
+        enter_measure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createMeasure();
+                mChart.refreshDrawableState();
+            }
+        });
+        make_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkPermissionCamera();
+            }
+        });
 
         // TODO когда определимся с фото здесь будет грид с последними фото
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
@@ -235,6 +226,20 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         //gridView.setVisibility(View.INVISIBLE);
         //recyclerView = view.findViewById(R.id.recyclerView);
         //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    void createMeasure() {
+        Measure measure = new Measure();
+        measure.set_id(measureRepository.getLastId()+1);
+        measure.setValue(Double.valueOf(textInputMeasure.getText().toString()));
+        measure.setChangedAt(new Date());
+        measure.setCreatedAt(new Date());
+        measure.setDate(new Date());
+        measure.setEquipment(equipment);
+        measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId()));
+        measure.setUuid(java.util.UUID.randomUUID().toString());
+        MeasureLocalDataSource.getInstance().addMeasure(measure);
+        Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -258,21 +263,24 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         mChart.setMaxVisibleValueCount(30);
         mChart.setPinchZoom(false);
         mChart.setDrawGridBackground(false);
+        mChart.getDescription().setEnabled(false);
+        mChart.getLegend().setEnabled(false);
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
 
         YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setDrawLabels(false);
+/*
         leftAxis.setLabelCount(8);
-        //leftAxis.setValueFormatter();
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         leftAxis.setSpaceTop(15f);
+*/
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setDrawGridLines(false);
         rightAxis.setLabelCount(8);
         rightAxis.setTextColor(Color.WHITE);
-        //rightAxis.setValueFormatter(custom);
         rightAxis.setSpaceTop(15f);
         setData();
     }
@@ -283,7 +291,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         XAxis xAxis = mChart.getXAxis();
 
         List<Measure> measures = MeasureLocalDataSource.getInstance().getMeasuresByEquipment(equipment);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy", Locale.US);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM", Locale.US);
 
         count = measures.size();
         for (int i = 0; i < count; i++) {
@@ -293,7 +301,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 if (dateVal != null) {
                     xVals.add(simpleDateFormat.format(dateVal));
                 } else {
-                    xVals.add("00.00.00");
+                    xVals.add("00.00");
                 }
             }
         }
@@ -307,19 +315,15 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         BarDataSet set1 = new BarDataSet(yVals, "DataSet");
         //set1.setBarSpacePercent(35f);
         BarData data = new BarData(set1);
-        // data.setValueFormatter(new MyValueFormatter());
         data.setValueTextSize(10f);
-        //data.setValueTypeface(mTf);
         mChart.setData(data);
     }
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
         private ArrayList <String>mValues;
-
-        public MyXAxisValueFormatter(ArrayList<String> values) {
+        MyXAxisValueFormatter(ArrayList<String> values) {
             this.mValues = values;
         }
-
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             return mValues.get((int) value);
@@ -420,6 +424,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                                     800, uuid.concat(".jpg"));
                             PhotoEquipment photoEquipment = new PhotoEquipment();
                             User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+                            photoEquipment.set_id(photoEquipmentRepository.getLastId());
                             photoEquipment.setEquipment(equipment);
                             photoEquipment.setUuid(uuid);
                             photoEquipment.setCreatedAt(new Date());

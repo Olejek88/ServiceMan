@@ -123,7 +123,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_objects, container, false);
-
         initViews(contentView);
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -276,6 +275,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(flatAdapter);
             mTitle.setText(currentHouse.getFullTitle());
             mObjectTitle.setText(currentHouse.getFullTitle());
+            if (currentHouse.getHouseType()!=null)
+                mToolbar.setSubtitle(currentHouse.getHouseType().getTitle());
 
             List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
             if (photos.size() > 0) {
@@ -298,9 +299,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(flatAdapter);
         }
 
-        mToolbar.setTitle(currentHouse.getFullTitle());
-        if (currentHouse.getHouseType()!=null)
-            mToolbar.setSubtitle(currentHouse.getHouseType().getTitle());
         fab.setVisibility(View.VISIBLE);
         back.setVisibility(View.VISIBLE);
         //showEmptyView(list.isEmpty());

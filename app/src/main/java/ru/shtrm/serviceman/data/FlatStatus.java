@@ -53,4 +53,11 @@ public class FlatStatus extends RealmObject {
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
     }
+
+    public class Status {
+        public static final String FLAT_STATUS_OK = "32562AA9-DE1D-436D-A0ED-5F5789DB8712";
+        public static final String  FLAT_STATUS_NO_ENTRANCE = "FEA3CC91-DD48-4264-AEF6-F91947A1B8EB";
+        public static final String  FLAT_STATUS_ABSENT = "BB6E24F2-6FA5-4E9A-83C8-5E1F4D51789B";
+        public static final String  FLAT_STATUS_UNVISITED = "9D86D530-1910-488E-87D9-FD2FE06CA5E7";
+    }
 }

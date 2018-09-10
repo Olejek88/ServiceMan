@@ -276,7 +276,6 @@ public class MapFragment extends Fragment implements MapContract.View {
                     if (l == null) {
                         continue;
                     }
-
                     if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
                         bestLocation = l;
                     }

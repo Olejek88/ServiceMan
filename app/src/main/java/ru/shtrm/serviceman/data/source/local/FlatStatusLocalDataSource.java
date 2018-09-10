@@ -31,7 +31,9 @@ public class FlatStatusLocalDataSource implements FlatStatusDataSource {
     @Override
     public List<FlatStatus> getFlatStatuses() {
         Realm realm = Realm.getDefaultInstance();
+        // статус не посещено недоступен для МК
         return realm.copyFromRealm(
-                realm.where(FlatStatus.class).findAllSorted("title"));
+                realm.where(FlatStatus.class).notEqualTo("uuid",FlatStatus.Status.FLAT_STATUS_UNVISITED).
+                        findAllSorted("title"));
     }
 }

@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -444,7 +445,7 @@ public class MainActivity extends AppCompatActivity
 
     private void showCheckinFragment() {
         changeFragment(workFragment);
-        //toolbar.setTitle(getResources().getString(R.string.nav_checkin));
+        toolbar.setTitle(getResources().getString(R.string.nav_checkin));
         navigationView.setCheckedItem(R.id.nav_checkin);
     }
 
@@ -585,4 +586,8 @@ public class MainActivity extends AppCompatActivity
         return sp.getBoolean(getString(R.string.gps), false);
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return keyCode == KeyEvent.KEYCODE_BACK || super.onKeyDown(keyCode, event);
+    }
 }

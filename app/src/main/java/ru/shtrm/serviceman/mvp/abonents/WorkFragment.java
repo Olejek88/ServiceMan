@@ -297,6 +297,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
         }
+
+        mToolbar.setTitle(currentHouse.getFullTitle());
+        if (currentHouse.getHouseType()!=null)
+            mToolbar.setSubtitle(currentHouse.getHouseType().getTitle());
         fab.setVisibility(View.VISIBLE);
         back.setVisibility(View.VISIBLE);
         //showEmptyView(list.isEmpty());
@@ -325,6 +329,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(streetAdapter);
         }
         mImage.setImageResource(R.drawable.city);
+        if (currentStreet!=null)
+            mToolbar.setTitle(currentStreet.getCity().getTitle());
         fab.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
     }
@@ -350,6 +356,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(houseAdapter);
         }
         mImage.setImageResource(R.drawable.street);
+        mToolbar.setTitle(currentStreet.getTitle());
         fab.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }

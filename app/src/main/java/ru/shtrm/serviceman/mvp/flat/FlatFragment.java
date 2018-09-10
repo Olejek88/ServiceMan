@@ -131,21 +131,21 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         TextView textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         TextView textViewFlat = view.findViewById(R.id.textViewFlat);
         CircleImageView circleImageView = view.findViewById(R.id.imageViewFlat);
-        GridView gridView = view.findViewById(R.id.gridview);
+        //GridView gridView = view.findViewById(R.id.gridview);
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
         Spinner statusSpinner = view.findViewById(R.id.spinnerFlatStatus);
         make_photo = view.findViewById(R.id.add_photo);
         new_flat = view.findViewById(R.id.add_equipment);
 
         if (mToolbar !=null) {
-            mToolbar.setSubtitle(flat.getFullTitle());
+            mToolbar.setTitle(flat.getFullTitle());
+            if (flat.getHouse().getHouseType()!=null)
+                mToolbar.setSubtitle(flat.getHouse().getHouseType().getTitle());
         }
 
         if (resident!=null) {
             textViewInn.setText(resident.getInn());
             textViewAbonent.setText(resident.getOwner());
-            if (mToolbar !=null)
-                mToolbar.setTitle("Квартира ".concat(flat.getTitle()));
         }
         //if (flat.getFlatStatus()!=null)
           //  textViewStatus.setText(flat.getFlatStatus().getTitle());
@@ -178,7 +178,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                presenter.updateFlatStatus(flat,adapter.getItem(position));
+                if (!adapter.getItem(position).equals(flat.getFlatStatus()))
+                    presenter.updateFlatStatus(flat,adapter.getItem(position));
             }
 
             @Override

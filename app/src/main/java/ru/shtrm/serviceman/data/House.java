@@ -13,8 +13,13 @@ public class House extends RealmObject {
     private String title;
     private Street street;
     private HouseStatus houseStatus;
+    private HouseType houseType;
     private Date createdAt;
     private Date changedAt;
+
+    public HouseType getHouseType() {
+        return houseType;
+    }
 
     public Street getStreet() {
         return street;

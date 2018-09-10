@@ -444,7 +444,7 @@ public class MainActivity extends AppCompatActivity
 
     private void showCheckinFragment() {
         changeFragment(workFragment);
-        toolbar.setTitle(getResources().getString(R.string.nav_checkin));
+        //toolbar.setTitle(getResources().getString(R.string.nav_checkin));
         navigationView.setCheckedItem(R.id.nav_checkin);
     }
 

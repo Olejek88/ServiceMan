@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="service_app_name">Service Man</string>
+    <string name="service_app_name">Сервисмен</string>
 
     <!--activities-->
     <string name="activity_add_alarm">Добавить проблему</string>
@@ -28,6 +28,7 @@
 
     <!--messages-->
     <string name="message_no_write_permission">Нет разрешений на запись</string>
+    <string name="message_no_gps_permission">Нет разрешения на определение местоположения</string>
 
     <!--login-->
     <string name="user_select">Оператор</string>
@@ -142,6 +143,8 @@
     <string name="notifications">Оповещения</string>
     <string name="gps">Сбор данных GPS</string>
     <string name="gps_desc">Необходимость сбора данных координат</string>
+    <string name="load_test_data">Загрузить тестовые данные</string>
+    <string name="delete_test_data">Удалить справочники</string>
 
     <string name="do_not_disturb_mode">Режим не беспокоить</string>
     <string name="do_not_disturb_mode_desc">Не оповещать меня в эти часы</string>
@@ -149,23 +152,23 @@
     <string name="start_time_desc">23:00</string>
     <string name="end_time">Конец</string>
     <string name="end_time_desc">06:00</string>
-    <string name="notification_interval">Интервал оповещений</string>
+    <string name="notification_interval">Интервал отсутствия показаний</string>
     <string name="other">Разное</string>
     <string name="user_interface">Интерфейс</string>
     <string name="navigation_bar_restart_msg">Изменения вступят в силу после перезапуска</string>
+
     <string-array name="notification_interval">
-        <item>10 минут</item>
-        <item>30 минут</item>
-        <item>1 час</item>
-        <item>1.5 часа</item>
-        <item>2 часа</item>
+        <item>неделя</item>
+        <item>месяц</item>
+        <item>2 месяца</item>
+        <item>3 месяца</item>
     </string-array>
+
     <string-array name="notification_interval_item">
         <item>0</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
-        <item>4</item>
     </string-array>
     <!--Settings end-->
 

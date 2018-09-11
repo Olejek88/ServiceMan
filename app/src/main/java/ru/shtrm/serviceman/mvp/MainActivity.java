@@ -66,10 +66,10 @@ import ru.shtrm.serviceman.util.SettingsUtil;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_WRITE_STORAGE = 2;
+    private static final int REQUEST_FINE_LOCATION = 3;
     private static final String TAG = "Main";
 
     private Toolbar toolbar;
-    private BottomNavigationView navigation;
     public static boolean isLogged = false;
     private static final int LOGIN = 0;
 
@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity
                 profileName.setText(user.getName());
             }
         }
-        CheckRunGPSListener();
+        if (_gpsListener==null)
+            CheckRunGPSListener();
     }
 
     /**
@@ -401,7 +402,7 @@ public class MainActivity extends AppCompatActivity
         ImageView profileImage = navigationView.getHeaderView(0).findViewById(R.id.user_image);
         profileImage.setImageResource(R.drawable.user_random_icon_6);
 
-        navigation = findViewById(R.id.bottomNavigationView);
+        BottomNavigationView navigation = findViewById(R.id.bottomNavigationView);
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -477,25 +478,49 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void CheckPermission() {
-        // Create the storage directory if it does not exist
-        if (MainUtil.isExternalStorageWritable()) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_WRITE_STORAGE);
+        int PERMISSION_ALL = 1;
+        String[] PERMISSIONS = {
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.CAMERA
+        };
+        if(!hasPermissions(this, PERMISSIONS)){
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_WRITE_STORAGE:
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        if (grantResults.length > 0) {
+            switch (requestCode) {
+                case REQUEST_WRITE_STORAGE:
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this,
+                                getResources().getString(R.string.message_no_write_permission),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case REQUEST_FINE_LOCATION:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this,
-                            getResources().getString(R.string.message_no_write_permission),
+                            getResources().getString(R.string.message_no_gps_permission),
                             Toast.LENGTH_SHORT).show();
                 }
-                break;
+                    break;
+            }
         }
     }
 
@@ -512,11 +537,9 @@ public class MainActivity extends AppCompatActivity
                 toast.show();
                 success = true;
             } else {
-/*
-                Toast toast = Toast.makeText(this, "База данных актуальна!", Toast.LENGTH_SHORT);
+                /* Toast toast = Toast.makeText(this, "База данных актуальна!", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.BOTTOM, 0, 0);
-                toast.show();
-*/
+                toast.show(); */
                 success = true;
             }
         } catch (Exception e) {
@@ -526,9 +549,7 @@ public class MainActivity extends AppCompatActivity
             toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
         }
-        //LoadTestData.LoadAllTestData();
-        //LoadTestData.LoadAllTestData2();
-        //LoadTestData.LoadAllTestData3();
+        LoadTestData.LoadTestUser();
         return success;
     }
 
@@ -568,16 +589,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Проверка включен ли GPS.
-     *
-     * @return boolean
-     */
-    private boolean isGpsOn() {
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        return lm != null && lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    }
-
-    /**
      * Проверка на необходимость GPS
      */
     private boolean isSkipGPS() {
@@ -589,5 +600,18 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return keyCode == KeyEvent.KEYCODE_BACK || super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (_locationManager != null) {
+            if (_gpsListener != null) {
+                _locationManager.removeUpdates(_gpsListener);
+            }
+
+            _locationManager = null;
+            _gpsListener = null;
+        }
+        super.onDestroy();
     }
 }

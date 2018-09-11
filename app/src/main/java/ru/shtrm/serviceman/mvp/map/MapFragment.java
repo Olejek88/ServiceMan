@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -34,11 +35,14 @@ import org.osmdroid.views.overlay.compass.CompassOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
+import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 
@@ -56,8 +60,15 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     private HouseAdapter houseAdapter;
     private MapContract.Presenter presenter;
+    private IMapController mapController;
+    private MapView mapView;
 
-    public MapFragment() {}
+    private Timer timer;
+    private TimerTask mTimerTask;
+    private Handler mTimerHandler = new Handler();
+
+    public MapFragment() {
+    }
 
     public static MapFragment newInstance() {
         return new MapFragment();
@@ -70,6 +81,7 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     /**
      * Set a presenter for this fragment(View),
+     *
      * @param presenter The presenter.
      */
     @Override
@@ -126,42 +138,39 @@ public class MapFragment extends Fragment implements MapContract.View {
     }
 
     @Override
+    public void onDestroy () {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return true;
     }
 
     /**
      * Init the views by findViewById.
+     *
      * @param view The container view.
      */
     @Override
     public void initViews(View view) {
-        Location location;
-        double curLatitude=55.5, curLongitude=55.5;
+        double curLatitude = 55.5, curLongitude = 55.5;
 
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
-        emptyView =  view.findViewById(R.id.emptyView);
-        recyclerView =  view.findViewById(R.id.recyclerView);
+        emptyView = view.findViewById(R.id.emptyView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        LocationManager lm = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
-        int permission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
-        if (lm != null && permission == PackageManager.PERMISSION_GRANTED) {
-            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location == null) {
-                location = getLastKnownLocation();
-            }
-            if (location != null) {
-                curLatitude = location.getLatitude();
-                curLongitude = location.getLongitude();
-            }
-        }
-
-        final MapView mapView = view.findViewById(R.id.gps_mapview);
+        mapView = view.findViewById(R.id.gps_mapview);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setBuiltInZoomControls(true);
-        IMapController mapController = mapView.getController();
-        mapController.setZoom(15.0);
+
+        mapController = mapView.getController();
+        mapController.setZoom(17.0);
         GeoPoint point2 = new GeoPoint(curLatitude, curLongitude);
         mapController.setCenter(point2);
 
@@ -181,7 +190,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         */
 
         List<Alarm> alarms = AlarmLocalDataSource.getInstance().getAlarms();
-        for (int i=0; i<alarms.size(); i++) {
+        for (int i = 0; i < alarms.size(); i++) {
             Alarm alarm = alarms.get(i);
             curLatitude = alarm.getLatitude();
             curLongitude = alarm.getLongitude();
@@ -261,24 +270,18 @@ public class MapFragment extends Fragment implements MapContract.View {
     }
 
     private Location getLastKnownLocation() {
-        FragmentActivity activity = getActivity();
         Location bestLocation = null;
-
-        if (activity != null) {
-            LocationManager mLocationManager;
-            mLocationManager = (LocationManager) activity.getApplicationContext()
-                    .getSystemService(LOCATION_SERVICE);
-            int permission = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
-            if (mLocationManager != null && permission == PackageManager.PERMISSION_GRANTED) {
-                List<String> providers = mLocationManager.getProviders(true);
-                for (String provider : providers) {
-                    Location l = mLocationManager.getLastKnownLocation(provider);
-                    if (l == null) {
-                        continue;
-                    }
-                    if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                        bestLocation = l;
-                    }
+        LocationManager mLocationManager = (LocationManager) mainActivityConnector.getSystemService(LOCATION_SERVICE);
+        int permission = ContextCompat.checkSelfPermission(mainActivityConnector, Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (mLocationManager != null && permission == PackageManager.PERMISSION_GRANTED) {
+            List<String> providers = mLocationManager.getProviders(true);
+            for (String provider : providers) {
+                Location l = mLocationManager.getLastKnownLocation(provider);
+                if (l == null) {
+                    continue;
+                }
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                    bestLocation = l;
                 }
             }
         }
@@ -303,7 +306,6 @@ public class MapFragment extends Fragment implements MapContract.View {
         } else {
             houseAdapter.updateData(list);
         }
-        //showEmptyView(list.isEmpty());
     }
 
     public void showAlarms(@NonNull final List<Alarm> list) {
@@ -314,9 +316,38 @@ public class MapFragment extends Fragment implements MapContract.View {
         super.onAttach(context);
         mainActivityConnector = getActivity();
         // TODO решить что делать если контекст не приехал
-        if (mainActivityConnector==null)
+        if (mainActivityConnector == null)
             onDestroyView();
+        if (timer == null) {
+            timer = new Timer();
+            mTimerTask = new TimerTask() {
+                public void run() {
+                    mTimerHandler.post(new Runnable() {
+                        public void run(){
+                            setPositionMarker();
+                        }
+                    });
+                }
+            };
+            timer.schedule(mTimerTask, 1, 3000);
+        }
     }
 
+    private void setPositionMarker() {
+        Location location = getLastKnownLocation();
+        if (location!=null) {
+            GeoPoint point2 = new GeoPoint(location.getLatitude(), location.getLongitude());
+            if (mapController!=null && mapView!=null && aOverlayItemArray!=null) {
+                mapController.setCenter(point2);
+                OverlayItem overlayItem = new OverlayItem("We are here", "WAH",
+                        new GeoPoint(location.getLatitude(), location.getLongitude()));
+                aOverlayItemArray.clear();
+                aOverlayItemArray.add(overlayItem);
+                ItemizedIconOverlay<OverlayItem> aItemizedIconOverlay = new ItemizedIconOverlay<>(
+                        mainActivityConnector, aOverlayItemArray, null);
+                mapView.getOverlays().add(aItemizedIconOverlay);
+            }
+        }
+    }
 }
 

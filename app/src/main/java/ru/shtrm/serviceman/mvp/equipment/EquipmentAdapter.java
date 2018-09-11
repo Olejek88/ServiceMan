@@ -54,6 +54,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Equipment item = list.get(position);
         EquipmentsViewHolder pvh = (EquipmentsViewHolder) holder;
+        if (item.getEquipmentType()!=null)
         pvh.textViewEquipmentTitle.setText(item.getEquipmentType().getTitle());
         pvh.textViewEquipmentSerial.setText(item.getSerial());
         if (item.getChangedAt()!=null) {

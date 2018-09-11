@@ -56,6 +56,34 @@ public class LoadTestData {
 
     final static String residentUuid = "1dd8d4f8-5c98-5885-86ed-97ddbc2059f6";
 
+
+    final String userTestUuid = "4462ed77-9bf0-4542-b127-f4ecefce49da";
+    final String cityUuid = "5562ed77-9bf0-4542-b127-ffffefce49da";
+    final String streetUuid = "1dd8d4f8-5c98-4444-86ed-97dddde";
+    final String houseUuid1 = "1dd8d4f8-5c98-4444-86ed-97ddddf";
+    final String houseUuid2 = "00000000-5c98-4444-86ed-97dddde";
+
+    public static void LoadTestUser() {
+        final Realm realmDB;
+        realmDB = Realm.getDefaultInstance();
+
+        final String userTestUuid = "4462ed77-9bf0-4542-b127-f4ecefce49da";
+        // User --------------------
+        user = realmDB.where(User.class).findFirst();
+        if (user == null) {
+            realmDB.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    user = realmDB.createObject(User.class, 1);
+                    user.setUuid(userTestUuid);
+                    user.setName("Иванов О.А.");
+                    user.setPin("1234");
+                    user.setContact("+79227000293");
+                }
+            });
+        }
+    }
+
     public static void LoadAllTestData() {
 
         final Realm realmDB;
@@ -66,23 +94,10 @@ public class LoadTestData {
         final String alarmUuid1 = "5562ed77-9bf0-4542-b127-ffffefce0011";
         final String alarmUuid2 = "5562ed77-9bf0-4542-b127-ffffefce0022";
 
-        final String userTestUuid = "4462ed77-9bf0-4542-b127-f4ecefce49da";
         final String cityUuid = "5562ed77-9bf0-4542-b127-ffffefce49da";
         final String streetUuid = "1dd8d4f8-5c98-4444-86ed-97dddde";
         final String houseUuid1 = "1dd8d4f8-5c98-4444-86ed-97ddddf";
         final String houseUuid2 = "00000000-5c98-4444-86ed-97dddde";
-
-        // User --------------------
-        realmDB.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                user = realmDB.createObject(User.class, 1);
-                user.setUuid(userTestUuid);
-                user.setName("Иванов О.А.");
-                user.setPin("1234");
-                user.setContact("+79227000285 Иван");
-            }
-        });
 
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override

@@ -17,13 +17,15 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
+import static ru.shtrm.serviceman.db.LoadTestData.user;
+
 public class UserDetailFragment extends Fragment
         implements UserDetailContract.View {
     private Activity mainActivityConnector = null;
 
     private UserDetailContract.Presenter presenter;
+    private View view;
     private User user;
-
     public UserDetailFragment() {}
 
     public static UserDetailFragment newInstance() {
@@ -39,12 +41,7 @@ public class UserDetailFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view;
-        user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
         view = inflater.inflate(R.layout.fragment_view_user, container, false);
-        if (user!=null)
-            initViews(view);
-
         setHasOptionsMenu(true);
         return view;
     }
@@ -75,8 +72,10 @@ public class UserDetailFragment extends Fragment
     public void initViews(View view) {
         TextView textViewName = view.findViewById(R.id.profile_name);
         TextView textViewContact = view.findViewById(R.id.profile_contact);
-        textViewName.setText(user.getName());
-        textViewContact.setText(user.getContact());
+        if (this.user!=null) {
+            textViewName.setText(this.user.getName());
+            textViewContact.setText(this.user.getContact());
+        }
     }
 
     @Override
@@ -91,5 +90,11 @@ public class UserDetailFragment extends Fragment
         // TODO решить что делать если контекст не приехал
         if (mainActivityConnector==null)
             onDestroyView();
+    }
+
+    @Override
+    public void showUser(User user) {
+        this.user = user;
+        initViews(view);
     }
 }

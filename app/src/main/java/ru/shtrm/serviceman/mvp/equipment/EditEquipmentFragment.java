@@ -14,9 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.TextViewCompat;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,14 +54,13 @@ import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.flat.FlatActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentFragment.ACTIVITY_PHOTO;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
 
-public class AddEquipmentFragment extends Fragment {
+public class EditEquipmentFragment extends Fragment {
     private Activity mainActivityConnector = null;
 
     private EquipmentRepository equipmentRepository;
@@ -74,20 +70,21 @@ public class AddEquipmentFragment extends Fragment {
     private EquipmentTypeRepository equipmentTypeRepository;
 
     // View references.
-    private AppCompatTextView editTextDate;
-    private TextInputEditText editTextSerial;
+    private TextInputEditText editTextSerial, editTextDate;
     private Spinner editEquipmentType, editEquipmentStatus;
     private FloatingActionButton fab;
+    private FloatingActionButton fab_delete;
+
     private House house;
     private Flat flat;
     private ImageView imageView;
     Calendar myCalendar;
     private Bitmap storeBitmap=null;
 
-    public AddEquipmentFragment() {}
+    public EditEquipmentFragment() {}
 
-    public static AddEquipmentFragment newInstance() {
-        return new AddEquipmentFragment();
+    public static EditEquipmentFragment newInstance() {
+        return new EditEquipmentFragment();
     }
 
     @Override
@@ -127,13 +124,17 @@ public class AddEquipmentFragment extends Fragment {
                 }
                 //editTextSerial.setText(title);
                 int res = storeEquipment();
-                if (res==0) {
-                    if (getActivity()!=null)
-                        getActivity().finishActivity(0);
-                }
+                if (res==0)
+                    getFragmentManager().popBackStackImmediate();
+                    getActivity().getSupportFragmentManager().popBackStack();
             }
         });
-
+        fab_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideImm();
+            }
+        });
         setHasOptionsMenu(true);
         return view;
     }
@@ -159,6 +160,7 @@ public class AddEquipmentFragment extends Fragment {
         editTextSerial = view.findViewById(R.id.editTextSerial);
         editTextDate = view.findViewById(R.id.editTextDate);
         fab = view.findViewById(R.id.fab);
+        fab_delete = view.findViewById(R.id.fab_delete);
         myCalendar = Calendar.getInstance();
         editEquipmentType = view.findViewById(R.id.editEquipmentType);
         editEquipmentStatus = view.findViewById(R.id.editEquipmentStatus);
@@ -216,7 +218,6 @@ public class AddEquipmentFragment extends Fragment {
 
     int storeEquipment() {
         Equipment equipment = new Equipment();
-        equipment.setUuid(java.util.UUID.randomUUID().toString());
         equipment.set_id(equipmentRepository.getLastId()+1);
         equipment.setChangedAt(new Date());
         equipment.setCreatedAt(new Date());
@@ -290,17 +291,15 @@ public class AddEquipmentFragment extends Fragment {
             case ACTIVITY_PHOTO:
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null && data.getExtras() != null) {
-                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                        if (bitmap != null) {
-                            storeBitmap=bitmap;
+                        storeBitmap = (Bitmap) data.getExtras().get("data");
+                        if (storeBitmap != null) {
                             String uuid = java.util.UUID.randomUUID().toString();
-                            MainUtil.storeNewImage(bitmap, getContext(),
+                            MainUtil.storeNewImage(storeBitmap, getContext(),
                                     800, uuid.concat(".jpg"));
-                            imageView.setImageBitmap(bitmap);
+                            imageView.setImageBitmap(storeBitmap);
                         }
                     }
                 }
-                break;
         }
     }
 }

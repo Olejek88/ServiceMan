@@ -72,4 +72,12 @@ public class EquipmentRepository implements EquipmentDataSource {
     public long getLastId() {
         return localDataSource.getLastId();
     }
+
+    @Override
+    public void deleteEquipment(Equipment equipment) { localDataSource.deleteEquipment(equipment); }
+
+    @Override
+    public void deleteEmptyEquipment() {
+        localDataSource.deleteEmptyEquipment();
+    }
 }

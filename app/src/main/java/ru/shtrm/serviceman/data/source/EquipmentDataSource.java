@@ -21,6 +21,10 @@ public interface EquipmentDataSource {
 
     List<Equipment> getEquipmentByType(EquipmentType equipmentType);
 
+    void deleteEquipment(Equipment equipment);
+
+    void deleteEmptyEquipment();
+
     int addEquipment(Equipment equipment);
 
     void updateEquipmentStatus (Equipment equipment, EquipmentStatus equipmentStatus);

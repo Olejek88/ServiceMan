@@ -559,31 +559,5 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             imm.hideSoftInputFromWindow(fab.getWindowToken(), 0);
         }
     }
-
-    public String getLastPhotoFilePath() {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return null;
-        }
-        String[] projection = {
-                MediaStore.Images.Media.DATA,
-        };
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        ContentResolver resolver = activity.getContentResolver();
-        String orderBy = android.provider.MediaStore.Video.Media.DATE_TAKEN + " DESC";
-        Cursor cursor = resolver.query(uri, projection, null, null, orderBy);
-        // TODO: реализовать удаление записи о фотке котрую мы "забрали"
-        // resolver.delete(uri,);
-        String result;
-        if (cursor != null && cursor.moveToFirst()) {
-            int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            result = cursor.getString(column_index_data);
-            cursor.close();
-        } else {
-            result = null;
-        }
-        return result;
-    }
-
 }
 

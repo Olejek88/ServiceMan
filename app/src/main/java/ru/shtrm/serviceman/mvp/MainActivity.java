@@ -1,12 +1,15 @@
 package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -63,10 +66,13 @@ import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
 
+import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.REQUEST_CAMERA_PERMISSION_CODE;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_WRITE_STORAGE = 2;
     private static final int REQUEST_FINE_LOCATION = 3;
+    private static final int REQUEST_CAMERA_PERMISSION_CODE = 4;
     private static final String TAG = "Main";
 
     private Toolbar toolbar;
@@ -158,8 +164,8 @@ public class MainActivity extends AppCompatActivity
                 profileName.setText(user.getName());
             }
         }
-        if (_gpsListener==null)
-            CheckRunGPSListener();
+        //if (_gpsListener==null)
+        CheckRunGPSListener();
     }
 
     /**
@@ -520,6 +526,14 @@ public class MainActivity extends AppCompatActivity
                             Toast.LENGTH_SHORT).show();
                 }
                     break;
+                case REQUEST_CAMERA_PERMISSION_CODE:
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this,
+                                getResources().getString(R.string.message_no_gps_permission),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+
             }
         }
     }

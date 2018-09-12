@@ -20,7 +20,7 @@ public class EquipmentActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
     private EquipmentFragment fragment;
 
-    public static final String EQUIPMENT_ID = "EQUIPMENT_ID";
+    public static final String EQUIPMENT_UUID = "EQUIPMENT_UUID";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,9 +37,9 @@ public class EquipmentActivity extends AppCompatActivity
         }
 
         if (!fragment.isAdded()) {
-            String equipment_id = getIntent().getStringExtra(EQUIPMENT_ID);
+            String equipment_id = getIntent().getStringExtra("EQUIPMENT_UUID");
             Bundle b = new Bundle();
-            b.putString(EQUIPMENT_ID, equipment_id);
+            b.putString(EQUIPMENT_UUID, equipment_id);
             fragment.setArguments(b);
 
             getSupportFragmentManager().beginTransaction()
@@ -52,7 +52,7 @@ public class EquipmentActivity extends AppCompatActivity
                 EquipmentRepository.getInstance(EquipmentLocalDataSource.getInstance()),
                 EquipmentStatusRepository.getInstance(EquipmentStatusLocalDataSource.getInstance()),
                 GpsTrackRepository.getInstance(GpsTrackLocalDataSource.getInstance()),
-                getIntent().getStringExtra(EQUIPMENT_ID));
+                getIntent().getStringExtra(EQUIPMENT_UUID));
     }
 
     @Override

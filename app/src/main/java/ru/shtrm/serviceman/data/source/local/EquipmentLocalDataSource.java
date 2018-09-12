@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
@@ -85,6 +86,21 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     }
 
     @Override
+    public void deleteEquipment(final Equipment equipment) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<Equipment> equipments =
+                        realm.where(Equipment.class).equalTo("uuid", equipment.getUuid()).
+                                findAll();
+                equipments.deleteAllFromRealm();
+            }
+        });
+        realm.close();
+    }
+
+    @Override
     public void updateEquipmentStatus(final Equipment equipment, final EquipmentStatus equipmentStatus) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
@@ -106,5 +122,19 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         }
         realm.close();
         return lastId.longValue();
+    }
+
+    @Override
+    public void deleteEmptyEquipment() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<Equipment> equipments =
+                        realm.where(Equipment.class).equalTo("uuid", "").findAll();
+                equipments.deleteAllFromRealm();
+            }
+        });
+        realm.close();
     }
 }

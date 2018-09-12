@@ -20,6 +20,14 @@ import java.util.Date;
 import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.app.App;
+import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.PhotoEquipment;
+import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
 public class MainUtil {
 
@@ -116,5 +124,27 @@ public class MainUtil {
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+
+    public static void storePhotoEquipment (Equipment equipment) {
+        PhotoEquipment photoEquipment = new PhotoEquipment();
+        String uuid = java.util.UUID.randomUUID().toString();
+        PhotoEquipmentLocalDataSource photoEquipmentRepository = PhotoEquipmentLocalDataSource.getInstance();
+        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
+        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        photoEquipment.set_id(photoEquipmentRepository.getLastId());
+        photoEquipment.setEquipment(equipment);
+        photoEquipment.setUuid(uuid);
+        photoEquipment.setCreatedAt(new Date());
+        photoEquipment.setChangedAt(new Date());
+        photoEquipment.setUser(user);
+        if (gpsTrackRepository.getLastTrack() != null) {
+            photoEquipment.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
+            photoEquipment.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
+        } else {
+            photoEquipment.setLattitude(App.defaultLatitude);
+            photoEquipment.setLongitude(App.defaultLongitude);
+        }
+        photoEquipmentRepository.savePhotoEquipment(photoEquipment);
     }
 }

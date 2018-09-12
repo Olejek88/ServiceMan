@@ -16,36 +16,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.FlatStatus;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
-import ru.shtrm.serviceman.mvp.equipment.EquipmentStatusListAdapter;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
@@ -103,8 +94,10 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     @Override
     public void onResume() {
         super.onResume();
-        if (presenter!=null)
+        if (presenter!=null) {
             presenter.subscribe();
+            presenter.loadEquipmentsByFlat(flat);
+        }
     }
 
     @Override
@@ -150,7 +143,11 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         //if (flat.getFlatStatus()!=null)
           //  textViewStatus.setText(flat.getFlatStatus().getTitle());
 
-        textViewTitle.setText(flat.getFullTitle());
+        if (flat.getFlatType()!=null)
+            textViewTitle.setText(flat.getFlatType().getTitle());
+        else
+            textViewTitle.setText(flat.getFullTitle());
+
         textViewFlat.setText(flat.getTitle().substring(0,1));
         if (photoFlat!=null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
@@ -243,7 +240,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             @Override
             public void OnItemClick(View v, int position) {
                 Intent intent = new Intent(getContext(), EquipmentActivity.class);
-                intent.putExtra(EquipmentActivity.EQUIPMENT_ID, String.valueOf(list.get(position).getUuid()));
+                String uuid = list.get(position).getUuid();
+                intent.putExtra("EQUIPMENT_UUID", String.valueOf(uuid));
                 startActivity(intent);
             }
         });

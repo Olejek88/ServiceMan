@@ -50,6 +50,7 @@
     <string name="enter_measure">Введите показания счетчика</string>
     <string name="equipment_status">Статус</string>
     <string name="activity_add_equipment">Добавить оборудование</string>
+    <string name="equipment_test_date">Дата поверки</string>
 
     <!--menu-->
     <string name="action_add_image">Добавить изображение</string>

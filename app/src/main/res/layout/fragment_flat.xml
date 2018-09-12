@@ -45,7 +45,8 @@
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:src="@color/colorPrimary" />
 
                     <android.support.v7.widget.AppCompatTextView
@@ -158,6 +159,7 @@
                 android:id="@+id/scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginBottom="60dp"
                 android:fillViewport="true">
 
                 <FrameLayout
@@ -195,6 +197,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="120dp"
+        android:layout_marginEnd="5dp"
         android:src="@drawable/ic_plus_white_36dp"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal" />
@@ -205,6 +208,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="60dp"
+        android:layout_marginEnd="5dp"
         android:src="@drawable/baseline_camera_enhance_white_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal" />

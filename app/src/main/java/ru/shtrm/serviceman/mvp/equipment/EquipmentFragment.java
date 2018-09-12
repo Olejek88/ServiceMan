@@ -1,34 +1,24 @@
 package ru.shtrm.serviceman.mvp.equipment;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +48,7 @@ import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
 import ru.shtrm.serviceman.data.source.PhotoEquipmentRepository;
@@ -69,8 +60,7 @@ import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.REQUEST_CAMERA_PERMISSION_CODE;
-import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_ID;
+import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_UUID;
 
 public class EquipmentFragment extends Fragment implements EquipmentContract.View {
     private Activity mainActivityConnector = null;
@@ -83,6 +73,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private GpsTrackRepository gpsTrackRepository;
     private PhotoEquipmentRepository photoEquipmentRepository;
     private MeasureRepository measureRepository;
+    private EquipmentRepository equipmentRepository;
 
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
@@ -90,6 +81,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     private FloatingActionButton enter_measure;
     private FloatingActionButton make_photo;
+    private FloatingActionButton fab_delete;
+
     protected BarChart mChart;
 
     public EquipmentFragment() {
@@ -111,7 +104,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         View view;
         Bundle b = getArguments();
         if (b != null) {
-            String equipmentUuid = b.getString(EQUIPMENT_ID);
+            String equipmentUuid = b.getString(EQUIPMENT_UUID);
             if (equipmentUuid != null)
                 equipment = EquipmentLocalDataSource.getInstance().getEquipmentByUuid(equipmentUuid);
         }
@@ -139,6 +132,10 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (measureRepository == null)
             measureRepository = MeasureRepository.getInstance
                     (MeasureLocalDataSource.getInstance());
+        if (equipmentRepository == null)
+            equipmentRepository = EquipmentRepository.getInstance
+                    (EquipmentLocalDataSource.getInstance());
+
     }
 
     @Override
@@ -171,12 +168,18 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         circleImageView = view.findViewById(R.id.imageViewEquipment);
         make_photo = view.findViewById(R.id.make_photo);
         enter_measure = view.findViewById(R.id.enter_measure);
+        fab_delete = view.findViewById(R.id.fab_delete);
 
         initChart(view);
 
         textViewSerial.setText(equipment.getSerial());
         textViewType.setText(equipment.getEquipmentType().getTitle());
         textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
+        SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US);
+        if (equipment.getTestDate()!=null)
+            textViewDate.setText(sDf.format(equipment.getTestDate()));
+        else
+            textViewDate.setText(R.string.no_last_time);
         //textViewEquipment.setText(equipment.getEquipmentType().getTitle().substring(0, 1));
 
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
@@ -186,12 +189,11 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             if (flat!=null) {
                 mToolbar.setSubtitle(flat.getFullTitle());
                 mToolbar.setTitle(equipment.getEquipmentType().getTitle());
+                mToolbar.setLogo(R.drawable.baseline_settings_white_48dp);
             }
         }
         if (photoEquipment != null) {
-            String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
-                    format(photoEquipment.getCreatedAt());
-            textViewPhotoDate.setText(sDate);
+            textViewPhotoDate.setText(sDf.format(photoEquipment.getCreatedAt()));
             // TODO заменить на ?
             circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
                     MainUtil.getPicturesDirectory(mainActivityConnector),
@@ -201,7 +203,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             textViewPhotoDate.setText("нет фото");
         }
 
-        List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
+        final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
         EquipmentStatusListAdapter adapter = new EquipmentStatusListAdapter(mainActivityConnector,
                 R.layout.simple_spinner_item, equipmentStatuses,R.color.colorPrimaryDark);
         statusSpinner.setAdapter(adapter);
@@ -211,12 +213,33 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             public void onClick(View v) {
                 createMeasure();
                 mChart.refreshDrawableState();
+                // не дать возможность вводить по несколько раз
+                if (getActivity()!=null)
+                    getActivity().finishActivity(0);
+
             }
         });
         make_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkPermissionCamera();
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, ACTIVITY_PHOTO);
+                } catch (ActivityNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        fab_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (equipment!=null)
+                    equipmentRepository.deleteEquipment(equipment);
+                else
+                    equipmentRepository.deleteEmptyEquipment();
+                if (getActivity()!=null)
+                    getActivity().finishActivity(0);
             }
         });
 
@@ -331,79 +354,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     /**
-     * Check whether the camera permission has been granted.
-     */
-    private void checkPermissionCamera() {
-        if (ContextCompat.checkSelfPermission(mainActivityConnector, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION_CODE);
-        } else {
-            startPhotoActivity();
-        }
-    }
-
-    /**
-     * Launch the camera
-     */
-    private void startPhotoActivity() {
-        try {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(intent, ACTIVITY_PHOTO);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * To handle the permission grant result.
-     * If the user denied the permission, show a dialog to explain
-     * the reason why the app need such permission and lead he/her
-     * to the system settings to grant permission.
-     *
-     * @param requestCode  The request code.
-     * @param permissions  The wanted permissions.
-     * @param grantResults The results.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CAMERA_PERMISSION_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startPhotoActivity();
-                } else {
-                    hideImm();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityConnector);
-                    builder.setTitle(R.string.require_permission);
-                    builder.setMessage(R.string.require_permission);
-                    builder.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Go to the detail settings of our application
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package",
-                                    mainActivityConnector.getPackageName(), null);
-                            intent.setData(uri);
-                            startActivity(intent);
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-                break;
-            default:
-        }
-    }
-
-    /**
      * Сохраняем фото
      *
      * @param requestCode The request code. See at {@link WorkFragment}.
@@ -448,14 +398,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 break;
             default:
                 break;
-        }
-    }
-
-    private void hideImm() {
-        InputMethodManager imm = (InputMethodManager)
-                mainActivityConnector.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null && imm.isActive()) {
-            imm.hideSoftInputFromWindow(make_photo.getWindowToken(), 0);
         }
     }
 }

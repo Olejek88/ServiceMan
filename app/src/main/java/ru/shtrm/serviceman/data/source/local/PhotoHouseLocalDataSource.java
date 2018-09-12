@@ -6,9 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
-import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
 

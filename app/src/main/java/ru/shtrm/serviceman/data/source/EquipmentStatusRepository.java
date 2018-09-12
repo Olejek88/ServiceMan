@@ -5,9 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
-import ru.shtrm.serviceman.data.FlatStatus;
 
 public class EquipmentStatusRepository implements EquipmentStatusDataSource {
 

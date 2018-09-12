@@ -8,11 +8,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.GpsTrack;
-import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.PhotoHouse;
-import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.source.GpsTrackDataSource;
-import ru.shtrm.serviceman.data.source.HouseDataSource;
 
 public class GpsTrackLocalDataSource implements GpsTrackDataSource {
 

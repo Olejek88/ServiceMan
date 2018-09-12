@@ -8,7 +8,6 @@ import android.os.Bundle;
 import java.util.Date;
 
 import io.realm.Realm;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;

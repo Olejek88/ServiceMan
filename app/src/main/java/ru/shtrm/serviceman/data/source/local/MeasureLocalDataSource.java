@@ -6,8 +6,9 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.GpsTrack;
+import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.source.MeasureDataSource;
 
@@ -66,4 +67,15 @@ public class MeasureLocalDataSource implements MeasureDataSource {
         return lastId.longValue();
     }
 
+    @Override
+    public Measure getLastMeasureByFlat(Flat flat) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Measure> measures  = realm.where(Measure.class).
+                equalTo("equipment.flat.uuid", flat.getUuid()).
+                findAllSorted("date");
+        if (measures!=null)
+            return realm.copyFromRealm(measures.first());
+        else
+            return null;
+    }
 }

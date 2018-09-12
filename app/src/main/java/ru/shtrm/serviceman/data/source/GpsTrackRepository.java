@@ -3,10 +3,7 @@ package ru.shtrm.serviceman.data.source;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.List;
-
 import ru.shtrm.serviceman.data.GpsTrack;
-import ru.shtrm.serviceman.data.House;
 
 public class GpsTrackRepository implements GpsTrackDataSource {
 

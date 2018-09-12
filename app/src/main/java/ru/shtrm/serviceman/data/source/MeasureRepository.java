@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 
 public class MeasureRepository implements MeasureDataSource {
@@ -47,4 +48,10 @@ public class MeasureRepository implements MeasureDataSource {
     public long getLastId() {
         return localDataSource.getLastId();
     }
+
+    @Override
+    public Measure getLastMeasureByFlat(Flat flat){
+        return localDataSource.getLastMeasureByFlat(flat);
+    }
+
 }

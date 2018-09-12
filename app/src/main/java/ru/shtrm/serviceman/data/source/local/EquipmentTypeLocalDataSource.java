@@ -5,9 +5,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
-import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.source.EquipmentStatusDataSource;
 import ru.shtrm.serviceman.data.source.EquipmentTypeDataSource;
 
 public class EquipmentTypeLocalDataSource implements EquipmentTypeDataSource {

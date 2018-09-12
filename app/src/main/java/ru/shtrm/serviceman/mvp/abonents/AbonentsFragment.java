@@ -139,7 +139,7 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.settings_list, menu);
+        //inflater.inflate(R.menu.settings_list, menu);
     }
 
     @Override

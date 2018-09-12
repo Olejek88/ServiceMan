@@ -9,7 +9,6 @@ import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.House;
 
 public class EquipmentRepository implements EquipmentDataSource {

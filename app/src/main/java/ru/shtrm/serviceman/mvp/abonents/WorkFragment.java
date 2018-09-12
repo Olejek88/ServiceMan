@@ -4,12 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -102,7 +100,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private ImageView mImage;
     private ImageView objectIcon;
     private AppBarLayout mAppBarLayout;
-    private Toolbar mToolbar;
 
     private AbonentsContract.Presenter presenter;
 
@@ -183,7 +180,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.settings_list, menu);
+        //inflater.inflate(R.menu.settings_list, menu);
     }
 
     @Override
@@ -217,7 +214,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         objectIcon = view.findViewById(R.id.object_icon);
-        //mToolbar = view.findViewById(R.id.toolbar);
         mTitle = view.findViewById(R.id.main_textview_title);
         mImage = view.findViewById(R.id.main_imageview_placeholder);
         mTitleContainer = view.findViewById(R.id.main_linearlayout_title);

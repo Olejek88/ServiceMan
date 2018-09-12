@@ -4,7 +4,6 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.PhotoHouse;
 
 public interface PhotoEquipmentDataSource {
 

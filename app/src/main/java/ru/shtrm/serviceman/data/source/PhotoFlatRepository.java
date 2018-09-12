@@ -5,9 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import io.realm.Realm;
 import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoFlat;
 
 public class PhotoFlatRepository implements PhotoFlatDataSource {

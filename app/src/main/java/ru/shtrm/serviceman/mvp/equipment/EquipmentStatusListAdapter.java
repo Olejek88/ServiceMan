@@ -15,7 +15,6 @@ import java.util.List;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.EquipmentStatus;
-import ru.shtrm.serviceman.data.User;
 
 
 public class EquipmentStatusListAdapter extends ArrayAdapter<EquipmentStatus> {

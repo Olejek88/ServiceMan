@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
 
 

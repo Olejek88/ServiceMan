@@ -4,16 +4,12 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.Alarm;
-import ru.shtrm.serviceman.data.AlarmStatus;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.FlatStatus;
-import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.FlatRepository;
 import ru.shtrm.serviceman.data.source.FlatStatusRepository;
-import ru.shtrm.serviceman.data.source.UsersRepository;
 
 public class FlatPresenter implements FlatContract.Presenter {
 

@@ -3,7 +3,6 @@ package ru.shtrm.serviceman.ui;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.db.LoadTestData;
 
 public class PrefsActivity extends AppCompatActivity {
 

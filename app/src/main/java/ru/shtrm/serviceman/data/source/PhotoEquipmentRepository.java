@@ -5,13 +5,8 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import io.realm.Realm;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.PhotoFlat;
-import ru.shtrm.serviceman.data.PhotoHouse;
 
 public class PhotoEquipmentRepository implements PhotoEquipmentDataSource {
 

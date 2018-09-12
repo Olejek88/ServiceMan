@@ -2,8 +2,6 @@ package ru.shtrm.serviceman.db.migration;
 
 import android.util.Log;
 
-import java.util.Date;
-
 import io.realm.DynamicRealm;
 import io.realm.RealmSchema;
 

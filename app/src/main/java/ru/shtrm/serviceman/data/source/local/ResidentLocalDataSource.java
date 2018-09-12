@@ -3,15 +3,8 @@ package ru.shtrm.serviceman.data.source.local;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.List;
-
 import io.realm.Realm;
-import io.realm.Sort;
-import ru.shtrm.serviceman.data.Alarm;
-import ru.shtrm.serviceman.data.AlarmStatus;
-import ru.shtrm.serviceman.data.AlarmType;
 import ru.shtrm.serviceman.data.Resident;
-import ru.shtrm.serviceman.data.source.AlarmDataSource;
 import ru.shtrm.serviceman.data.source.ResidentDataSource;
 
 public class ResidentLocalDataSource implements ResidentDataSource {

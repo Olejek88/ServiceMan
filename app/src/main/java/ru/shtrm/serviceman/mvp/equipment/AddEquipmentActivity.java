@@ -1,19 +1,10 @@
 package ru.shtrm.serviceman.mvp.equipment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.source.EquipmentRepository;
-import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
-import ru.shtrm.serviceman.data.source.GpsTrackRepository;
-import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;

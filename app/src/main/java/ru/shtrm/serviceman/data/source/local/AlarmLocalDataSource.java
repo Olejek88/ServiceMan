@@ -10,7 +10,6 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AlarmStatus;
 import ru.shtrm.serviceman.data.AlarmType;
-import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.AlarmDataSource;
 
 public class AlarmLocalDataSource implements AlarmDataSource {

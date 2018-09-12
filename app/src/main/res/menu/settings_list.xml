@@ -12,7 +12,10 @@
         android:title="@string/action_add_image" />
 
     <item android:id="@+id/action_set_status"
-        android:icon="@drawable/ic_info_black_24dp"
         app:showAsAction="never"
         android:title="@string/action_set_status" />
+
+    <item android:id="@+id/action_add_comment"
+        app:showAsAction="never"
+        android:title="@string/action_add_comment" />
 </menu>

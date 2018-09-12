@@ -6,12 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Image;
-import ru.shtrm.serviceman.util.MainUtil;
-import static ru.shtrm.serviceman.mvp.images.ImageGridAdapter.IMAGE_ID;
 
 public class ImagePreviewActivity extends AppCompatActivity {
 

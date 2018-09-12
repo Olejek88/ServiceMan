@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 
 public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -58,7 +60,11 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (item.getChangedAt()!=null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
             pvh.textViewDate.setText(sDate);
-            long diffInMillies = (new Date()).getTime() - item.getChangedAt().getTime();
+            Measure measure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item);
+            long diffInMillies = 1000000000;
+            if (measure.getDate()!=null)
+                diffInMillies = (new Date()).getTime() - measure.getDate().getTime();
+
             TimeUnit timeUnit = TimeUnit.DAYS;
             long days = timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
             if (days>7)

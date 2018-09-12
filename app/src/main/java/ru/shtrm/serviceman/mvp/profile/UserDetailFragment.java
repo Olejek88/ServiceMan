@@ -13,11 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-
-import static ru.shtrm.serviceman.db.LoadTestData.user;
 
 public class UserDetailFragment extends Fragment
         implements UserDetailContract.View {

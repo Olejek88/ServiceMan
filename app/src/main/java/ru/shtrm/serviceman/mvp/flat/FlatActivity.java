@@ -1,6 +1,5 @@
 package ru.shtrm.serviceman.mvp.flat;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,16 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.FlatRepository;
 import ru.shtrm.serviceman.data.source.FlatStatusRepository;
-import ru.shtrm.serviceman.data.source.UsersRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.FlatStatusLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class FlatActivity extends AppCompatActivity

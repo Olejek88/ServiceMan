@@ -10,10 +10,13 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
@@ -55,8 +58,21 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (item.getChangedAt()!=null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
             pvh.textViewDate.setText(sDate);
+            long diffInMillies = (new Date()).getTime() - item.getChangedAt().getTime();
+            TimeUnit timeUnit = TimeUnit.DAYS;
+            long days = timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+            if (days>7)
+                pvh.layoutObjectItem.setBackgroundColor(context.getResources().
+                        getColor(R.color.colorRowFailed));
+            else
+                pvh.layoutObjectItem.setBackgroundColor(context.getResources().
+                        getColor(R.color.colorPrimary));
         }
-        else pvh.textViewDate.setText(R.string.no_last_time);
+        else {
+            pvh.textViewDate.setText(R.string.no_last_time);
+            pvh.layoutObjectItem.setBackgroundColor(context.getResources().
+                    getColor(R.color.colorRowNotVisited));
+        }
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
         pvh.textViewTitle.setText(item.getHouse().getStreet().getTitle().concat(", ").
                 concat(item.getHouse().getTitle()).concat(", ").concat(item.getTitle()));
@@ -102,6 +118,7 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         AppCompatTextView textViewStatus;
         AppCompatTextView textViewImage;
         CircleImageView circleImageView;
+        LinearLayout layoutObjectItem;
 
         private OnRecyclerViewItemClickListener listener;
 
@@ -112,6 +129,7 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             textViewDate = itemView.findViewById(R.id.textObjectTime);
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
+            layoutObjectItem = itemView.findViewById(R.id.layoutObjectItem);
 
             this.listener = listener;
             itemView.setOnClickListener(this);

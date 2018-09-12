@@ -10,6 +10,9 @@
     <color name="colorHeaderBackground">#35464e</color>
     <color name="colorNavItemUnselected">#a5a5a5</color>
 
+    <color name="colorRowNotVisited">#c0c0c0</color>
+    <color name="colorRowFailed">#ff726b</color>
+
     <color name="transparent_black">#33000000</color>
 
     <color name="cyan_500">#00BCD4</color>

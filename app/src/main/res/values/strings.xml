@@ -47,10 +47,11 @@
     <!--equipments-->
     <string name="equipment_serial">Серийный номер:</string>
     <string name="equipment_date">Дата поверки:</string>
-    <string name="enter_measure">Введите показания счетчика</string>
+    <string name="enter_measure">Введите показания</string>
     <string name="equipment_status">Статус</string>
     <string name="activity_add_equipment">Добавить оборудование</string>
     <string name="equipment_test_date">Дата поверки</string>
+    <string name="equipment_unknown">Неизвестный тип</string>
 
     <!--menu-->
     <string name="action_add_image">Добавить изображение</string>
@@ -166,10 +167,10 @@
     </string-array>
 
     <string-array name="notification_interval_item">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
+        <item>7</item>
+        <item>30</item>
+        <item>61</item>
+        <item>92</item>
     </string-array>
     <!--Settings end-->
 

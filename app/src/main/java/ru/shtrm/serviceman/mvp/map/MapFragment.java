@@ -52,12 +52,8 @@ public class MapFragment extends Fragment implements MapContract.View {
     private Activity mainActivityConnector = null;
     ArrayList<OverlayItem> aOverlayItemArray;
 
-    // View references
     private BottomNavigationView bottomNavigationView;
-    private FloatingActionButton fab;
     private RecyclerView recyclerView;
-    private LinearLayout emptyView;
-
     private HouseAdapter houseAdapter;
     private MapContract.Presenter presenter;
     private IMapController mapController;
@@ -161,7 +157,6 @@ public class MapFragment extends Fragment implements MapContract.View {
         double curLatitude = 55.5, curLongitude = 55.5;
 
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
-        emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -342,6 +337,7 @@ public class MapFragment extends Fragment implements MapContract.View {
                 OverlayItem overlayItem = new OverlayItem("We are here", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));
                 aOverlayItemArray.clear();
+                mapView.getOverlays().clear();
                 aOverlayItemArray.add(overlayItem);
                 ItemizedIconOverlay<OverlayItem> aItemizedIconOverlay = new ItemizedIconOverlay<>(
                         mainActivityConnector, aOverlayItemArray, null);

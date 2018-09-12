@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 4;
     private static final String TAG = "Main";
 
-    private Toolbar toolbar;
+    public static Toolbar toolbar;
     public static boolean isLogged = false;
     private static final int LOGIN = 0;
 

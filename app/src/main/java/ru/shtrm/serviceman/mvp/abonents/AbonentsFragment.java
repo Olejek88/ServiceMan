@@ -37,7 +37,6 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
 
     // View references
     private BottomNavigationView bottomNavigationView;
-    private FloatingActionButton fab;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
@@ -167,7 +166,6 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
      */
     @Override
     public void initViews(View view) {
-        fab =  view.findViewById(R.id.fab);
         back =  view.findViewById(R.id.back);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         emptyView =  view.findViewById(R.id.emptyView);

@@ -55,6 +55,7 @@ import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.flat.FlatActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -216,13 +217,14 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         objectIcon = view.findViewById(R.id.object_icon);
-        mToolbar = view.findViewById(R.id.main_toolbar);
+        //mToolbar = view.findViewById(R.id.toolbar);
         mTitle = view.findViewById(R.id.main_textview_title);
         mImage = view.findViewById(R.id.main_imageview_placeholder);
         mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
         mObjectTitle = view.findViewById(R.id.object_name);
         mObjectDate = view.findViewById(R.id.object_date);
         mAppBarLayout = view.findViewById(R.id.main_appbar);
+        handleToolbarTitleVisibility(0);
     }
 
     /**
@@ -276,7 +278,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             mTitle.setText(currentHouse.getFullTitle());
             mObjectTitle.setText(currentHouse.getFullTitle());
             if (currentHouse.getHouseType()!=null)
-                mToolbar.setSubtitle(currentHouse.getHouseType().getTitle());
+                MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
 
             List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
             if (photos.size() > 0) {
@@ -328,7 +330,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         }
         mImage.setImageResource(R.drawable.city);
         if (currentStreet!=null)
-            mToolbar.setTitle(currentStreet.getCity().getTitle());
+            MainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
         fab.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
     }
@@ -354,7 +356,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(houseAdapter);
         }
         mImage.setImageResource(R.drawable.street);
-        mToolbar.setTitle(currentStreet.getTitle());
+        MainActivity.toolbar.setTitle(currentStreet.getTitle());
         fab.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }

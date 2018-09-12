@@ -115,7 +115,6 @@ public class AddEquipmentFragment extends Fragment {
                 getFragmentManager().popBackStack();
 
         initViews(view);
-        //addLayoutListener(scrollView, editTextName);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +124,6 @@ public class AddEquipmentFragment extends Fragment {
                     showTitleError();
                     return;
                 }
-                //editTextSerial.setText(title);
                 int res = storeEquipment();
                 if (res==0) {
                     if (getActivity()!=null)

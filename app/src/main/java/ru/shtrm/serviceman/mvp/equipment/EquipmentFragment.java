@@ -1,6 +1,7 @@
 package ru.shtrm.serviceman.mvp.equipment;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -13,12 +14,15 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +38,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +49,7 @@ import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
+import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
@@ -79,11 +85,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private TextInputEditText textInputMeasure;
     private TextView textViewPhotoDate;
 
-    private FloatingActionButton enter_measure;
-    private FloatingActionButton make_photo;
-    private FloatingActionButton fab_delete;
-
     protected BarChart mChart;
+    Calendar myCalendar;
 
     public EquipmentFragment() {
     }
@@ -155,27 +158,27 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     @Override
     public void initViews(View view) {
-        TextView textViewSerial = view.findViewById(R.id.textViewEquipmentSerial);
-        TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
-        TextView textViewStatus = view.findViewById(R.id.textViewEquipmentStatus);
-        TextView textViewType = view.findViewById(R.id.textViewEquipmentTitle);
-        TextView textViewEquipment = view.findViewById(R.id.textViewEquipment);
-        Spinner statusSpinner = view.findViewById(R.id.equipment_status);
+        final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
+        final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);
+        final TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
+        FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
+        FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
+        FloatingActionButton fab_delete = view.findViewById(R.id.fab_delete);
+        //TextView textViewEquipment = view.findViewById(R.id.textViewEquipment);
+        //TextView textViewType = view.findViewById(R.id.textViewEquipmentTitle);
         //GridView gridView = view.findViewById(R.id.gridview);
+        myCalendar = Calendar.getInstance();
 
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         textInputMeasure = view.findViewById(R.id.addMeasureValue);
         circleImageView = view.findViewById(R.id.imageViewEquipment);
-        make_photo = view.findViewById(R.id.make_photo);
-        enter_measure = view.findViewById(R.id.enter_measure);
-        fab_delete = view.findViewById(R.id.fab_delete);
 
         initChart(view);
 
-        textViewSerial.setText(equipment.getSerial());
-        textViewType.setText(equipment.getEquipmentType().getTitle());
-        textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
-        SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US);
+        editTextSerial.setText(equipment.getSerial());
+        //textViewType.setText(equipment.getEquipmentType().getTitle());
+        //textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
+        SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
         if (equipment.getTestDate()!=null)
             textViewDate.setText(sDf.format(equipment.getTestDate()));
         else
@@ -188,8 +191,12 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             Flat flat = equipment.getFlat();
             if (flat!=null) {
                 mToolbar.setSubtitle(flat.getFullTitle());
-                mToolbar.setTitle(equipment.getEquipmentType().getTitle());
-                mToolbar.setLogo(R.drawable.baseline_settings_white_48dp);
+                if (equipment.getEquipmentType()!=null)
+                    mToolbar.setTitle(equipment.getEquipmentType().getTitle());
+                else
+                    mToolbar.setTitle(R.string.equipment_unknown);
+                mToolbar.setLogo(R.drawable.baseline_settings_white_24dp);
+                mToolbar.setTitleMarginStart(1);
             }
         }
         if (photoEquipment != null) {
@@ -208,15 +215,40 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 R.layout.simple_spinner_item, equipmentStatuses,R.color.colorPrimaryDark);
         statusSpinner.setAdapter(adapter);
 
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
+                textViewDate.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+
+        textViewDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(mainActivityConnector, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
         enter_measure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createMeasure();
+                // если есть данные - вводим их, иначе сохраняем оборудование
+                if (textInputMeasure.getText().toString().length()>0)
+                    createMeasure();
                 mChart.refreshDrawableState();
                 // не дать возможность вводить по несколько раз
-                if (getActivity()!=null)
+                storeEditEquipment(editTextSerial.getText().toString(),
+                        (EquipmentStatus) statusSpinner.getSelectedItem());
+                if (getActivity()!=null) {
                     getActivity().finishActivity(0);
-
+                    getActivity().onBackPressed();
+                }
             }
         });
         make_photo.setOnClickListener(new View.OnClickListener() {
@@ -263,6 +295,17 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         measure.setUuid(java.util.UUID.randomUUID().toString());
         MeasureLocalDataSource.getInstance().addMeasure(measure);
         Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
+    }
+
+    void storeEditEquipment(String serial, EquipmentStatus equipmentStatus) {
+        equipment.setChangedAt(new Date());
+        if (myCalendar.getTime()!=null)
+            equipment.setTestDate(myCalendar.getTime());
+        else
+            equipment.setTestDate(new Date());
+        equipment.setSerial(serial);
+        equipment.setEquipmentStatus(equipmentStatus);
+        equipmentRepository.addEquipment(equipment);
     }
 
     @Override

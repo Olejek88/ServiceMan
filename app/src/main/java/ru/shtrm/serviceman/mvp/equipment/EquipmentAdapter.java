@@ -55,7 +55,9 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Equipment item = list.get(position);
         EquipmentsViewHolder pvh = (EquipmentsViewHolder) holder;
         if (item.getEquipmentType()!=null)
-        pvh.textViewEquipmentTitle.setText(item.getEquipmentType().getTitle());
+            pvh.textViewEquipmentTitle.setText(item.getEquipmentType().getTitle());
+        else
+            pvh.textViewEquipmentTitle.setText(R.string.equipment_unknown);
         pvh.textViewEquipmentSerial.setText(item.getSerial());
         if (item.getChangedAt()!=null) {
             // TODO добавить вывод последнего измерения

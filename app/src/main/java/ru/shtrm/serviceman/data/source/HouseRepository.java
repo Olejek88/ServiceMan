@@ -39,6 +39,11 @@ public class HouseRepository implements HouseDataSource {
     }
 
     @Override
+    public List<House> getHousesByStreetForCurrentUser(Street street) {
+        return localDataSource.getHousesByStreetForCurrentUser(street);
+    }
+
+    @Override
     public House getHouse(String uuid) {
         return localDataSource.getHouse(uuid);
     }

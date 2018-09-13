@@ -48,6 +48,8 @@ public class AbonentsPresenter implements AbonentsContract.Presenter {
     @Override
     public List<Street> loadStreets() {
         List<Street> streets = streetRepository.getStreets();
+        //TODO вариант для выбора только по пользователю
+        //List<Street> streets = streetRepository.getStreetsByCurrentUser();
         view.showStreets(streets);
         return streets;
     }
@@ -55,6 +57,8 @@ public class AbonentsPresenter implements AbonentsContract.Presenter {
     @Override
     public List<House> loadHouses(Street street) {
         List<House> houses = houseRepository.getHousesByStreet(street);
+        //TODO вариант для выбора только по пользователю
+        //List<House> houses = houseRepository.getHousesByStreetForCurrentUser(street);
         view.showHouses(houses);
         return houses;
     }

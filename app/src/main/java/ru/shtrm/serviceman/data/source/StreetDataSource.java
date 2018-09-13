@@ -8,4 +8,5 @@ public interface StreetDataSource {
 
     List<Street> getStreets();
 
+    List<Street> getStreetsByCurrentUser();
 }

@@ -11,5 +11,7 @@ public interface HouseDataSource {
 
     List<House> getHousesByStreet(Street street);
 
+    List<House> getHousesByStreetForCurrentUser(Street street);
+
     House getHouse(String uuid);
 }

@@ -57,7 +57,6 @@ public class PhotoHouseLocalDataSource implements PhotoHouseDataSource {
             }
         });
         realm.close();
-
     }
 
     @Override

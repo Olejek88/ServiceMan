@@ -71,6 +71,7 @@ public class AddEquipmentFragment extends Fragment {
     private House house;
     private Flat flat;
     private ImageView imageView;
+    private String photoUuid;
     Calendar myCalendar;
     private Bitmap storeBitmap=null;
 
@@ -220,7 +221,7 @@ public class AddEquipmentFragment extends Fragment {
         equipmentRepository.addEquipment(equipment);
         Toast.makeText(mainActivityConnector, "Успешно добавлено оборудование", Toast.LENGTH_SHORT).show();
         if (storeBitmap!=null) {
-            MainUtil.storePhotoEquipment(equipment);
+            MainUtil.storePhotoEquipment(equipment,photoUuid);
         }
         return 0;
     }
@@ -281,9 +282,9 @@ public class AddEquipmentFragment extends Fragment {
                         Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                         if (bitmap != null) {
                             storeBitmap=bitmap;
-                            String uuid = java.util.UUID.randomUUID().toString();
+                            photoUuid = java.util.UUID.randomUUID().toString();
                             MainUtil.storeNewImage(bitmap, getContext(),
-                                    800, uuid.concat(".jpg"));
+                                    800, photoUuid.concat(".jpg"));
                             imageView.setImageBitmap(bitmap);
                         }
                     }

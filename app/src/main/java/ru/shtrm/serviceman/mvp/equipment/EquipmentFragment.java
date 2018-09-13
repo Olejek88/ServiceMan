@@ -103,6 +103,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                              @Nullable final Bundle savedInstanceState) {
         View view;
         Bundle b = getArguments();
+        checkRepository();
         if (b != null) {
             String equipmentUuid = b.getString(EQUIPMENT_UUID);
             if (equipmentUuid != null)
@@ -113,7 +114,11 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(equipment);
             initViews(view);
         }
-
+        else {
+            equipmentRepository.deleteEmptyEquipment();
+            if (getActivity()!=null)
+                getActivity().finishActivity(0);
+        }
         setHasOptionsMenu(true);
         return view;
     }
@@ -123,19 +128,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         super.onResume();
         if (presenter != null)
             presenter.subscribe();
-        if (photoEquipmentRepository == null)
-            photoEquipmentRepository = PhotoEquipmentRepository.getInstance
-                    (PhotoEquipmentLocalDataSource.getInstance());
-        if (gpsTrackRepository == null)
-            gpsTrackRepository = GpsTrackRepository.getInstance
-                    (GpsTrackLocalDataSource.getInstance());
-        if (measureRepository == null)
-            measureRepository = MeasureRepository.getInstance
-                    (MeasureLocalDataSource.getInstance());
-        if (equipmentRepository == null)
-            equipmentRepository = EquipmentRepository.getInstance
-                    (EquipmentLocalDataSource.getInstance());
-
+        checkRepository();
     }
 
     @Override
@@ -263,10 +256,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         fab_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (equipment!=null)
-                    equipmentRepository.deleteEquipment(equipment);
-                else
-                    equipmentRepository.deleteEmptyEquipment();
+                equipmentRepository.deleteEquipment(equipment);
                 if (getActivity()!=null)
                     getActivity().finishActivity(0);
             }
@@ -292,6 +282,21 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         measure.setUuid(java.util.UUID.randomUUID().toString());
         MeasureLocalDataSource.getInstance().addMeasure(measure);
         Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
+    }
+
+    void checkRepository() {
+        if (photoEquipmentRepository == null)
+            photoEquipmentRepository = PhotoEquipmentRepository.getInstance
+                    (PhotoEquipmentLocalDataSource.getInstance());
+        if (gpsTrackRepository == null)
+            gpsTrackRepository = GpsTrackRepository.getInstance
+                    (GpsTrackLocalDataSource.getInstance());
+        if (measureRepository == null)
+            measureRepository = MeasureRepository.getInstance
+                    (MeasureLocalDataSource.getInstance());
+        if (equipmentRepository == null)
+            equipmentRepository = EquipmentRepository.getInstance
+                    (EquipmentLocalDataSource.getInstance());
     }
 
     void storeEditEquipment(String serial, EquipmentStatus equipmentStatus) {
@@ -412,25 +417,11 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                             String uuid = java.util.UUID.randomUUID().toString();
                             MainUtil.storeNewImage(bitmap, getContext(),
                                     800, uuid.concat(".jpg"));
-                            PhotoEquipment photoEquipment = new PhotoEquipment();
-                            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
-                            photoEquipment.set_id(photoEquipmentRepository.getLastId());
-                            photoEquipment.setEquipment(equipment);
-                            photoEquipment.setUuid(uuid);
-                            photoEquipment.setCreatedAt(new Date());
-                            photoEquipment.setChangedAt(new Date());
-                            photoEquipment.setUser(user);
-                            if (gpsTrackRepository.getLastTrack() != null) {
-                                photoEquipment.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
-                                photoEquipment.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-                            } else {
-                                photoEquipment.setLattitude(App.defaultLatitude);
-                                photoEquipment.setLongitude(App.defaultLongitude);
-                            }
-                            photoEquipmentRepository.savePhotoEquipment(photoEquipment);
+                            MainUtil.storePhotoEquipment(equipment,uuid);
+                            //photoEquipmentRepository.savePhotoEquipment(photoEquipment);
                             circleImageView.setImageBitmap(bitmap);
                             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
-                                    format(photoEquipment.getCreatedAt());
+                                    format(new Date());
                             textViewPhotoDate.setText(sDate);
                         }
                     }

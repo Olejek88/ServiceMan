@@ -17,4 +17,6 @@ public interface MeasureDataSource {
     void addMeasure(Measure measure);
 
     long getLastId();
+
+    long getUnsentMeasuresCount();
 }

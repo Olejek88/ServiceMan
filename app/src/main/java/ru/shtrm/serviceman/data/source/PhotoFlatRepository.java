@@ -7,6 +7,7 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.PhotoFlat;
+import ru.shtrm.serviceman.data.PhotoHouse;
 
 public class PhotoFlatRepository implements PhotoFlatDataSource {
 
@@ -46,5 +47,10 @@ public class PhotoFlatRepository implements PhotoFlatDataSource {
     @Override
     public long getLastId() {
         return localDataSource.getLastId();
+    }
+
+    @Override
+    public void savePhotoFlat(PhotoFlat photoFlat) {
+        localDataSource.savePhotoFlat(photoFlat);
     }
 }

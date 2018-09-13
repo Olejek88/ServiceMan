@@ -1,9 +1,12 @@
 package ru.shtrm.serviceman.mvp.flat;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,6 +38,7 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
@@ -44,6 +49,7 @@ import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
 
 public class FlatFragment extends Fragment implements FlatContract.View {
     private Activity mainActivityConnector = null;
+    private final static int ACTIVITY_PHOTO = 100;
 
     private FlatContract.Presenter presenter;
     private Flat flat;
@@ -52,6 +58,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
     private EquipmentAdapter equipmentAdapter;
     private RecyclerView recyclerView;
+    private CircleImageView circleImageView;
+    private TextView textViewPhotoDate;
 
     private FloatingActionButton new_flat;
     private FloatingActionButton make_photo;
@@ -121,12 +129,13 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
         //TextView textViewStatus = view.findViewById(R.id.textViewFlatStatus);
         TextView textViewTitle = view.findViewById(R.id.textViewFlatTitle);
-        TextView textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         TextView textViewFlat = view.findViewById(R.id.textViewFlat);
-        CircleImageView circleImageView = view.findViewById(R.id.imageViewFlat);
         //GridView gridView = view.findViewById(R.id.gridview);
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
         Spinner statusSpinner = view.findViewById(R.id.spinnerFlatStatus);
+
+        textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
+        circleImageView = view.findViewById(R.id.imageViewFlat);
         make_photo = view.findViewById(R.id.add_photo);
         new_flat = view.findViewById(R.id.add_equipment);
 
@@ -191,7 +200,12 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         make_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //checkPermissionCamera();
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, ACTIVITY_PHOTO);
+                } catch (ActivityNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -248,4 +262,36 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         //showEmptyView(list.isEmpty());
     }
 
+    /**
+     * Сохраняем фото
+     *
+     * @param requestCode The request code. See at {@link WorkFragment}.
+     * @param resultCode  The result code.
+     * @param data        The result.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ACTIVITY_PHOTO:
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null && data.getExtras() != null) {
+                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                        if (bitmap != null) {
+                            String uuid = java.util.UUID.randomUUID().toString();
+                            MainUtil.storeNewImage(bitmap, getContext(),
+                                    800, uuid.concat(".jpg"));
+                            MainUtil.storePhotoFlat(flat,uuid);
+                            circleImageView.setImageBitmap(bitmap);
+                            String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
+                                    format(new Date());
+                            textViewPhotoDate.setText(sDate);
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }

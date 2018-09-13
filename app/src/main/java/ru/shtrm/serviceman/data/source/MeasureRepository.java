@@ -54,4 +54,8 @@ public class MeasureRepository implements MeasureDataSource {
         return localDataSource.getLastMeasureByFlat(flat);
     }
 
+    @Override
+    public long getUnsentMeasuresCount() {
+        return localDataSource.getUnsentMeasuresCount();
+    }
 }

@@ -1,5 +1,6 @@
 package ru.shtrm.serviceman.data.source.local;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.PhotoFlat;
+import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.PhotoFlatDataSource;
 
 public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
@@ -65,4 +67,15 @@ public class PhotoFlatLocalDataSource implements PhotoFlatDataSource {
         return lastId.longValue();
     }
 
+    @Override
+    public void savePhotoFlat(@NonNull final PhotoFlat photoFlat) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(photoFlat);
+            }
+        });
+        realm.close();
+    }
 }

@@ -1,27 +1,19 @@
 package ru.shtrm.serviceman.mvp.abonents;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,18 +31,14 @@ import java.util.List;
 import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.app.App;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.Street;
-import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.PhotoHouseRepository;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.flat.FlatActivity;
@@ -67,7 +54,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private static final int LEVEL_INFO = 4;
 
     public final static int ACTIVITY_PHOTO = 100;
-    public final static int REQUEST_CAMERA_PERMISSION_CODE = 0;
 
     private FloatingActionButton fab;
     private FloatingActionButton back;
@@ -147,7 +133,12 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkPermissionCamera();
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, ACTIVITY_PHOTO);
+                } catch (ActivityNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -419,79 +410,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     }
 
     /**
-     * Check whether the camera permission has been granted.
-     */
-    private void checkPermissionCamera() {
-        if (ContextCompat.checkSelfPermission(mainActivityConnector, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION_CODE);
-        } else {
-            startPhotoActivity();
-        }
-    }
-
-    /**
-     * Launch the camera
-     */
-    private void startPhotoActivity() {
-        try {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(intent, ACTIVITY_PHOTO);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * To handle the permission grant result.
-     * If the user denied the permission, show a dialog to explain
-     * the reason why the app need such permission and lead he/her
-     * to the system settings to grant permission.
-     *
-     * @param requestCode  The request code.
-     * @param permissions  The wanted permissions.
-     * @param grantResults The results.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CAMERA_PERMISSION_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startPhotoActivity();
-                } else {
-                    hideImm();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityConnector);
-                    builder.setTitle(R.string.require_permission);
-                    builder.setMessage(R.string.require_permission);
-                    builder.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Go to the detail settings of our application
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package",
-                                    mainActivityConnector.getPackageName(), null);
-                            intent.setData(uri);
-                            startActivity(intent);
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-                break;
-            default:
-        }
-    }
-
-    /**
      * Сохраняем фото
      *
      * @param requestCode The request code. See at {@link WorkFragment}.
@@ -506,33 +424,18 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 if (resultCode == Activity.RESULT_OK) {
                     switch (currentLevel) {
                         case LEVEL_FLAT:
-                            String uuid = java.util.UUID.randomUUID().toString();
                             // TODO сделать красиво
                             if (data != null && data.getExtras() != null) {
                                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                                 if (bitmap != null) {
+                                    String uuid = java.util.UUID.randomUUID().toString();
                                     MainUtil.storeNewImage(bitmap, getContext(),
                                             800, uuid.concat(".jpg"));
-                                    PhotoHouse photoHouse = new PhotoHouse();
-                                    User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
-                                    photoHouse.set_id(photoHouseRepository.getLastId()+1);
-                                    photoHouse.setHouse(currentHouse);
-                                    photoHouse.setUuid(uuid);
-                                    photoHouse.setCreatedAt(new Date());
-                                    photoHouse.setChangedAt(new Date());
-                                    photoHouse.setUser(user);
-                                    if (gpsTrackRepository.getLastTrack() != null) {
-                                        photoHouse.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
-                                        photoHouse.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-                                    } else {
-                                        photoHouse.setLattitude(App.defaultLatitude);
-                                        photoHouse.setLongitude(App.defaultLongitude);
-                                    }
-                                    photoHouseRepository.savePhotoHouse(photoHouse);
+                                    MainUtil.storePhotoHouse (currentHouse,uuid);
                                     objectIcon.setImageBitmap(bitmap);
                                     mImage.setImageBitmap(bitmap);
                                     String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
-                                            format(photoHouse.getCreatedAt());
+                                            format(new Date());
                                     mObjectDate.setText(sDate);
                                 }
                             }
@@ -544,17 +447,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 break;
             default:
                 break;
-        }
-    }
-
-    /**
-     * Hide the input method like soft keyboard, etc... when they are active.
-     */
-    private void hideImm() {
-        InputMethodManager imm = (InputMethodManager)
-                mainActivityConnector.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null && imm.isActive()) {
-            imm.hideSoftInputFromWindow(fab.getWindowToken(), 0);
         }
     }
 }

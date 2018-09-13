@@ -60,7 +60,9 @@ import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.ui.PrefsActivity;
+import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -127,6 +129,7 @@ public class MainActivity extends AppCompatActivity
         }
         initViews();
         initFragments(currentSavedInstanceState);
+        //MainUtil.setBadges(getApplicationContext());
     }
 
     @Override

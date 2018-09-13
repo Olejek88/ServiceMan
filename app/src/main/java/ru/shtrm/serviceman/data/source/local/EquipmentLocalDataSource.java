@@ -134,6 +134,16 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
                 equipments.deleteAllFromRealm();
             }
         });
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<Equipment> equipments = realm.where(Equipment.class).findAll();
+                for (Equipment equipment : equipments) {
+                    if (equipment.getUuid() == null)
+                        equipment.deleteFromRealm();
+                }
+            }
+        });
         realm.close();
     }
 }

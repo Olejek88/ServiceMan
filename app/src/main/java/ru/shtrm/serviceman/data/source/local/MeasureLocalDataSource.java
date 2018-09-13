@@ -78,4 +78,12 @@ public class MeasureLocalDataSource implements MeasureDataSource {
         else
             return null;
     }
+
+    @Override
+    public long getUnsentMeasuresCount() {
+        Realm realm = Realm.getDefaultInstance();
+        //TODO uncomment when ready
+        //return realm.where(Measure.class).equalTo("sent",0).count();
+        return 0;
+    }
 }

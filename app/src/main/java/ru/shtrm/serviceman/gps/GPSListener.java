@@ -67,8 +67,8 @@ public class GPSListener implements LocationListener, GpsStatus.Listener {
                         return;
                     }
                 }
-                GpsTrack gpstrack = realmDB.createObject(GpsTrack.class);
                 long next_id = GpsTrack.getLastId() + 1;
+                GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
                 gpstrack.set_id(next_id);
                 gpstrack.setDate(new Date());
                 gpstrack.setUserUuid(uuid);

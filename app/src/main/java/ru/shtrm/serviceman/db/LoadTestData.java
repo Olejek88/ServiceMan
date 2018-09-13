@@ -472,7 +472,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipment1 = realmDB.createObject(Equipment.class, 2);
+                equipment1 = realmDB.createObject(Equipment.class, 18);
                 equipment1.setUuid(equipmentUuid4);
                 equipment1.setFlat(flat);
                 equipment1.setHouse(house2);

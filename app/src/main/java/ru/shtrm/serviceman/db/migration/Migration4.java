@@ -28,7 +28,5 @@ public class Migration4 implements IAppMigration {
                 .addField("createdAt", Date.class)
                 .addField("changedAt", Date.class)
                 .addPrimaryKey("_id");
-        schema.get("Flat").addRealmObjectField("flatType", schema.get("FlatType"));
-        schema.get("House").addRealmObjectField("houseType", schema.get("HouseType"));
     }
 }

@@ -62,9 +62,10 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             pvh.textViewDate.setText(sDate);
             Measure measure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item);
             long diffInMillies = 1000000000;
-            if (measure.getDate()!=null)
-                diffInMillies = (new Date()).getTime() - measure.getDate().getTime();
-
+            if (measure!=null) {
+                if (measure.getDate() != null)
+                    diffInMillies = (new Date()).getTime() - measure.getDate().getTime();
+            }
             TimeUnit timeUnit = TimeUnit.DAYS;
             long days = timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
             if (days>7)

@@ -565,6 +565,7 @@ public class MainActivity extends AppCompatActivity
             toast.show();
         }
         LoadTestData.LoadTestUser();
+        //LoadTestData.LoadAllTestData4();
         return success;
     }
 

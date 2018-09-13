@@ -22,6 +22,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 LoadTestData.LoadAllTestData();
                 LoadTestData.LoadAllTestData2();
                 LoadTestData.LoadAllTestData3();
+                LoadTestData.LoadAllTestData4();
                 return true;
             }
         });

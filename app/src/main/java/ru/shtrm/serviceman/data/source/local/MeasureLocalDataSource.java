@@ -73,7 +73,7 @@ public class MeasureLocalDataSource implements MeasureDataSource {
         RealmResults<Measure> measures  = realm.where(Measure.class).
                 equalTo("equipment.flat.uuid", flat.getUuid()).
                 findAllSorted("date");
-        if (measures!=null)
+        if (measures.size()>0)
             return realm.copyFromRealm(measures.first());
         else
             return null;

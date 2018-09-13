@@ -58,6 +58,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         else
             pvh.textViewEquipmentTitle.setText(R.string.equipment_unknown);
         pvh.textViewEquipmentSerial.setText(item.getSerial());
+        // это работает если один счетчик на хату, иначе добавить метод
         Measure lastMeasure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item.getFlat());
         if (item.getChangedAt()!=null) {
             // TODO добавить вывод последнего измерения

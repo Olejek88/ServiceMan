@@ -118,7 +118,7 @@ public class AddEquipmentFragment extends Fragment {
                 int res = storeEquipment();
                 if (res==0) {
                     if (getActivity()!=null)
-                        getActivity().finishActivity(0);
+                        getActivity().onBackPressed();
                 }
             }
         });

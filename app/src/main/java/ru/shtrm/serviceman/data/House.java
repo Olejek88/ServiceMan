@@ -17,6 +17,10 @@ public class House extends RealmObject {
     private Date createdAt;
     private Date changedAt;
 
+    public void setHouseType(HouseType houseType) {
+        this.houseType = houseType;
+    }
+
     public HouseType getHouseType() {
         return houseType;
     }

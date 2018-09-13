@@ -16,7 +16,9 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
+import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -56,10 +58,14 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         else
             pvh.textViewEquipmentTitle.setText(R.string.equipment_unknown);
         pvh.textViewEquipmentSerial.setText(item.getSerial());
+        Measure lastMeasure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item.getFlat());
         if (item.getChangedAt()!=null) {
             // TODO добавить вывод последнего измерения
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
-            pvh.textViewEquipmentLastMeasure.setText(sDate);
+            if (lastMeasure!=null)
+                pvh.textViewEquipmentLastMeasure.setText(sDate.concat(" [").
+                        concat(String.valueOf(lastMeasure.getValue())).concat("]"));
+            else pvh.textViewEquipmentLastMeasure.setText(sDate);
         }
         else pvh.textViewEquipmentLastMeasure.setText(R.string.no_last_time);
         // пока убрал

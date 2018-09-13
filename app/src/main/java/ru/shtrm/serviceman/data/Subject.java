@@ -26,6 +26,22 @@ public class Subject extends RealmObject {
     private Date createdAt;
     private Date changedAt;
 
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
+    }
+
+    public Date getContractDate() {
+        return contractDate;
+    }
+
+    public void setContractDate(Date contractDate) {
+        this.contractDate = contractDate;
+    }
+
     public String getOwner() {
         return owner;
     }

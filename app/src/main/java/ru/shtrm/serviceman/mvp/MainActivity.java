@@ -1,6 +1,7 @@
 package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -63,6 +65,8 @@ import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
 import me.leolin.shortcutbadger.ShortcutBadger;
+
+import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -638,11 +642,16 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_add_comment) {
             return true;
         } else if (id == R.id.action_add_image) {
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, ACTIVITY_PHOTO);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
             return true;
         } else if (id == R.id.action_set_status) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

@@ -25,6 +25,10 @@ public class Flat extends RealmObject {
         return house;
     }
 
+    public void setFlatType(FlatType flatType) {
+        this.flatType = flatType;
+    }
+
     public void setHouse(House house) {
         this.house = house;
     }

@@ -10,6 +10,7 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersDataSource;
+import ru.shtrm.serviceman.util.MainUtil;
 
 public class UsersLocalDataSource implements UsersDataSource {
 
@@ -71,6 +72,6 @@ public class UsersLocalDataSource implements UsersDataSource {
     public boolean checkUser(@NonNull String userUuid, @NonNull String pin) {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).equalTo("uuid", userUuid).findFirst();
-        return user != null && user.getPin().equals(pin);
+        return user != null && user.getPin().equals(MainUtil.MD5(pin));
     }
 }

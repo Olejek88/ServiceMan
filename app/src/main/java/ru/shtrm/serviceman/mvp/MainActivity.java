@@ -491,7 +491,7 @@ public class MainActivity extends AppCompatActivity
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.CAMERA
         };
-        if(!hasPermissions(this, PERMISSIONS)){
+        if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
     }
@@ -521,11 +521,11 @@ public class MainActivity extends AppCompatActivity
                     }
                     break;
                 case REQUEST_FINE_LOCATION:
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this,
-                            getResources().getString(R.string.message_no_gps_permission),
-                            Toast.LENGTH_SHORT).show();
-                }
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this,
+                                getResources().getString(R.string.message_no_gps_permission),
+                                Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case REQUEST_CAMERA_PERMISSION_CODE:
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
@@ -564,8 +564,36 @@ public class MainActivity extends AppCompatActivity
             toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
         }
+
+        // изменяем индекс Иванова О.А., добавляем сервисного пользователя
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                User u = realm.where(User.class)
+                        .equalTo("uuid", "4462ed77-9bf0-4542-b127-f4ecefce49da")
+                        .findFirst();
+                if (u != null && u.get_id() == 1) {
+                    User w = realm.copyFromRealm(u);
+                    w.set_id(2);
+                    realm.copyToRealmOrUpdate(w);
+                    u.deleteFromRealm();
+                }
+
+                User sUser = new User();
+                sUser.set_id(1);
+                sUser.setUuid("00000000-9bf0-4542-b127-f4ecefce49da");
+                sUser.setName("sUser");
+                sUser.setPin(MainUtil.MD5("qwerfvgtbsasljflasjflajsljdsa"));
+                sUser.setContact("");
+                realm.copyToRealmOrUpdate(sUser);
+            }
+        });
+        realm.close();
+
         LoadTestData.LoadTestUser();
         //LoadTestData.LoadAllTestData4();
+
         return success;
     }
 

@@ -51,6 +51,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 User user = (User) userSelect.getSelectedItem();
                 checkUser(user.getUuid(), pinCode.getText().toString());
+                // TODO: реализовать получение из загашника текущий токен
+                // TODO: сделать тестовый запрос к серверу чтобы убедится что токен не протух
+                // TODO: если протух, получить новый
             }
         });
     }
@@ -104,8 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         pinCode.requestFocus();
 
         List<User> users = presenter.loadUsers();
-        UserListAdapter adapter = new UserListAdapter(this,
-                R.layout.item_user, users);
+        UserListAdapter adapter = new UserListAdapter(this, R.layout.item_user, users);
         userSelect.setAdapter(adapter);
     }
 

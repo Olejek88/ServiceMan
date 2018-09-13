@@ -42,7 +42,7 @@
 
     <!--flats-->
     <string name="flat_abonent">Абонент</string>
-    <string name="flat_inn">ИНН</string>
+    <string name="flat_inn">ИНН/Договор</string>
 
     <!--equipments-->
     <string name="equipment_serial">Серийный номер:</string>

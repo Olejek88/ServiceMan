@@ -436,30 +436,35 @@ public class MainActivity extends AppCompatActivity
     public void showAlarmsFragment() {
         changeFragment(alarmsFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_alarms));
+        toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_alarms);
     }
 
     private void showProfileFragment() {
         changeFragment(profileFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_profile));
+        toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_profile);
     }
 
     private void showAbonentsFragment() {
         changeFragment(abonentsFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_users));
+        toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_users);
     }
 
     private void showCheckinFragment() {
         changeFragment(workFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_checkin));
+        toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_checkin);
     }
 
     private void showMapFragment() {
         changeFragment(mapFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_map));
+        toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_map);
     }
 

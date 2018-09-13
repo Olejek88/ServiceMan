@@ -34,9 +34,11 @@ import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.Resident;
+import ru.shtrm.serviceman.data.Subject;
 import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.SubjectLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
@@ -54,6 +56,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     private FlatContract.Presenter presenter;
     private Flat flat;
     private Resident resident;
+    private Subject subject;
     private PhotoFlat photoFlat;
 
     private EquipmentAdapter equipmentAdapter;
@@ -61,8 +64,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     private CircleImageView circleImageView;
     private TextView textViewPhotoDate;
 
-    private FloatingActionButton new_flat;
-    private FloatingActionButton make_photo;
+    private FloatingActionButton new_equipment;
 
     public FlatFragment() {}
 
@@ -87,6 +89,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                 flat = FlatLocalDataSource.getInstance().getFlat(flatUuid);
             if (flat != null) {
                 resident = ResidentLocalDataSource.getInstance().getResidentByFlat(flat.getUuid());
+                subject = SubjectLocalDataSource.getInstance().getSubjectByFlat(flat.getUuid());
                 photoFlat = PhotoFlatLocalDataSource.getInstance().getLastPhotoByFlat(flat);
                 initViews(view);
                 presenter.loadEquipmentsByFlat(flat);
@@ -125,6 +128,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
     @Override
     public void initViews(View view) {
+        FloatingActionButton make_photo = view.findViewById(R.id.add_photo);
         TextView textViewInn = view.findViewById(R.id.textViewFlatInn);
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
         //TextView textViewStatus = view.findViewById(R.id.textViewFlatStatus);
@@ -136,8 +140,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         circleImageView = view.findViewById(R.id.imageViewFlat);
-        make_photo = view.findViewById(R.id.add_photo);
-        new_flat = view.findViewById(R.id.add_equipment);
+        new_equipment = view.findViewById(R.id.add_equipment);
 
         if (mToolbar !=null) {
             mToolbar.setTitle(flat.getFullTitle());
@@ -148,6 +151,10 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         if (resident!=null) {
             textViewInn.setText(resident.getInn());
             textViewAbonent.setText(resident.getOwner());
+        }
+        if (subject!=null) {
+            textViewInn.setText(subject.getContractNumber());
+            textViewAbonent.setText(subject.getOwner());
         }
         //if (flat.getFlatStatus()!=null)
           //  textViewStatus.setText(flat.getFlatStatus().getTitle());
@@ -187,7 +194,6 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                 if (!adapter.getItem(position).equals(flat.getFlatStatus()))
                     presenter.updateFlatStatus(flat,adapter.getItem(position));
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
             }
@@ -209,7 +215,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             }
         });
 
-        new_flat.setOnClickListener(new View.OnClickListener() {
+        new_equipment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), AddEquipmentActivity.class);

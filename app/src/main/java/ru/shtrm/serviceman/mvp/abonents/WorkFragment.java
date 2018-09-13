@@ -266,6 +266,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             mObjectTitle.setText(currentHouse.getFullTitle());
             if (currentHouse.getHouseType()!=null)
                 MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
+            else
+                MainActivity.toolbar.setSubtitle(null);
 
             List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
             if (photos.size() > 0) {
@@ -316,8 +318,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(streetAdapter);
         }
         mImage.setImageResource(R.drawable.city);
-        if (currentStreet!=null)
+        if (currentStreet!=null) {
             MainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
+            MainActivity.toolbar.setSubtitle(null);
+        }
         fab.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
     }
@@ -344,6 +348,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         }
         mImage.setImageResource(R.drawable.street);
         MainActivity.toolbar.setTitle(currentStreet.getTitle());
+        MainActivity.toolbar.setSubtitle(null);
         fab.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }

@@ -13,6 +13,16 @@ public class Subject extends RealmObject {
     private String owner;
     private House house;
 
+    public Flat getFlat() {
+        return flat;
+    }
+
+    public void setFlat(Flat flat) {
+        this.flat = flat;
+    }
+
+    private Flat flat;
+
     public House getHouse() {
         return house;
     }

@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +43,7 @@ import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.flat.FlatActivity;
+import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener {
@@ -264,10 +266,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(flatAdapter);
             mTitle.setText(currentHouse.getFullTitle());
             mObjectTitle.setText(currentHouse.getFullTitle());
-            if (currentHouse.getHouseType()!=null)
-                MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
-            else
-                MainActivity.toolbar.setSubtitle(null);
+            MainActivity.toolbar.setSubtitle(null);
+            if (currentHouse.getHouseType()!=null) {
+                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
+                    MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
+                else
+                    MainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
+            }
 
             List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
             if (photos.size() > 0) {

@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (!initDB()) {
-            // принудительное обновление приложения
             finish();
         }
 
@@ -300,6 +299,8 @@ public class MainActivity extends AppCompatActivity
                     getFragment(savedInstanceState, "AlarmFragment");
             mapFragment = (MapFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "MapFragment");
+            workFragment = (WorkFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "WorkFragment");
             selectedNavItem = savedInstanceState.getInt(KEY_NAV_ITEM);
         } else {
             abonentsFragment = (AbonentsFragment) getSupportFragmentManager().

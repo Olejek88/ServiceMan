@@ -44,6 +44,7 @@ import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
+import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
@@ -63,8 +64,6 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     private RecyclerView recyclerView;
     private CircleImageView circleImageView;
     private TextView textViewPhotoDate;
-
-    private FloatingActionButton new_equipment;
 
     public FlatFragment() {}
 
@@ -129,6 +128,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     @Override
     public void initViews(View view) {
         FloatingActionButton make_photo = view.findViewById(R.id.add_photo);
+        FloatingActionButton new_equipment = view.findViewById(R.id.add_equipment);
+
         TextView textViewInn = view.findViewById(R.id.textViewFlatInn);
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
         //TextView textViewStatus = view.findViewById(R.id.textViewFlatStatus);
@@ -140,12 +141,17 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         circleImageView = view.findViewById(R.id.imageViewFlat);
-        new_equipment = view.findViewById(R.id.add_equipment);
 
         if (mToolbar !=null) {
             mToolbar.setTitle(flat.getFullTitle());
-            if (flat.getHouse().getHouseType()!=null)
-                mToolbar.setSubtitle(flat.getHouse().getHouseType().getTitle());
+            if (flat.getHouse().getHouseType() != null) {
+                if(DensityUtil.getScreenHeight(mainActivityConnector)>1280) {
+                    mToolbar.setSubtitle(flat.getHouse().getHouseType().getTitle());
+                } else {
+                    mToolbar.setTitle(flat.getFullTitle().concat(" - ").
+                            concat(flat.getHouse().getHouseType().getTitle()));
+                }
+            }
         }
 
         if (resident!=null) {
@@ -179,20 +185,25 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             textViewPhotoDate.setText("нет фото");
         }
 
+        FlatStatus fs1, fs2;
         List<FlatStatus> flatStatuses = presenter.loadFlatStatuses();
         final FlatStatusListAdapter adapter = new FlatStatusListAdapter(mainActivityConnector,
                 R.layout.simple_spinner_item, flatStatuses, R.color.mdtp_white);
         statusSpinner.setAdapter(adapter);
-        for (int pos = 0; pos < flatStatuses.size(); pos++)
-            if (flatStatuses.get(pos).equals(flat.getFlatStatus())) {
+        for (int pos = 0; pos < flatStatuses.size(); pos++) {
+            if (flatStatuses.get(pos).getUuid().equals(flat.getFlatStatus().getUuid())) {
                 statusSpinner.setSelection(pos);
             }
+        }
 
         statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (!adapter.getItem(position).equals(flat.getFlatStatus()))
-                    presenter.updateFlatStatus(flat,adapter.getItem(position));
+                if (adapter.getItem(position)!=null) {
+                    if (!adapter.getItem(position).getUuid().equals(flat.getFlatStatus().getUuid()))
+                        presenter.updateFlatStatus(flat, adapter.getItem(position));
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {

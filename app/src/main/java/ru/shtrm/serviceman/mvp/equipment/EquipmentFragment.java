@@ -61,6 +61,7 @@ import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
+import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_UUID;
@@ -180,7 +181,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (mToolbar !=null) {
             Flat flat = equipment.getFlat();
             if (flat!=null) {
-                mToolbar.setSubtitle(flat.getFullTitle());
+                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
+                    mToolbar.setSubtitle(flat.getFullTitle());
                 if (equipment.getEquipmentType()!=null)
                     mToolbar.setTitle(equipment.getEquipmentType().getTitle());
                 else

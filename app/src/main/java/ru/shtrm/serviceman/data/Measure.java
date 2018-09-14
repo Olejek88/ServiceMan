@@ -1,7 +1,9 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.UUID;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -17,6 +19,16 @@ public class Measure extends RealmObject {
     private double value;
     private Date createdAt;
     private Date changedAt;
+    private boolean sent;
+
+    public Measure() {
+        uuid = UUID.randomUUID().toString().toUpperCase();
+        sent = false;
+        Date createDate = new Date();
+        date = createDate;
+        createdAt = createDate;
+        changedAt = createDate;
+    }
 
     public double getValue() {
         return value;
@@ -80,5 +92,25 @@ public class Measure extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Alarm.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 }

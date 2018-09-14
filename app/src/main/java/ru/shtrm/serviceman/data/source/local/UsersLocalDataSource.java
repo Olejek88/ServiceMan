@@ -33,13 +33,17 @@ public class UsersLocalDataSource implements UsersDataSource {
     public List<User> getUsers() {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                        realm.where(User.class).findAllSorted("name", Sort.ASCENDING));
+                realm
+                        .where(User.class)
+                        .notEqualTo("uuid", User.SERVICE_USER_UUID)
+                        .findAllSorted("name", Sort.ASCENDING)
+        );
     }
 
     public User getLastUser() {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).findFirst();
-        if (user!=null)
+        if (user != null)
             return realm.copyFromRealm(user);
         else
             return null;
@@ -49,7 +53,7 @@ public class UsersLocalDataSource implements UsersDataSource {
     public User getUser(@NonNull String uuid) {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).equalTo("uuid", uuid).findFirst();
-        if (user!=null)
+        if (user != null)
             return realm.copyFromRealm(user);
         else
             return null;
@@ -58,10 +62,10 @@ public class UsersLocalDataSource implements UsersDataSource {
     public User getAuthorisedUser() {
         Realm realm = Realm.getDefaultInstance();
         AuthorizedUser aUser = AuthorizedUser.getInstance();
-        if (aUser!=null) {
+        if (aUser != null) {
             User user = realm.where(User.class).equalTo("uuid",
                     aUser.getId()).findFirst();
-            if (user!=null) {
+            if (user != null) {
                 return realm.copyFromRealm(user);
             }
         }

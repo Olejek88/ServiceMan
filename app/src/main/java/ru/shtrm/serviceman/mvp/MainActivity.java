@@ -64,8 +64,6 @@ import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
-import me.leolin.shortcutbadger.ShortcutBadger;
-
 import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 
 public class MainActivity extends AppCompatActivity
@@ -565,31 +563,8 @@ public class MainActivity extends AppCompatActivity
             toast.show();
         }
 
-        // изменяем индекс Иванова О.А., добавляем сервисного пользователя
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                User u = realm.where(User.class)
-                        .equalTo("uuid", "4462ed77-9bf0-4542-b127-f4ecefce49da")
-                        .findFirst();
-                if (u != null && u.get_id() == 1) {
-                    User w = realm.copyFromRealm(u);
-                    w.set_id(2);
-                    realm.copyToRealmOrUpdate(w);
-                    u.deleteFromRealm();
-                }
-
-                User sUser = new User();
-                sUser.set_id(1);
-                sUser.setUuid("00000000-9bf0-4542-b127-f4ecefce49da");
-                sUser.setName("sUser");
-                sUser.setPin(MainUtil.MD5("qwerfvgtbsasljflasjflajsljdsa"));
-                sUser.setContact("");
-                realm.copyToRealmOrUpdate(sUser);
-            }
-        });
-        realm.close();
+        // добавляем сервисного пользователя
+        addServiceUser();
 
         LoadTestData.LoadTestUser();
         //LoadTestData.LoadAllTestData4();
@@ -682,5 +657,27 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addServiceUser() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                User sUser = realm.where(User.class)
+                        .equalTo("uuid", User.SERVICE_USER_UUID)
+                        .findFirst();
+                if (sUser == null) {
+                    sUser = new User();
+                    sUser.set_id(User.getLastId() + 1);
+                    sUser.setUuid(User.SERVICE_USER_UUID);
+                    sUser.setName("sUser");
+                    sUser.setPin(MainUtil.MD5("qwerfvgtbsasljflasjflajsljdsa"));
+                    sUser.setContact("");
+                    realm.copyToRealmOrUpdate(sUser);
+                }
+            }
+        });
+        realm.close();
     }
 }

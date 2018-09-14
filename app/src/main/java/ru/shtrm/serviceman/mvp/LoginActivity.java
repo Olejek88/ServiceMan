@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 loginError.setVisibility(View.GONE);
-                if (s.length()==4) {
+                if (s.length() == 4) {
                     Button b = findViewById(R.id.loginButton);
                     b.performClick();
                 }

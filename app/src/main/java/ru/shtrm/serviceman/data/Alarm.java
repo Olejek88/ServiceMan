@@ -17,11 +17,13 @@ public class Alarm extends RealmObject {
     private AlarmType alarmType;
     private AlarmStatus alarmStatus;
     private User user;
+    private boolean sent;
 
     public Alarm() {
         uuid = UUID.randomUUID().toString().toUpperCase();
-//        sent = false;
+        sent = false;
         Date createDate = new Date();
+        date = createDate;
         createdAt = createDate;
         changedAt = createDate;
     }
@@ -133,4 +135,11 @@ public class Alarm extends RealmObject {
     private Date createdAt;
     private Date changedAt;
 
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
+    }
 }

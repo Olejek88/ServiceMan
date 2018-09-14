@@ -10,6 +10,12 @@ public class Migration8 implements IAppMigration {
     public void migration(DynamicRealm realm) {
         Log.d(this.getClass().getSimpleName(), "from 7 version");
         RealmSchema schema = realm.getSchema();
-        schema.get("");
+        schema.get("Alarm").addField("sent", boolean.class);
+        schema.get("Equipment").addField("sent", boolean.class);
+        schema.get("Measure").addField("sent", boolean.class);
+        schema.get("PhotoAlarm").addField("sent", boolean.class);
+        schema.get("PhotoEquipment").addField("sent", boolean.class);
+        schema.get("PhotoFlat").addField("sent", boolean.class);
+        schema.get("PhotoHouse").addField("sent", boolean.class);
     }
 }

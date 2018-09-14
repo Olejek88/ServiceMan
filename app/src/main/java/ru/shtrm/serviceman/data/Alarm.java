@@ -26,6 +26,7 @@ public class Alarm extends RealmObject {
         date = createDate;
         createdAt = createDate;
         changedAt = createDate;
+        user = AuthorizedUser.getInstance().getUser();
     }
 
     public long get_id() {

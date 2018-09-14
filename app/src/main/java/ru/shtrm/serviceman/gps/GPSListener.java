@@ -8,9 +8,9 @@ import android.os.Bundle;
 import java.util.Date;
 
 import io.realm.Realm;
+import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
 import static java.lang.Math.abs;
 
@@ -54,10 +54,11 @@ public class GPSListener implements LocationListener, GpsStatus.Listener {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
-                String uuid = user.getUuid();
-                if (uuid != null) {
-                    userUuid = uuid;
+                User user = AuthorizedUser.getInstance().getUser();
+                String uuid;
+                if (user != null) {
+                    userUuid = user.getUuid();
+                    uuid = user.getUuid();
                 } else {
                     if (userUuid != null) {
                         uuid = userUuid;
@@ -67,6 +68,7 @@ public class GPSListener implements LocationListener, GpsStatus.Listener {
                         return;
                     }
                 }
+
                 long next_id = GpsTrack.getLastId() + 1;
                 GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
                 gpstrack.set_id(next_id);

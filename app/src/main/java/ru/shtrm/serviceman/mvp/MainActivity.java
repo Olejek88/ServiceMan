@@ -61,6 +61,7 @@ import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
+import ru.shtrm.serviceman.retrofit.UsersTask;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
@@ -112,14 +113,22 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
+        // get list of users with service_user
+        Realm realm = Realm.getDefaultInstance();
+        User sUser = realm.where(User.class).equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
+        UsersTask task = new UsersTask(getApplicationContext());
+        task.execute(sUser.getUuid(), sUser.getPin());
+        realm.close();
+
         if (savedInstanceState != null) {
             isLogged = savedInstanceState.getBoolean("isLogged");
         } else {
-            User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
+            User user = AuthorizedUser.getInstance().getUser();
             if (user == null) {
                 user = UsersLocalDataSource.getInstance().getLastUser();
-                if (user != null)
-                    AuthorizedUser.getInstance().setId(user.getUuid());
+                if (user != null) {
+                    AuthorizedUser.getInstance().setUser(user);
+                }
             }
         }
 
@@ -156,8 +165,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (AuthorizedUser.getInstance().getId() != null) {
-            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        if (AuthorizedUser.getInstance().getUser() != null) {
+            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
             if (user != null) {
                 TextView profileName = navigationView.getHeaderView(0).findViewById(R.id.name);
                 profileName.setText(user.getName());
@@ -566,8 +575,8 @@ public class MainActivity extends AppCompatActivity
         // добавляем сервисного пользователя
         addServiceUser();
 
-        LoadTestData.LoadTestUser();
-        //LoadTestData.LoadAllTestData4();
+//        LoadTestData.LoadTestUser();
+//        LoadTestData.LoadAllTestData4();
 
         return success;
     }

@@ -7,7 +7,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.Sort;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersDataSource;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -57,19 +56,6 @@ public class UsersLocalDataSource implements UsersDataSource {
             return realm.copyFromRealm(user);
         else
             return null;
-    }
-
-    public User getAuthorisedUser() {
-        Realm realm = Realm.getDefaultInstance();
-        AuthorizedUser aUser = AuthorizedUser.getInstance();
-        if (aUser != null) {
-            User user = realm.where(User.class).equalTo("uuid",
-                    aUser.getId()).findFirst();
-            if (user != null) {
-                return realm.copyFromRealm(user);
-            }
-        }
-        return null;
     }
 
     @Override

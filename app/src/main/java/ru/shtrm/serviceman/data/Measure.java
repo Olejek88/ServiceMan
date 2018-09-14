@@ -28,6 +28,7 @@ public class Measure extends RealmObject {
         date = createDate;
         createdAt = createDate;
         changedAt = createDate;
+        user = AuthorizedUser.getInstance().getUser();
     }
 
     public double getValue() {

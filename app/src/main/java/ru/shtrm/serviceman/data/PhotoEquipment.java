@@ -28,6 +28,7 @@ public class PhotoEquipment extends RealmObject {
         Date createDate = new Date();
         createdAt = createDate;
         changedAt = createDate;
+        user = AuthorizedUser.getInstance().getUser();
     }
 
     public Equipment getEquipment() {

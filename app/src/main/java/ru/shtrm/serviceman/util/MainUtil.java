@@ -138,7 +138,7 @@ public class MainUtil {
         PhotoEquipment photoEquipment = new PhotoEquipment();
         PhotoEquipmentLocalDataSource photoEquipmentRepository = PhotoEquipmentLocalDataSource.getInstance();
         GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
         photoEquipment.set_id(photoEquipmentRepository.getLastId()+1);
         photoEquipment.setEquipment(equipment);
         photoEquipment.setUuid(uuid);
@@ -157,7 +157,7 @@ public class MainUtil {
 
     public static void storePhotoHouse (House house, String uuid) {
         PhotoHouse photoHouse = new PhotoHouse();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
         PhotoHouseLocalDataSource photoHouseRepository = PhotoHouseLocalDataSource.getInstance();
         GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
         photoHouse.set_id(photoHouseRepository.getLastId()+1);
@@ -180,7 +180,7 @@ public class MainUtil {
         PhotoFlat photoFlat = new PhotoFlat();
         PhotoFlatLocalDataSource photoFlatRepository = PhotoFlatLocalDataSource.getInstance();
         GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
         photoFlat.set_id(photoFlatRepository.getLastId()+1);
         photoFlat.setFlat(flat);
         photoFlat.setUuid(uuid);

@@ -1,5 +1,6 @@
 package ru.shtrm.serviceman.mvp;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
@@ -25,6 +27,7 @@ import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.user.UserContract;
 import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
+import ru.shtrm.serviceman.retrofit.TokenTask;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -51,7 +54,16 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 User user = (User) userSelect.getSelectedItem();
                 checkUser(user.getUuid(), pinCode.getText().toString());
-                // TODO: реализовать получение из загашника текущий токен
+                // достаём ранее сохранённый токен
+                SharedPreferences sp = getApplicationContext().getSharedPreferences(user.getUuid(), MODE_PRIVATE);
+                String token = sp.getString("token", null);
+                // если токена нет, делаем запрос к серверу
+                if (token == null) {
+                    TokenTask task = new TokenTask(getApplicationContext());
+                    task.execute(user.getUuid(), user.getPin());
+                } else {
+                    AuthorizedUser.getInstance().setToken(token);
+                }
                 // TODO: сделать тестовый запрос к серверу чтобы убедится что токен не протух
                 // TODO: если протух, получить новый
             }
@@ -117,7 +129,10 @@ public class LoginActivity extends AppCompatActivity {
         if (usersLocalDataSource != null) {
             if (usersLocalDataSource.checkUser(userUuid, pin)) {
                 AuthorizedUser aUser = AuthorizedUser.getInstance();
-                aUser.setId(userUuid);
+                Realm realm = Realm.getDefaultInstance();
+                User user = realm.where(User.class).equalTo("uuid", userUuid).findFirst();
+                aUser.setUser(realm.copyFromRealm(user));
+                realm.close();
                 finish();
             } else
                 loginError.setVisibility(View.VISIBLE);

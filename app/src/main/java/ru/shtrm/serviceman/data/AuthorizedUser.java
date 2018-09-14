@@ -1,58 +1,59 @@
 package ru.shtrm.serviceman.data;
 
 public class AuthorizedUser {
-	
-	private String mUuid;
-	private String mToken;
-	private static AuthorizedUser mInstance;
-	
-	public static synchronized AuthorizedUser getInstance() {
-		if (mInstance == null) {
-			mInstance = new AuthorizedUser();
-		}
-		return mInstance;
-	}
 
-	/**
-	 * @return the mUuid
-	 */
-	public String getId() {
-		return mUuid;
-	}
+    private User mUser;
+    private String mToken;
+    private static AuthorizedUser mInstance;
 
-	/**
-	 * @param Uuid the mUuid to set
-	 */
-	public void setId(String Uuid) {
-		this.mUuid = Uuid;
-	}
+    public static synchronized AuthorizedUser getInstance() {
+        if (mInstance == null) {
+            mInstance = new AuthorizedUser();
+        }
 
-	/**
-	 * @return the mToken
-	 */
-	public String getToken() {
-		return mToken;
-	}
+        return mInstance;
+    }
 
-	/**
-	 * @param Token the mToken to set
-	 */
-	public void setToken(String Token) {
-		this.mToken = Token;
-	}
+    /**
+     * @return the Uuid
+     */
+    public User getUser() {
+        return mUser;
+    }
 
-	/**
-	 * @return The bearer
-	 */
-	public String getBearer() {
-		return "bearer " + mToken;
-	}
+    /**
+     * @param user User
+     */
+    public void setUser(User user) {
+        mUser = user;
+    }
 
-	/**
-	 * Обнуляем информацию о текущем пользователе.
-	 */
-	public void reset() {
-		mToken = null;
-		mUuid = null;
-	}
+    /**
+     * @return the mToken
+     */
+    public String getToken() {
+        return mToken;
+    }
+
+    /**
+     * @param token the Token to set
+     */
+    public void setToken(String token) {
+        this.mToken = token;
+    }
+
+    /**
+     * @return The bearer
+     */
+    public String getBearer() {
+        return "Bearer " + mToken;
+    }
+
+    /**
+     * Обнуляем информацию о текущем пользователе.
+     */
+    public void reset() {
+        mToken = null;
+        mUser = null;
+    }
 }

@@ -18,6 +18,7 @@ public class GpsTrack extends RealmObject implements ISend {
     public GpsTrack() {
         sent = false;
         date = new Date();
+        userUuid = AuthorizedUser.getInstance().getUser().getUuid();
     }
 
     public GpsTrack(double lat, double lon) {

@@ -43,14 +43,12 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
@@ -278,7 +276,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         measure.setCreatedAt(new Date());
         measure.setDate(new Date());
         measure.setEquipment(equipment);
-        measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId()));
+        measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid()));
         measure.setUuid(java.util.UUID.randomUUID().toString());
         MeasureLocalDataSource.getInstance().addMeasure(measure);
         Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();

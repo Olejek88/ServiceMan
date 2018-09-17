@@ -185,7 +185,6 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             textViewPhotoDate.setText("нет фото");
         }
 
-        FlatStatus fs1, fs2;
         List<FlatStatus> flatStatuses = presenter.loadFlatStatuses();
         final FlatStatusListAdapter adapter = new FlatStatusListAdapter(mainActivityConnector,
                 R.layout.simple_spinner_item, flatStatuses, R.color.mdtp_white);

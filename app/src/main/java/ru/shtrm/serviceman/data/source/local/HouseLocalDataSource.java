@@ -63,6 +63,18 @@ public class HouseLocalDataSource implements HouseDataSource {
     }
 
     @Override
+    public List<House> getHousesForUser(User user) {
+        Realm realm = Realm.getDefaultInstance();
+        List<House> resultHouse = new ArrayList<>();
+        List<UserHouse> housesByUser = realm.copyFromRealm(realm.where(UserHouse.class).
+                equalTo("user.uuid", user.getUuid()).findAll());
+        for (UserHouse userHouse : housesByUser) {
+            resultHouse.add(userHouse.getHouse());
+        }
+        return resultHouse;
+    }
+
+    @Override
     public House getHouse(String uuid) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(

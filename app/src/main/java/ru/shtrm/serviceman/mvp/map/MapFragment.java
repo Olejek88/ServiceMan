@@ -3,10 +3,13 @@ package ru.shtrm.serviceman.mvp.map;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -20,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -37,8 +41,15 @@ import java.util.TimerTask;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
+import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.PhotoHouse;
+import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
+import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 
@@ -46,9 +57,10 @@ import static android.content.Context.LOCATION_SERVICE;
 
 public class MapFragment extends Fragment implements MapContract.View {
     private Activity mainActivityConnector = null;
-    ArrayList<OverlayItem> aOverlayItemArray;
 
-    private BottomNavigationView bottomNavigationView;
+    ArrayList<OverlayItem> aOverlayItemArray;
+    ItemizedIconOverlay<OverlayItem> positionItemizedIconOverlay;
+
     private RecyclerView recyclerView;
     private HouseAdapter houseAdapter;
     private MapContract.Presenter presenter;
@@ -56,7 +68,6 @@ public class MapFragment extends Fragment implements MapContract.View {
     private MapView mapView;
 
     private Timer timer;
-    private TimerTask mTimerTask;
     private Handler mTimerHandler = new Handler();
 
     public MapFragment() {
@@ -89,31 +100,7 @@ public class MapFragment extends Fragment implements MapContract.View {
 
         initViews(contentView);
 
-        // The function of BottomNavigationView is just as a filter.
-        // We need not to build a fragment for each option.
-        // Filter the data in presenter and then show it.
-/*
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_checkin:
-                        break;
-                    case R.id.nav_users:
-                        break;
-                    case R.id.nav_map:
-                        break;
-                    case R.id.nav_alarms:
-                        break;
-                }
-                return true;
-            }
-        });
-*/
-
-        // Set true to inflate the options menu.
         setHasOptionsMenu(true);
-
         return contentView;
     }
 
@@ -150,9 +137,6 @@ public class MapFragment extends Fragment implements MapContract.View {
      */
     @Override
     public void initViews(View view) {
-        double curLatitude = 55.5, curLongitude = 55.5;
-
-        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -162,92 +146,11 @@ public class MapFragment extends Fragment implements MapContract.View {
 
         mapController = mapView.getController();
         mapController.setZoom(17.0);
-        GeoPoint point2 = new GeoPoint(curLatitude, curLongitude);
-        mapController.setCenter(point2);
-
-        OverlayItem overlayItem = new OverlayItem("We are here", "WAH",
-                new GeoPoint(curLatitude, curLongitude));
         aOverlayItemArray = new ArrayList<>();
-        aOverlayItemArray.add(overlayItem);
-        ItemizedIconOverlay<OverlayItem> aItemizedIconOverlay = new ItemizedIconOverlay<>(
-                getActivity().getApplicationContext(), aOverlayItemArray, null);
-        mapView.getOverlays().add(aItemizedIconOverlay);
-
-        // TODO выводить маркеры домов?
-        /*
-        final ArrayList<GeoPoint> waypoints = new ArrayList<>();
-        GeoPoint currentPoint = new GeoPoint(curLatitude, curLongitude);
-        waypoints.add(currentPoint);
-        */
-
-        List<Alarm> alarms = AlarmLocalDataSource.getInstance().getAlarms();
-        for (int i = 0; i < alarms.size(); i++) {
-            Alarm alarm = alarms.get(i);
-            curLatitude = alarm.getLatitude();
-            curLongitude = alarm.getLongitude();
-
-            OverlayItem olItem = new OverlayItem(alarm.getComment(),
-                    "Alarm", new GeoPoint(curLatitude, curLongitude));
-            Drawable newMarker;
-            newMarker = this.getResources().getDrawable(R.drawable.baseline_add_location_black_24dp);
-            olItem.setMarker(newMarker);
-            aOverlayItemArray.add(olItem);
-        }
-
-/*
-        houseListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                OverlayItem item = overlayItemArray.get(position);
-                // Get the new Drawable
-                Drawable marker = view.getResources().getDrawable(R.drawable.equipment_32);
-                // Set the new marker
-                item.setMarker(marker);
-                if (LastItemPosition >= 0) {
-                    OverlayItem item2 = overlayItemArray.get(LastItemPosition);
-                    marker = view.getResources().getDrawable(R.drawable.marker_equip);
-                    item2.setMarker(marker);
-                }
-
-                LastItemPosition = position;
-            }
-        });
-        houseListView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                //equipmentListView.getItemAtPosition();
-                return false;
-            }
-        });
-
-        TaskItemizedOverlay overlay = new TaskItemizedOverlay(getActivity().getApplicationContext(),
-                overlayItemArray) {
-            @Override
-            protected boolean onLongPressHelper(int index, OverlayItem item) {
-                Equipment equipment = ((OldMapFragment.EquipmentOverlayItem) item).equipment;
-                Toast.makeText(
-                        mContext,
-                        "UUID оборудования " + equipment.getTitle() + " - "
-                                + equipment.getUuid(), Toast.LENGTH_SHORT)
-                        .show();
-
-
-                String equipment_uuid = equipment.getUuid();
-                Intent equipmentInfo = new Intent(getActivity(), EquipmentInfoActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("equipment_uuid", equipment_uuid);
-                equipmentInfo.putExtras(bundle);
-                getActivity().startActivity(equipmentInfo);
-
-                return super.onLongPressHelper(index, item);
-            }
-        };
-        mapView.getOverlays().add(overlay);
-*/
-
+        addAlarmsOverlay();
+        addHouseOverlay();
         // Добавляем несколько слоев
-        CompassOverlay compassOverlay = new CompassOverlay(getActivity()
-                .getApplicationContext(), mapView);
+        CompassOverlay compassOverlay = new CompassOverlay(mainActivityConnector, mapView);
         compassOverlay.enableCompass();
         mapView.getOverlays().add(compassOverlay);
 
@@ -291,15 +194,20 @@ public class MapFragment extends Fragment implements MapContract.View {
                 @Override
                 public void OnItemClick(View v, int position) {
                     House house = list.get(position);
+                    if (house!=null) {
+                        PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
+                                getLastPhotoByHouse(house);
+                        if (photoHouse!=null) {
+                            GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
+                            mapController.setCenter(point2);
+                        }
+                    }
                 }
             });
             recyclerView.setAdapter(houseAdapter);
         } else {
             houseAdapter.updateData(list);
         }
-    }
-
-    public void showAlarms(@NonNull final List<Alarm> list) {
     }
 
     @Override
@@ -311,10 +219,10 @@ public class MapFragment extends Fragment implements MapContract.View {
             onDestroyView();
         if (timer == null) {
             timer = new Timer();
-            mTimerTask = new TimerTask() {
+            TimerTask mTimerTask = new TimerTask() {
                 public void run() {
                     mTimerHandler.post(new Runnable() {
-                        public void run(){
+                        public void run() {
                             setPositionMarker();
                         }
                     });
@@ -324,22 +232,95 @@ public class MapFragment extends Fragment implements MapContract.View {
         }
     }
 
+    private void addAlarmsOverlay() {
+        double curLatitude, curLongitude;
+        final ArrayList<OverlayItem> alarmOverlayItemArray = new ArrayList<>();
+        List<Alarm> alarms = AlarmLocalDataSource.getInstance().getAlarms();
+        for (int i = 0; i < alarms.size(); i++) {
+            Alarm alarm = alarms.get(i);
+            curLatitude = alarm.getLatitude();
+            curLongitude = alarm.getLongitude();
+
+            OverlayItem olItem = new OverlayItem(alarm.getComment(),
+                    "Alarm", new GeoPoint(curLatitude, curLongitude));
+            Drawable newMarker;
+            newMarker = this.getResources().getDrawable(R.drawable.baseline_add_location_black_24dp);
+            olItem.setMarker(newMarker);
+            alarmOverlayItemArray.add(olItem);
+        }
+        ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(
+                mainActivityConnector, alarmOverlayItemArray, null);
+        mapView.getOverlays().add(aIconOverlay);
+    }
+
+
+    private void addHouseOverlay() {
+        final ArrayList<OverlayItem> houseOverlayItemArray = new ArrayList<>();
+        // TODO выбирать только для текущего пользователя
+        //List<House> houses = HouseLocalDataSource.getInstance().getHousesByUser();
+        List<House> houses = HouseLocalDataSource.getInstance().getHouses();
+        for (House house : houses) {
+            PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
+            if (photoHouse!=null) {
+                HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
+                        "Дом", new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude()));
+                houseItem.house = house;
+                Drawable newMarker;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Resources.Theme theme = mainActivityConnector.getTheme();
+                    newMarker = this.getResources().getDrawable(R.drawable.marker_house, theme);
+                } else {
+                    newMarker = this.getResources().getDrawable(R.drawable.marker_house);
+                }
+                houseItem.setMarker(newMarker);
+                houseOverlayItemArray.add(houseItem);
+            }
+        }
+
+        ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(
+                mainActivityConnector, houseOverlayItemArray, null);
+        mapView.getOverlays().add(aIconOverlay);
+
+        TaskItemizedOverlay overlay = new TaskItemizedOverlay(mainActivityConnector, houseOverlayItemArray) {
+            @Override
+            protected boolean onLongPressHelper(int index, OverlayItem item) {
+                House house = ((HouseOverlayItem) item).house;
+                String markerText = house.getFullTitle();
+                if (house.getHouseType()!=null)
+                    markerText=markerText.concat(" - ").concat(house.getHouseType().getTitle());
+                Toast.makeText(mainActivityConnector, markerText, Toast.LENGTH_SHORT).show();
+                return super.onLongPressHelper(index, item);
+            }
+        };
+        mapView.getOverlays().add(overlay);
+    }
+
     private void setPositionMarker() {
         Location location = getLastKnownLocation();
         if (location!=null) {
             GeoPoint point2 = new GeoPoint(location.getLatitude(), location.getLongitude());
             if (mapController!=null && mapView!=null && aOverlayItemArray!=null) {
                 mapController.setCenter(point2);
-                OverlayItem overlayItem = new OverlayItem("We are here", "WAH",
+                OverlayItem overlayItem = new OverlayItem("Вы здесь", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));
-                aOverlayItemArray.clear();
-                mapView.getOverlays().clear();
-                aOverlayItemArray.add(overlayItem);
-                ItemizedIconOverlay<OverlayItem> aItemizedIconOverlay = new ItemizedIconOverlay<>(
-                        mainActivityConnector, aOverlayItemArray, null);
-                mapView.getOverlays().add(aItemizedIconOverlay);
+                if (positionItemizedIconOverlay==null)
+                    positionItemizedIconOverlay = new ItemizedIconOverlay<>(
+                            mainActivityConnector, aOverlayItemArray, null);
+
+                positionItemizedIconOverlay.removeAllItems();
+                positionItemizedIconOverlay.addItem(overlayItem);
+                mapView.getOverlays().add(positionItemizedIconOverlay);
             }
         }
     }
+
+    private class HouseOverlayItem extends OverlayItem {
+        public House house;
+
+        HouseOverlayItem(String a, String b, GeoPoint p) {
+            super(a, b, p);
+        }
+    }
+
 }
 

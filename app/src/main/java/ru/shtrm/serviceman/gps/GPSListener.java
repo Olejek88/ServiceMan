@@ -17,7 +17,7 @@ import static java.lang.Math.abs;
 public class GPSListener implements LocationListener, GpsStatus.Listener {
 
     private String userUuid = null;
-    public Location prevLocation = null;
+    private Location prevLocation = null;
 
     @Override
     public void onGpsStatusChanged(int event) {
@@ -55,25 +55,15 @@ public class GPSListener implements LocationListener, GpsStatus.Listener {
             @Override
             public void execute(Realm realm) {
                 User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
-                String uuid = user.getUuid();
-                if (uuid != null) {
-                    userUuid = uuid;
-                } else {
-                    if (userUuid != null) {
-                        uuid = userUuid;
-                    } else {
-                        // нет ни текущего, ни "предыдущего" пользователя,
-                        // координаты "привязать" не к кому.
-                        return;
-                    }
+                if (user!=null) {
+                    long next_id = GpsTrack.getLastId() + 1;
+                    GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
+                    gpstrack.setDate(new Date());
+                    gpstrack.setUserUuid(user.getUuid());
+                    gpstrack.setLatitude(latitude);
+                    gpstrack.setLongitude(longitude);
+                    realm.copyToRealmOrUpdate(gpstrack);
                 }
-                long next_id = GpsTrack.getLastId() + 1;
-                GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
-                gpstrack.set_id(next_id);
-                gpstrack.setDate(new Date());
-                gpstrack.setUserUuid(uuid);
-                gpstrack.setLatitude(latitude);
-                gpstrack.setLongitude(longitude);
             }
         });
 

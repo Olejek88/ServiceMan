@@ -1,4 +1,4 @@
-package ru.shtrm.serviceman.retrofit;
+package ru.shtrm.serviceman.retrofit.iface;
 
 import java.util.List;
 import retrofit2.Call;

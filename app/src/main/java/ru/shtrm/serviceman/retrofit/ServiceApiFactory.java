@@ -21,6 +21,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.retrofit.iface.ITokenService;
+import ru.shtrm.serviceman.retrofit.iface.IUsersService;
 
 public class ServiceApiFactory {
     private static final int CONNECT_TIMEOUT = 15;

@@ -27,6 +27,7 @@ import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.user.UserContract;
 import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 import ru.shtrm.serviceman.retrofit.TokenTask;
 
 public class LoginActivity extends AppCompatActivity {
@@ -63,9 +64,12 @@ public class LoginActivity extends AppCompatActivity {
                     task.execute(user.getUuid(), user.getPin());
                 } else {
                     AuthorizedUser.getInstance().setToken(token);
+                    if (!SManApiFactory.pingService()) {
+                        // TODO: проверить в чём дело
+                        // TODO: если протух, получить новый
+                    }
                 }
-                // TODO: сделать тестовый запрос к серверу чтобы убедится что токен не протух
-                // TODO: если протух, получить новый
+
             }
         });
     }

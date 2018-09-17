@@ -17,16 +17,16 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 
-public class SManApiFactory {
+public class ServiceApiFactory {
     private static final int CONNECT_TIMEOUT = 15;
     private static final int WRITE_TIMEOUT = 60;
     private static final int TIMEOUT = 60;
+    private static String token;
 
     private static final OkHttpClient CLIENT = new OkHttpClient()
             .newBuilder()
@@ -40,7 +40,7 @@ public class SManApiFactory {
                     Headers origHeaders = origRequest.headers();
                     AuthorizedUser user = AuthorizedUser.getInstance();
                     Headers newHeaders = origHeaders.newBuilder()
-                            .add("Authorization", user.getBearer()).build();
+                            .add("Authorization", "Bearer " + token).build();
 
                     Request.Builder requestBuilder = origRequest.newBuilder().headers(newHeaders);
                     Request newRequest = requestBuilder.build();
@@ -76,15 +76,6 @@ public class SManApiFactory {
         return getRetrofit().create(IUsersService.class);
     }
 
-    @NonNull
-    public static IPing getPingService() {
-        return getRetrofit().create(IPing.class);
-    }
-
-    @NonNull
-    public static Retrofit getPrivateRetrofit() {
-        return getRetrofit();
-    }
     /**
      * Метод без указания специфической обработки элементов json.
      *
@@ -150,12 +141,7 @@ public class SManApiFactory {
         }
     }
 
-    public static boolean pingService() {
-        Call<Void> call = getPingService().ping();
-        try {
-            return call.execute().isSuccessful();
-        } catch (Exception e) {
-            return false;
-        }
+    public static void setToken(String t) {
+        token = t;
     }
 }

@@ -50,7 +50,6 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
@@ -65,6 +64,7 @@ import ru.shtrm.serviceman.retrofit.UsersTask;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
+
 import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 
 public class MainActivity extends AppCompatActivity
@@ -113,12 +113,8 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
-        // get list of users with service_user
-        Realm realm = Realm.getDefaultInstance();
-        User sUser = realm.where(User.class).equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
-        UsersTask task = new UsersTask(getApplicationContext());
-        task.execute(sUser.getUuid(), sUser.getPin());
-        realm.close();
+        // пытаемся получить список пользователей с сервера, с помощью сервисного пользователя
+        getUsersList();
 
         if (savedInstanceState != null) {
             isLogged = savedInstanceState.getBoolean("isLogged");
@@ -687,6 +683,17 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        realm.close();
+    }
+
+    private void getUsersList() {
+        Realm realm = Realm.getDefaultInstance();
+        User sUser = realm.where(User.class).equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
+        if (sUser != null) {
+            UsersTask task = new UsersTask(getApplicationContext());
+            task.execute(sUser.getUuid(), sUser.getPin());
+        }
+
         realm.close();
     }
 }

@@ -5,75 +5,66 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.Realm;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Token;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.UsersRepository;
 
 public class UsersTask extends AsyncTask<String, Void, List<User>> {
 
     private WeakReference<Context> context;
+    private String token;
 
-    public UsersTask(@NonNull Context context) {
-        this.context = new WeakReference<>(context);
+    private class Reason {
+        static final int UNK_ERROR = -1;
+        static final int OK = 0;
+        static final int NOT_GET_TOKEN = 1;
+        static final int NO_NETWORK = 2;
+        static final int UNAUTHORIZED = 3;
+    }
+
+    private int rc = Reason.OK;
+
+    public UsersTask(@NonNull Context c) {
+        context = new WeakReference<>(c);
+        SharedPreferences sp = context.get().getSharedPreferences(User.SERVICE_USER_UUID, Context.MODE_PRIVATE);
+        token = sp.getString("token", null);
     }
 
     @Override
     protected List<User> doInBackground(String... strings) {
-//        Token token = null;
-        List<User> users = null;
-//        Call<Token> call = SManApiFactory.getTokenService().getToken(strings[0], strings[1]);
-//        try {
-//            Response<Token> response = call.execute();
-//            if (response.isSuccessful()) {
-//                token = response.body();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        String token = "qxWUrcY6VA6GMG0y5rotx95uWZM08Zfm";
-        if (token != null) {
-            User user = AuthorizedUser.getInstance().getUser();
-            AuthorizedUser.getInstance().setToken(token);
-            Call<List<User>> res = SManApiFactory.getUsersService().getUsers("0000-00-00");
-            try {
-//                Response<ResponseBody> response = res.execute();
-                Response<List<User>> response = res.execute();
-                if (response.isSuccessful()) {
-                    users = response.body();
-//                    ResponseBody body = response.body();
-//                    String json = body.string();
-//                    try {
-//                        JSONArray jObj = new JSONArray(json);
-//                        for (int idx = 0; idx < jObj.length(); idx++) {
-//                            Object o = jObj.get(idx);
-//                            User u = new User();
-//                        }
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
+        List<User> users;
 
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        // видимо первый запуск или обнулили данные приложения
+        if (token == null) {
+            String t = getToken(strings[0], strings[1]);
+            if (t == null) {
+                this.rc = Reason.NOT_GET_TOKEN;
+                return null;
+            } else {
+                token = t;
             }
         }
+
+        // проверяем токен
+        if (!checkToken(token)) {
+            return null;
+        }
+
+        ServiceApiFactory.setToken(token);
+
+        Date date = new Date();
+        date.setTime(0);
+        users = getUsersList(date);
 
         return users;
     }
@@ -90,10 +81,74 @@ public class UsersTask extends AsyncTask<String, Void, List<User>> {
             }
         });
         realm.close();
-//        if (token != null) {
-//            SharedPreferences sp = context.get().getSharedPreferences(token.getUsersUuid(), Context.MODE_PRIVATE);
-//            sp.edit().putString("token", token.getToken()).commit();
-//            AuthorizedUser.getInstance().setToken(token.getToken());
-//        }
+
+        if (rc == Reason.OK) {
+            SharedPreferences sp = context.get().getSharedPreferences(User.SERVICE_USER_UUID, Context.MODE_PRIVATE);
+            sp.edit().putString("token", this.token).commit();
+        } else {
+            switch (rc) {
+                case Reason.UNAUTHORIZED:
+                    Toast.makeText(context.get(), "Неверный пин код!", Toast.LENGTH_LONG).show();
+                    break;
+                case Reason.NO_NETWORK:
+                    Toast.makeText(context.get(), "Нет сети!", Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    Toast.makeText(context.get(), "Неизвестная ошибка!", Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+    }
+
+    private boolean checkToken(String token) {
+        ServiceApiFactory.setToken(token);
+        getUsersList(new Date());
+        return this.rc == Reason.OK;
+    }
+
+    private List<User> getUsersList(Date date) {
+        List<User> users = null;
+        String dateParam = new SimpleDateFormat("yyyy-MM-dd HH:ss", Locale.US).format(date);
+        Call<List<User>> res = ServiceApiFactory.getUsersService().getUsers(dateParam);
+        this.rc = Reason.UNK_ERROR;
+        try {
+            Response<List<User>> response = res.execute();
+            if (response.isSuccessful()) {
+                users = response.body();
+            } else {
+                switch (response.code()) {
+                    case 401:
+                        rc = Reason.UNAUTHORIZED;
+                        break;
+                    default:
+                        rc = Reason.UNK_ERROR;
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rc = Reason.NO_NETWORK;
+        }
+
+        return users;
+    }
+
+    private String getToken(String uuid, String pinHash) {
+        Token token = null;
+        Call<Token> call = SManApiFactory.getTokenService().getToken(uuid, pinHash);
+        try {
+            Response<Token> response = call.execute();
+            if (response.isSuccessful()) {
+                token = response.body();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (token != null) {
+            return token.getToken();
+        } else {
+            return null;
+        }
     }
 }

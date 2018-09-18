@@ -31,9 +31,11 @@ import ru.shtrm.serviceman.retrofit.iface.IEquipmentStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IFlatService;
 import ru.shtrm.serviceman.retrofit.iface.IFlatStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IFlatTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IGpsTrackService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IHouseTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IJournalService;
 import ru.shtrm.serviceman.retrofit.iface.IMeasureService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoAlarmService;
@@ -203,6 +205,16 @@ public class SManApiFactory {
     @NonNull
     public static IUsersService getUsersService() {
         return getRetrofit().create(IUsersService.class);
+    }
+
+    @NonNull
+    public static IFlatTypeService getFlatTypeService() {
+        return getRetrofit().create(IFlatTypeService.class);
+    }
+
+    @NonNull
+    public static IHouseTypeService getHouseTypeService() {
+        return getRetrofit().create(IHouseTypeService.class);
     }
 
     @NonNull

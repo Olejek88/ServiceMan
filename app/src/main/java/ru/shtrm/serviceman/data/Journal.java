@@ -69,7 +69,15 @@ public class Journal extends RealmObject implements ISend {
     }
 
     public static void add(String message) {
-        String userUuid = AuthorizedUser.getInstance().getUser().getUuid();
+        User user = AuthorizedUser.getInstance().getUser();
+        String userUuid;
+
+        if (user != null) {
+            userUuid = user.getUuid();
+        } else {
+            userUuid = User.SERVICE_USER_UUID;
+        }
+
         if (userUuid == null) {
             userUuid = User.SERVICE_USER_UUID;
         }

@@ -15,8 +15,10 @@ import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.FlatStatus;
+import ru.shtrm.serviceman.data.FlatType;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
+import ru.shtrm.serviceman.data.HouseType;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.Resident;
@@ -45,12 +47,20 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
             Journal.add("Street not updated.");
         }
 
+        if (!updateHouseType(realm)) {
+            Journal.add("HouseType not updated.");
+        }
+
         if (!updateHouseStatus(realm)) {
             Journal.add("HouseStatus not updated.");
         }
 
         if (!updateHouse(realm)) {
             Journal.add("House not updated.");
+        }
+
+        if (!updateFlatType(realm)) {
+            Journal.add("FlatType not updated.");
         }
 
         if (!updateFlatStatus(realm)) {
@@ -395,6 +405,52 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
         Call<List<User>> call = SManApiFactory.getUsersService().getData(lastUpdate);
         try {
             Response<List<User>> response = call.execute();
+            if (response.isSuccessful()) {
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(response.body());
+                realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean updateFlatType(Realm realm) {
+        String lastUpdate;
+        String rName = FlatType.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
+        Call<List<FlatType>> call = SManApiFactory.getFlatTypeService().getData(lastUpdate);
+        try {
+            Response<List<FlatType>> response = call.execute();
+            if (response.isSuccessful()) {
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(response.body());
+                realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean updateHouseType(Realm realm) {
+        String lastUpdate;
+        String rName = HouseType.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
+        Call<List<HouseType>> call = SManApiFactory.getHouseTypeService().getData(lastUpdate);
+        try {
+            Response<List<HouseType>> response = call.execute();
             if (response.isSuccessful()) {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());

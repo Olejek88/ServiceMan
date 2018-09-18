@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -65,8 +66,11 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     AuthorizedUser.getInstance().setToken(token);
                     if (!SManApiFactory.pingService()) {
+                        Log.d("xxxx", "ping failed");
                         // TODO: проверить в чём дело
                         // TODO: если протух, получить новый
+                    } else {
+                        Log.d("xxxx", "ping success");
                     }
                 }
 

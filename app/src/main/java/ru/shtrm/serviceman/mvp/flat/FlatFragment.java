@@ -40,6 +40,7 @@ import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.SubjectLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
@@ -47,6 +48,7 @@ import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
+import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
 
@@ -122,6 +124,22 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         if (item.getItemId() == android.R.id.home) {
             mainActivityConnector.onBackPressed();
         }
+        int id = item.getItemId();
+        if (id == R.id.action_add_comment) {
+            MainActivity.createAddMessageDialog(mainActivityConnector, flat);
+            return true;
+        } else if (id == R.id.action_add_image) {
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, ACTIVITY_PHOTO);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
+            return true;
+        } else if (id == R.id.action_set_status) {
+            return true;
+        }
+
         return true;
     }
 

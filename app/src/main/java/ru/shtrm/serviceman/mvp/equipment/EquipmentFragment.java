@@ -43,14 +43,12 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
@@ -60,6 +58,7 @@ import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -143,6 +142,21 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             mainActivityConnector.onBackPressed();
+        }
+        int id = item.getItemId();
+        if (id == R.id.action_add_comment) {
+            MainActivity.createAddMessageDialog(mainActivityConnector, equipment.getFlat());
+            return true;
+        } else if (id == R.id.action_add_image) {
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, ACTIVITY_PHOTO);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
+            return true;
+        } else if (id == R.id.action_set_status) {
+            return true;
         }
         return true;
     }

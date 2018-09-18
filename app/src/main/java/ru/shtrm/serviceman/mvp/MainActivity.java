@@ -1,12 +1,16 @@
 package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +19,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -29,16 +34,28 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
+
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.Message;
+import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.FlatRepository;
@@ -47,7 +64,10 @@ import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.MessageLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.PhotoMessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.db.LoadTestData;
@@ -78,6 +98,7 @@ public class MainActivity extends AppCompatActivity
     public static Toolbar toolbar;
     public static boolean isLogged = false;
     private static final int LOGIN = 0;
+    private ImageView add_photo;
 
     private NavigationView navigationView;
     private DrawerLayout drawer;
@@ -141,6 +162,22 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == LOGIN) {
             if (resultCode == RESULT_OK) {
                 isLogged = true;
+            }
+        }
+        if (requestCode == ACTIVITY_PHOTO) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null && data.getExtras() != null) {
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    if (bitmap != null) {
+                        String uuid = java.util.UUID.randomUUID().toString();
+                        MainUtil.storeNewImage(bitmap, getApplicationContext(),
+                                800, uuid.concat(".jpg"));
+                        //MainUtil.storePhotoEquipment(,uuid);
+                        //photoEquipmentRepository.savePhotoEquipment(photoEquipment);
+                        if (add_photo != null)
+                            add_photo.setImageBitmap(bitmap);
+                    }
+                }
             }
         }
     }
@@ -646,19 +683,67 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_add_comment) {
-            return true;
-        } else if (id == R.id.action_add_image) {
-            try {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, ACTIVITY_PHOTO);
-            } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
-            }
-            return true;
-        } else if (id == R.id.action_set_status) {
+        if (id == R.id.action_set_status) {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void createAddMessageDialog(final Activity activity, final Flat flat) {
+        final View mView = LayoutInflater.from(activity).inflate(R.layout.message_add_dialog, null);
+        ImageView add_photo = mView.findViewById(R.id.imageAddMessage);
+        final EditText userEditText = mView.findViewById(R.id.userMessage);
+
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(activity);
+        alertDialogBuilderUserInput.setView(mView);
+
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setPositiveButton("Отправить", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+                        String messageText = userEditText.getText().toString();
+                        if (messageText.length()>3) {
+                            Message message = new Message();
+                            MessageLocalDataSource messageRepository = MessageLocalDataSource.getInstance();
+                            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+                            String uuid = java.util.UUID.randomUUID().toString();
+                            message.set_id(messageRepository.getLastId() + 1);
+                            message.setUuid(uuid);
+                            message.setUser(user);
+                            message.setMessage(userEditText.getText().toString());
+                            message.setFlat(flat);
+                            message.setDate(new Date());
+                            message.setCreatedAt(new Date());
+                            message.setChangedAt(new Date());
+                            messageRepository.saveMessage(message);
+                        }
+                        else {
+                            TextView error = mView.findViewById(R.id.dialogError);
+                            error.setText(R.string.error_message_title);
+                        }
+                    }
+                })
+
+                .setNegativeButton("Отменить",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        add_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    activity.startActivityForResult(intent, ACTIVITY_PHOTO);
+                } catch (ActivityNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+        alertDialogAndroid.show();
     }
 }

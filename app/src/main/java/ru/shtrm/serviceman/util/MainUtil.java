@@ -26,15 +26,18 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.PhotoHouse;
+import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.PhotoMessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
 public class MainUtil {
@@ -195,6 +198,25 @@ public class MainUtil {
             photoFlat.setLongitude(App.defaultLongitude);
         }
         photoFlatRepository.savePhotoFlat(photoFlat);
+    }
+
+    public static void storePhotoMessage (Message message, String uuid) {
+        PhotoMessage photoMessage = new PhotoMessage();
+        PhotoMessageLocalDataSource photoMessageRepository = PhotoMessageLocalDataSource.getInstance();
+        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
+        photoMessage.set_id(photoMessageRepository.getLastId()+1);
+        photoMessage.setMessage(message);
+        photoMessage.setUuid(uuid);
+        photoMessage.setCreatedAt(new Date());
+        photoMessage.setChangedAt(new Date());
+        if (gpsTrackRepository.getLastTrack() != null) {
+            photoMessage.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
+            photoMessage.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
+        } else {
+            photoMessage.setLattitude(App.defaultLatitude);
+            photoMessage.setLongitude(App.defaultLongitude);
+        }
+        photoMessageRepository.savePhotoMessage(photoMessage);
     }
 
     public static void setBadges(Context context) {

@@ -40,6 +40,11 @@
     <!--abonents-->
     <string name="no_last_time">Нет обслуживания</string>
 
+    <!--add message-->
+    <string name="add_message_title">Сообщение</string>
+    <string name="enter_something">Введите сообщение</string>
+    <string name="error_message_title">Длина сообщения меньше мимнумума</string>
+
     <!--flats-->
     <string name="flat_abonent">Абонент</string>
     <string name="flat_inn">ИНН/Договор</string>

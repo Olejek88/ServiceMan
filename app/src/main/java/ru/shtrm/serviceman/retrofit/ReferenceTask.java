@@ -1,6 +1,8 @@
 package ru.shtrm.serviceman.retrofit;
 
 import android.os.AsyncTask;
+
+import java.util.Date;
 import java.util.List;
 import io.realm.Realm;
 import retrofit2.Call;
@@ -32,7 +34,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
         }
 
         if (!updateAlarmType(realm)) {
-            Journal.add("AlarmStatus not updated.");
+            Journal.add("AlarmType not updated.");
         }
 
         if (!updateCity(realm)) {
@@ -89,7 +91,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateAlarmStatus(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr("AlarmStatus");
+        String rName = AlarmStatus.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<AlarmStatus>> call = SManApiFactory.getAlarmStatusService().getData(lastUpdate);
         try {
             Response<List<AlarmStatus>> response = call.execute();
@@ -97,6 +101,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -109,7 +114,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateAlarmType(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr("AlarmType");
+        String rName = AlarmType.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<AlarmType>> call = SManApiFactory.getAlarmTypeService().getData(lastUpdate);
         try {
             Response<List<AlarmType>> response = call.execute();
@@ -117,6 +124,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -129,7 +137,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateCity(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr("City");
+        String rName = City.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<City>> call = SManApiFactory.getCityService().getData(lastUpdate);
         try {
             Response<List<City>> response = call.execute();
@@ -137,6 +147,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -149,7 +160,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateStreet(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr("Street");
+        String rName = Street.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Street>> call = SManApiFactory.getStreetService().getData(lastUpdate);
         try {
             Response<List<Street>> response = call.execute();
@@ -157,6 +170,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -169,7 +183,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateHouseStatus(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr("HouseStatus");
+        String rName = HouseStatus.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<HouseStatus>> call = SManApiFactory.getHouseStatusService().getData(lastUpdate);
         try {
             Response<List<HouseStatus>> response = call.execute();
@@ -177,6 +193,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -189,7 +206,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateHouse(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr("House");
+        String rName = House.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<House>> call = SManApiFactory.getHouseService().getData(lastUpdate);
         try {
             Response<List<House>> response = call.execute();
@@ -197,6 +216,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -209,7 +229,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateFlatStatus(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(FlatStatus.class.getSimpleName());
+        String rName = FlatStatus.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<FlatStatus>> call = SManApiFactory.getFlatStatusService().getData(lastUpdate);
         try {
             Response<List<FlatStatus>> response = call.execute();
@@ -217,6 +239,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -228,7 +251,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
     }
     private boolean updateFlat(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(Flat.class.getSimpleName());
+        String rName = Flat.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Flat>> call = SManApiFactory.getFlatService().getData(lastUpdate);
         try {
             Response<List<Flat>> response = call.execute();
@@ -236,6 +261,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -248,7 +274,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateEquipmentStatus(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(EquipmentStatus.class.getSimpleName());
+        String rName = EquipmentStatus.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<EquipmentStatus>> call = SManApiFactory.getEquipmentStatusService().getData(lastUpdate);
         try {
             Response<List<EquipmentStatus>> response = call.execute();
@@ -256,6 +284,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -265,9 +294,12 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
             return false;
         }
     }
+
     private boolean updateEquipmentType(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(EquipmentType.class.getSimpleName());
+        String rName = EquipmentType.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<EquipmentType>> call = SManApiFactory.getEquipmentTypeService().getData(lastUpdate);
         try {
             Response<List<EquipmentType>> response = call.execute();
@@ -275,6 +307,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -287,7 +320,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateEquipment(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(Equipment.class.getSimpleName());
+        String rName = Equipment.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Equipment>> call = SManApiFactory.getEquipmentService().getData(lastUpdate);
         try {
             Response<List<Equipment>> response = call.execute();
@@ -295,6 +330,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -307,7 +343,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateSubject(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(Subject.class.getSimpleName());
+        String rName = Subject.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Subject>> call = SManApiFactory.getSubjectService().getData(lastUpdate);
         try {
             Response<List<Subject>> response = call.execute();
@@ -315,6 +353,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -327,7 +366,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateResident(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(Resident.class.getSimpleName());
+        String rName = Resident.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Resident>> call = SManApiFactory.getResidentService().getData(lastUpdate);
         try {
             Response<List<Resident>> response = call.execute();
@@ -335,6 +376,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -347,7 +389,9 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
 
     private boolean updateUser(Realm realm) {
         String lastUpdate;
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(User.class.getSimpleName());
+        String rName = User.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<User>> call = SManApiFactory.getUsersService().getData(lastUpdate);
         try {
             Response<List<User>> response = call.execute();
@@ -355,6 +399,7 @@ public class ReferenceTask extends AsyncTask<Void, Void, Void> {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());
                 realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;

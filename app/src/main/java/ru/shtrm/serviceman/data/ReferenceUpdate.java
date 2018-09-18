@@ -51,6 +51,21 @@ public class ReferenceUpdate extends RealmObject {
         realm.close();
     }
 
+    /**
+     * @param referenceName Название справочника (используем имя класса).
+     * @param updateDate    Дата обновления содержимого справочника.
+     * @param realm         Экземпляр базы данных.
+     */
+    public static void saveReferenceData(String referenceName, Date updateDate, Realm realm) {
+        ReferenceUpdate item = new ReferenceUpdate();
+        item.setReferenceName(referenceName);
+        item.setUpdateDate(updateDate);
+
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(item);
+        realm.commitTransaction();
+    }
+
     public String getReferenceName() {
         return referenceName;
     }

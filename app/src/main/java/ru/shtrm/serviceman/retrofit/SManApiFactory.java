@@ -22,7 +22,28 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
+import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IAlarmTypeService;
+import ru.shtrm.serviceman.retrofit.iface.ICityService;
+import ru.shtrm.serviceman.retrofit.iface.IEquipmentService;
+import ru.shtrm.serviceman.retrofit.iface.IEquipmentStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IEquipmentTypeService;
+import ru.shtrm.serviceman.retrofit.iface.IFlatService;
+import ru.shtrm.serviceman.retrofit.iface.IFlatStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IGpsTrackService;
+import ru.shtrm.serviceman.retrofit.iface.IHouseService;
+import ru.shtrm.serviceman.retrofit.iface.IHouseStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IJournalService;
+import ru.shtrm.serviceman.retrofit.iface.IMeasureService;
+import ru.shtrm.serviceman.retrofit.iface.IPhotoAlarmService;
+import ru.shtrm.serviceman.retrofit.iface.IPhotoEquipmentService;
+import ru.shtrm.serviceman.retrofit.iface.IPhotoFlatService;
+import ru.shtrm.serviceman.retrofit.iface.IPhotoHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IPing;
+import ru.shtrm.serviceman.retrofit.iface.IResidentService;
+import ru.shtrm.serviceman.retrofit.iface.IStreetService;
+import ru.shtrm.serviceman.retrofit.iface.ISubjectService;
 import ru.shtrm.serviceman.retrofit.iface.ITokenService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
 
@@ -68,6 +89,111 @@ public class SManApiFactory {
                 }
             })
             .build();
+
+    @NonNull
+    public static IAlarmService getAlarmService() {
+        return getRetrofit().create(IAlarmService.class);
+    }
+
+    @NonNull
+    public static IAlarmStatusService getAlarmStatusService() {
+        return getRetrofit().create(IAlarmStatusService.class);
+    }
+
+    @NonNull
+    public static IAlarmTypeService getAlarmTypeService() {
+        return getRetrofit().create(IAlarmTypeService.class);
+    }
+
+    @NonNull
+    public static ICityService getCityService() {
+        return getRetrofit().create(ICityService.class);
+    }
+
+    @NonNull
+    public static IEquipmentService getEquipmentService() {
+        return getRetrofit().create(IEquipmentService.class);
+    }
+
+    @NonNull
+    public static IEquipmentStatusService getEquipmentStatusService() {
+        return getRetrofit().create(IEquipmentStatusService.class);
+    }
+
+    @NonNull
+    public static IEquipmentTypeService getEquipmentTypeService() {
+        return getRetrofit().create(IEquipmentTypeService.class);
+    }
+
+    @NonNull
+    public static IFlatService getFlatService() {
+        return getRetrofit().create(IFlatService.class);
+    }
+
+    @NonNull
+    public static IFlatStatusService getFlatStatusService() {
+        return getRetrofit().create(IFlatStatusService.class);
+    }
+
+    @NonNull
+    public static IGpsTrackService getGpsTrackService() {
+        return getRetrofit().create(IGpsTrackService.class);
+    }
+
+    @NonNull
+    public static IHouseService getHouseService() {
+        return getRetrofit().create(IHouseService.class);
+    }
+
+    @NonNull
+    public static IHouseStatusService getHouseStatusService() {
+        return getRetrofit().create(IHouseStatusService.class);
+    }
+
+    @NonNull
+    public static IJournalService getJournalService() {
+        return getRetrofit().create(IJournalService.class);
+    }
+
+    @NonNull
+    public static IMeasureService getMeasureService() {
+        return getRetrofit().create(IMeasureService.class);
+    }
+
+    @NonNull
+    public static IPhotoAlarmService getPhotoAlarmService() {
+        return getRetrofit().create(IPhotoAlarmService.class);
+    }
+
+    @NonNull
+    public static IPhotoEquipmentService getPhotoEquipmentService() {
+        return getRetrofit().create(IPhotoEquipmentService.class);
+    }
+
+    @NonNull
+    public static IPhotoFlatService getPhotoFlatService() {
+        return getRetrofit().create(IPhotoFlatService.class);
+    }
+
+    @NonNull
+    public static IPhotoHouseService getPhotoHouseService() {
+        return getRetrofit().create(IPhotoHouseService.class);
+    }
+
+    @NonNull
+    public static IResidentService getResidentService() {
+        return getRetrofit().create(IResidentService.class);
+    }
+
+    @NonNull
+    public static IStreetService getStreetService() {
+        return getRetrofit().create(IStreetService.class);
+    }
+
+    @NonNull
+    public static ISubjectService getSubjectService() {
+        return getRetrofit().create(ISubjectService.class);
+    }
 
     @NonNull
     public static ITokenService getTokenService() {

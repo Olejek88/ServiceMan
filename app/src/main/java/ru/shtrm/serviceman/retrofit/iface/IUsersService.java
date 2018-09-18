@@ -8,5 +8,5 @@ import ru.shtrm.serviceman.data.User;
 
 public interface IUsersService {
     @GET("/users")
-    Call<List<User>> getUsers(@Query("changedAfter") String changeAfter);
+    Call<List<User>> getData(@Query("changedAfter") String changeAfter);
 }

@@ -8,5 +8,5 @@ import ru.shtrm.serviceman.data.Resident;
 
 public interface IResidentService {
     @GET("/resident")
-    Call<List<Resident>> getUsers(@Query("changedAfter") String changeAfter);
+    Call<List<Resident>> getData(@Query("changedAfter") String changeAfter);
 }

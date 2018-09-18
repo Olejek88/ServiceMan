@@ -8,5 +8,5 @@ import ru.shtrm.serviceman.data.HouseStatus;
 
 public interface IHouseStatusService {
     @GET("/house-status")
-    Call<List<HouseStatus>> getUsers(@Query("changedAfter") String changeAfter);
+    Call<List<HouseStatus>> getData(@Query("changedAfter") String changeAfter);
 }

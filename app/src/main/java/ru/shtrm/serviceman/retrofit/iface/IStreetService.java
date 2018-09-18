@@ -8,5 +8,5 @@ import ru.shtrm.serviceman.data.Street;
 
 public interface IStreetService {
     @GET("/street")
-    Call<List<Street>> getUsers(@Query("changedAfter") String changeAfter);
+    Call<List<Street>> getData(@Query("changedAfter") String changeAfter);
 }

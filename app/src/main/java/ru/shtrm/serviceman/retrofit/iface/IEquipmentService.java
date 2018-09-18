@@ -13,5 +13,4 @@ public interface IEquipmentService {
     Call<List<Equipment>> getData(@Query("changedAfter") String changeAfter);
     @POST("/equipment/create")
     Call<Void> sendData(@Body List<Equipment> data);
-
 }

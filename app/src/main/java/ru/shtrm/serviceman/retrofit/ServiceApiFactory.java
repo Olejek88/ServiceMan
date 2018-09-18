@@ -1,16 +1,13 @@
 package ru.shtrm.serviceman.retrofit;
 
 import android.support.annotation.NonNull;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -21,7 +18,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.retrofit.iface.ITokenService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
 
 public class ServiceApiFactory {
@@ -67,11 +63,6 @@ public class ServiceApiFactory {
                 }
             })
             .build();
-
-    @NonNull
-    public static ITokenService getTokenService() {
-        return getRetrofit().create(ITokenService.class);
-    }
 
     @NonNull
     public static IUsersService getUsersService() {

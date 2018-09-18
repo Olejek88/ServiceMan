@@ -16,6 +16,7 @@ import java.util.Locale;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Response;
+import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.Token;
 import ru.shtrm.serviceman.data.User;
 
@@ -62,9 +63,11 @@ public class UsersTask extends AsyncTask<String, Void, List<User>> {
 
         ServiceApiFactory.setToken(token);
 
-        Date date = new Date();
-        date.setTime(0);
+        String rName = User.class.getSimpleName();
+        Date date = ReferenceUpdate.lastChanged(rName);
+        Date updateDate = new Date();
         users = getUsersList(date);
+        ReferenceUpdate.saveReferenceData(rName, updateDate);
 
         return users;
     }
@@ -108,9 +111,9 @@ public class UsersTask extends AsyncTask<String, Void, List<User>> {
 
     private List<User> getUsersList(Date date) {
         List<User> users = null;
-        String dateParam = new SimpleDateFormat("yyyy-MM-dd HH:ss", Locale.US).format(date);
-        Call<List<User>> res = ServiceApiFactory.getUsersService().getUsers(dateParam);
-        this.rc = Reason.UNK_ERROR;
+        String dateParam = new SimpleDateFormat("yyyy-MM-dd H:m:s", Locale.US).format(date);
+        Call<List<User>> res = ServiceApiFactory.getUsersService().getData(dateParam);
+        this.rc = Reason.OK;
         try {
             Response<List<User>> response = res.execute();
             if (response.isSuccessful()) {

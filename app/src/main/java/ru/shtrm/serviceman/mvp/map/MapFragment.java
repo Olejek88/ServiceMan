@@ -117,7 +117,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     }
 
     @Override
-    public void onDestroy () {
+    public void onDestroy() {
         if (timer != null) {
             timer.cancel();
             timer.purge();
@@ -297,9 +297,9 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     private void setPositionMarker() {
         Location location = getLastKnownLocation();
-        if (location!=null) {
+        if (location != null) {
             GeoPoint point2 = new GeoPoint(location.getLatitude(), location.getLongitude());
-            if (mapController!=null && mapView!=null && aOverlayItemArray!=null) {
+            if (mapController != null && mapView != null && aOverlayItemArray != null) {
                 mapController.setCenter(point2);
                 OverlayItem overlayItem = new OverlayItem("Вы здесь", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));

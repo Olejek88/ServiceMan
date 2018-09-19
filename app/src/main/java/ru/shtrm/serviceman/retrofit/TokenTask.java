@@ -2,6 +2,7 @@ package ru.shtrm.serviceman.retrofit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -10,7 +11,6 @@ import java.lang.ref.WeakReference;
 
 import retrofit2.Call;
 import retrofit2.Response;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Token;
 
 public class TokenTask extends AsyncTask<String, Void, Token> {
@@ -45,10 +45,9 @@ public class TokenTask extends AsyncTask<String, Void, Token> {
         if (token != null) {
             SharedPreferences sp = context.get().getSharedPreferences(token.getUsersUuid(), Context.MODE_PRIVATE);
             sp.edit().putString("token", token.getToken()).commit();
-            // TODO: вместо этого нужно реализовать отправку сообщения, кому нужно его обработает!!!!
-            AuthorizedUser aUser = AuthorizedUser.getInstance();
-            aUser.setToken(token.getToken());
-            aUser.setValidToken(true);
+            Intent result = new Intent(Token.TOKEN_INTENT);
+            result.putExtra("token", token.getToken());
+            context.get().sendBroadcast(result);
         }
     }
 }

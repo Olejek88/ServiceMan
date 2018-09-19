@@ -1,5 +1,9 @@
 package ru.shtrm.serviceman.mvp;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +26,7 @@ import java.util.List;
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Token;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
@@ -40,6 +45,15 @@ public class LoginActivity extends AppCompatActivity {
     private Spinner userSelect;
     private EditText pinCode;
     private TextView loginError;
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String token = intent.getStringExtra("token");
+            AuthorizedUser.getInstance().setToken(token);
+            unregisterReceiver(this);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (token == null) {
                         TokenTask task = new TokenTask(getApplicationContext());
                         task.execute(user.getUuid(), user.getPin());
+                        registerReceiver(receiver, new IntentFilter(Token.TOKEN_INTENT));
                     } else {
                         aUser.setToken(token);
                         Runnable runnable = new Runnable() {
@@ -82,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                                 } else {
                                     Log.d("xxxx", "ping failed");
                                     // TODO: проверить в чём дело
+                                    registerReceiver(receiver, new IntentFilter(Token.TOKEN_INTENT));
                                     TokenTask task = new TokenTask(getApplicationContext());
                                     task.execute(aUser.getUser().getUuid(), aUser.getUser().getPin());
                                 }

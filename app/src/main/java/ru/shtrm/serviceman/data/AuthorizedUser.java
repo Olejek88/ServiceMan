@@ -41,6 +41,7 @@ public class AuthorizedUser {
      */
     public void setToken(String token) {
         this.mToken = token;
+        mIsValidToken = true;
     }
 
     /**

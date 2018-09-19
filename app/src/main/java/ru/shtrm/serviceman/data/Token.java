@@ -1,6 +1,7 @@
 package ru.shtrm.serviceman.data;
 
 public class Token {
+    public static final String TOKEN_INTENT = "ru.shtrm.serviceman.token-intent";
     private String usersUuid;
     private String token;
 

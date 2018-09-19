@@ -60,6 +60,7 @@ import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
+import ru.shtrm.serviceman.mvp.flat.FlatActivity;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -146,6 +147,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
         FloatingActionButton fab_delete = view.findViewById(R.id.fab_delete);
+        FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
         //TextView textViewEquipment = view.findViewById(R.id.textViewEquipment);
         //TextView textViewType = view.findViewById(R.id.textViewEquipmentTitle);
         //GridView gridView = view.findViewById(R.id.gridview);
@@ -243,6 +245,13 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 } catch (ActivityNotFoundException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EquipmentActivity.createAddMessageDialog(mainActivityConnector,equipment.getFlat());
             }
         });
 

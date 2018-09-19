@@ -20,6 +20,7 @@ import io.realm.RealmObject;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 import ru.shtrm.serviceman.db.migration.Migration1;
+import ru.shtrm.serviceman.db.migration.Migration11;
 import ru.shtrm.serviceman.db.migration.Migration2;
 import ru.shtrm.serviceman.db.migration.Migration3;
 import ru.shtrm.serviceman.db.migration.Migration4;
@@ -102,6 +103,10 @@ class AppRealmMigration implements RealmMigration {
             oldVersion++;
         }
 
+        if (oldVersion == 10) {
+            new Migration11().migration(realm);
+            oldVersion++;
+        }
         //testPropsFields(realm);
     }
 

@@ -180,7 +180,7 @@ public class FlatActivity extends AppCompatActivity
                 if (messageText.length()>3) {
                     Message message = new Message();
                     MessageLocalDataSource messageRepository = MessageLocalDataSource.getInstance();
-                    User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+                    User user = AuthorizedUser.getInstance().getUser();
                     String uuid = java.util.UUID.randomUUID().toString();
                     message.set_id(messageRepository.getLastId() + 1);
                     message.setUuid(uuid);

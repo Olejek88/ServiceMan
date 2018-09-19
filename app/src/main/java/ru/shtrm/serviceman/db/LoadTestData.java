@@ -142,6 +142,8 @@ public class LoadTestData {
                 houseStatus = realmDB.createObject(HouseStatus.class, 1);
                 houseStatus.setUuid(houseStatusUuid);
                 houseStatus.setTitle("Все в порядке");
+                houseStatus.setCreatedAt(new Date());
+                houseStatus.setChangedAt(new Date());
             }
         });
 
@@ -151,6 +153,8 @@ public class LoadTestData {
                 flatStatus = realmDB.createObject(FlatStatus.class, 1);
                 flatStatus.setUuid(flatStatusUuid);
                 flatStatus.setTitle("Все в порядке");
+                flatStatus.setCreatedAt(new Date());
+                flatStatus.setChangedAt(new Date());
             }
         });
 
@@ -160,6 +164,8 @@ public class LoadTestData {
                 equipmentStatus = realmDB.createObject(EquipmentStatus.class, 1);
                 equipmentStatus.setUuid(equipmentStatusUuid);
                 equipmentStatus.setTitle("Работоспособно");
+                equipmentStatus.setCreatedAt(new Date());
+                equipmentStatus.setChangedAt(new Date());
             }
         });
 
@@ -169,6 +175,8 @@ public class LoadTestData {
                 equipmentType = realmDB.createObject(EquipmentType.class, 1);
                 equipmentType.setUuid(equipmentTypeUuid);
                 equipmentType.setTitle("Датчик расхода ХВ");
+                equipmentType.setCreatedAt(new Date());
+                equipmentType.setChangedAt(new Date());
             }
         });
 
@@ -179,6 +187,8 @@ public class LoadTestData {
                 street.setUuid(streetUuid);
                 street.setCity(city);
                 street.setTitle("Воронежская");
+                street.setCreatedAt(new Date());
+                street.setChangedAt(new Date());
             }
         });
 
@@ -190,6 +200,8 @@ public class LoadTestData {
                 house1.setStreet(street);
                 house1.setTitle("8А");
                 house1.setHouseStatus(houseStatus);
+                house1.setCreatedAt(new Date());
+                house1.setChangedAt(new Date());
             }
         });
         realmDB.executeTransaction(new Realm.Transaction() {
@@ -200,6 +212,8 @@ public class LoadTestData {
                 house2.setStreet(street);
                 house2.setTitle("6");
                 house2.setHouseStatus(houseStatus);
+                house2.setCreatedAt(new Date());
+                house2.setChangedAt(new Date());
             }
         });
 
@@ -211,6 +225,8 @@ public class LoadTestData {
                 flat.setHouse(house1);
                 flat.setTitle("8");
                 flat.setFlatStatus(flatStatus);
+                flat.setCreatedAt(new Date());
+                flat.setChangedAt(new Date());
             }
         });
 
@@ -257,10 +273,11 @@ public class LoadTestData {
             }
         });
 
+/*
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                alarm1 = realmDB.createObject(Alarm.class, 1);
+                alarm1 = realmDB.createObject(Alarm.class);
                 alarm1.setUuid(alarmUuid1);
                 alarm1.setAlarmStatus(alarmStatus);
                 alarm1.setAlarmType(alarmType);
@@ -275,7 +292,7 @@ public class LoadTestData {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                alarm2 = realmDB.createObject(Alarm.class, 2);
+                alarm2 = realmDB.createObject(Alarm.class);
                 alarm2.setUuid(alarmUuid2);
                 alarm2.setAlarmStatus(alarmStatus);
                 alarm2.setAlarmType(alarmType);
@@ -286,6 +303,7 @@ public class LoadTestData {
                 alarm2.setLongitude(59.36);
             }
         });
+*/
 
         realmDB.close();
     }
@@ -313,6 +331,7 @@ public class LoadTestData {
             }
         });
 
+/*
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -344,6 +363,7 @@ public class LoadTestData {
                 equipment1.setCreatedAt(new Date());
             }
         });
+*/
 
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
@@ -462,6 +482,7 @@ public class LoadTestData {
             }
         });
 
+/*
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -477,6 +498,7 @@ public class LoadTestData {
                 equipment1.setCreatedAt(new Date());
             }
         });
+*/
 
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override

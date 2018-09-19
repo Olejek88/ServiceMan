@@ -5,13 +5,24 @@
     android:id="@+id/preferences_settings">
 
     <PreferenceCategory
-        android:title="@string/notifications">
+        android:title="@string/nav_map">
 
         <CheckBoxPreference
             android:key="gps"
             android:title="@string/gps"
             android:defaultValue="true"
             android:summary="@string/gps_desc" />
+
+        <CheckBoxPreference
+            android:key="gps_center"
+            android:title="@string/gps_center"
+            android:defaultValue="true"
+            android:summary="@string/gps_center_desc" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/data">
 
         <Preference
             android:key="@string/load_test_data"
@@ -20,6 +31,11 @@
         <Preference
             android:key="@string/delete_test_data"
             android:title="@string/delete_test_data" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/notifications">
 
         <ListPreference
             android:key="notification_interval"
@@ -31,16 +47,5 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/other">
-
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/user_interface">
-
-
-    </PreferenceCategory>
 
 </PreferenceScreen>

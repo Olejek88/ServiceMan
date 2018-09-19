@@ -41,7 +41,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onAttach(Context context) {
         super.onAttach(context);
         Activity mainActivityConnector = getActivity();
-        // TODO решить что делать если контекст не приехал
         if (mainActivityConnector ==null)
             onDestroyView();
     }

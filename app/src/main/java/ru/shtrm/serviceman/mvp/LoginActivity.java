@@ -34,9 +34,6 @@ import ru.shtrm.serviceman.util.MainUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private UserContract.Presenter presenter;
-    private UsersLocalDataSource usersLocalDataSource;
-
     private Spinner userSelect;
     private EditText pinCode;
     private TextView loginError;
@@ -95,12 +92,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void initViews() {
+        UserContract.Presenter presenter = new UserPresenter(UsersRepository.getInstance(UsersLocalDataSource.getInstance()));
         userSelect = findViewById(R.id.user_select);
         pinCode = findViewById(R.id.login_pin);
         loginError = findViewById(R.id.login_error);
         loginError.setBackgroundColor(getResources().getColor(R.color.red));
 
-        presenter = new UserPresenter(UsersRepository.getInstance(UsersLocalDataSource.getInstance()));
 
         pinCode.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
@@ -149,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
 
     void checkUser(String userUuid, String pin) {
         setResult(RESULT_OK);
-        usersLocalDataSource = UsersLocalDataSource.getInstance();
+        UsersLocalDataSource usersLocalDataSource = UsersLocalDataSource.getInstance();
         if (usersLocalDataSource != null) {
             if (usersLocalDataSource.checkUser(userUuid, pin)) {
                 AuthorizedUser aUser = AuthorizedUser.getInstance();

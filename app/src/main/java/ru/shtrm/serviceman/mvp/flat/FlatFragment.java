@@ -34,14 +34,17 @@ import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.Resident;
+import ru.shtrm.serviceman.data.Subject;
 import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.SubjectLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
+import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
@@ -54,15 +57,13 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     private FlatContract.Presenter presenter;
     private Flat flat;
     private Resident resident;
+    private Subject subject;
     private PhotoFlat photoFlat;
 
     private EquipmentAdapter equipmentAdapter;
     private RecyclerView recyclerView;
     private CircleImageView circleImageView;
     private TextView textViewPhotoDate;
-
-    private FloatingActionButton new_flat;
-    private FloatingActionButton make_photo;
 
     public FlatFragment() {}
 
@@ -87,6 +88,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                 flat = FlatLocalDataSource.getInstance().getFlat(flatUuid);
             if (flat != null) {
                 resident = ResidentLocalDataSource.getInstance().getResidentByFlat(flat.getUuid());
+                subject = SubjectLocalDataSource.getInstance().getSubjectByFlat(flat.getUuid());
                 photoFlat = PhotoFlatLocalDataSource.getInstance().getLastPhotoByFlat(flat);
                 initViews(view);
                 presenter.loadEquipmentsByFlat(flat);
@@ -125,6 +127,9 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
     @Override
     public void initViews(View view) {
+        FloatingActionButton make_photo = view.findViewById(R.id.add_photo);
+        FloatingActionButton new_equipment = view.findViewById(R.id.add_equipment);
+
         TextView textViewInn = view.findViewById(R.id.textViewFlatInn);
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
         //TextView textViewStatus = view.findViewById(R.id.textViewFlatStatus);
@@ -136,18 +141,26 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         circleImageView = view.findViewById(R.id.imageViewFlat);
-        make_photo = view.findViewById(R.id.add_photo);
-        new_flat = view.findViewById(R.id.add_equipment);
 
         if (mToolbar !=null) {
             mToolbar.setTitle(flat.getFullTitle());
-            if (flat.getHouse().getHouseType()!=null)
-                mToolbar.setSubtitle(flat.getHouse().getHouseType().getTitle());
+            if (flat.getHouse().getHouseType() != null) {
+                if(DensityUtil.getScreenHeight(mainActivityConnector)>1280) {
+                    mToolbar.setSubtitle(flat.getHouse().getHouseType().getTitle());
+                } else {
+                    mToolbar.setTitle(flat.getFullTitle().concat(" - ").
+                            concat(flat.getHouse().getHouseType().getTitle()));
+                }
+            }
         }
 
         if (resident!=null) {
             textViewInn.setText(resident.getInn());
             textViewAbonent.setText(resident.getOwner());
+        }
+        if (subject!=null) {
+            textViewInn.setText(subject.getContractNumber());
+            textViewAbonent.setText(subject.getOwner());
         }
         //if (flat.getFlatStatus()!=null)
           //  textViewStatus.setText(flat.getFlatStatus().getTitle());
@@ -176,18 +189,21 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         final FlatStatusListAdapter adapter = new FlatStatusListAdapter(mainActivityConnector,
                 R.layout.simple_spinner_item, flatStatuses, R.color.mdtp_white);
         statusSpinner.setAdapter(adapter);
-        for (int pos = 0; pos < flatStatuses.size(); pos++)
-            if (flatStatuses.get(pos).equals(flat.getFlatStatus())) {
+        for (int pos = 0; pos < flatStatuses.size(); pos++) {
+            if (flatStatuses.get(pos).getUuid().equals(flat.getFlatStatus().getUuid())) {
                 statusSpinner.setSelection(pos);
             }
+        }
 
         statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (!adapter.getItem(position).equals(flat.getFlatStatus()))
-                    presenter.updateFlatStatus(flat,adapter.getItem(position));
+                if (adapter.getItem(position)!=null) {
+                    if (!adapter.getItem(position).getUuid().equals(flat.getFlatStatus().getUuid()))
+                        presenter.updateFlatStatus(flat, adapter.getItem(position));
+                }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
             }
@@ -209,7 +225,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             }
         });
 
-        new_flat.setOnClickListener(new View.OnClickListener() {
+        new_equipment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), AddEquipmentActivity.class);

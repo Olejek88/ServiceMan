@@ -48,11 +48,9 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
     private Street currentStreet;
-    private Flat currentFlat;
 
     private AbonentsContract.Presenter presenter;
 
-    // As a fragment, default constructor is needed.
     public AbonentsFragment() {}
 
     public static AbonentsFragment newInstance() {
@@ -77,18 +75,13 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
             public void onClick(View v) {
                 switch (currentLevel) {
                     case LEVEL_INFO:
-                        //showStreets(list);
                         presenter.loadFlats(currentHouse);
-                        //recyclerView.setAdapter(flatAdapter);
                         break;
                     case LEVEL_FLAT:
                         presenter.loadHouses(currentStreet);
-                        //recyclerView.setAdapter(houseAdapter);
                         break;
                     case LEVEL_HOUSE:
-                        //presenter.loadStreets();
                         presenter.loadStreets();
-                        //recyclerView.setAdapter(streetAdapter);
                         break;
                     case LEVEL_STREET:
                         break;
@@ -210,11 +203,13 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
             flatAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
                 @Override
                 public void OnItemClick(View v, int position) {
+/*
                     Flat flat = list.get(position);
-                    //                   Intent intent = new Intent(getContext(), FlatActivity.class);
-//                    intent.putExtra(FlatActivity.FLAT_ID, list.get(position).get_id());
-//                    startActivity(intent);
+                    Intent intent = new Intent(getContext(), FlatActivity.class);
+                    intent.putExtra(FlatActivity.FLAT_ID, list.get(position).get_id());
+                    startActivity(intent);
                     currentFlat = flat;
+*/
                 }
             });
             recyclerView.setAdapter(flatAdapter);
@@ -222,7 +217,6 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
         }
-        //showEmptyView(list.isEmpty());
     }
 
     public void showStreets(@NonNull final List<Street> list) {
@@ -242,8 +236,6 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
             streetAdapter.updateData(list);
             recyclerView.setAdapter(streetAdapter);
         }
-
-        //showEmptyView(list.isEmpty());
     }
 
     public void showHouses(@NonNull final List<House> list) {
@@ -263,7 +255,6 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
             houseAdapter.updateData(list);
             recyclerView.setAdapter(houseAdapter);
         }
-        //showEmptyView(list.isEmpty());
     }
 
     @Override

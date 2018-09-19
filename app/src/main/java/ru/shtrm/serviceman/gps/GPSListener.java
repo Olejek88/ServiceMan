@@ -17,7 +17,7 @@ import static java.lang.Math.abs;
 public class GPSListener implements LocationListener, GpsStatus.Listener {
 
     private String userUuid = null;
-    public Location prevLocation = null;
+    private Location prevLocation = null;
 
     @Override
     public void onGpsStatusChanged(int event) {

@@ -86,6 +86,7 @@ public class LoadTestData {
     final static String houseUuid1 = "1dd8d4f8-5c98-4444-86ed-97ddddf";
     final static String houseUuid2 = "00000000-5c98-4444-86ed-97dddde";
     final static String houseUuid3 = "12345678-5c98-4444-86ed-97dddde";
+    final static String houseUuid4 = "87654321-5c98-4444-86ed-97dddde";
     final static String subjectUuid = "82128989-5c98-4444-86ed-97dddde";
 
     public static void LoadTestUser() {
@@ -434,7 +435,7 @@ public class LoadTestData {
             @Override
             public void execute(Realm realm) {
                 house3 = realmDB.createObject(House.class, 4);
-                house3.setUuid(houseUuid3);
+                house3.setUuid(houseUuid4);
                 house3.setStreet(street);
                 house3.setTitle("19");
                 house3.setHouseType(houseType2);
@@ -492,6 +493,7 @@ public class LoadTestData {
                 subject = realmDB.createObject(Subject.class, 1);
                 subject.setUuid(subjectUuid);
                 subject.setHouse(house2);
+                subject.setFlat(flat);
                 subject.setOwner("Колдовский П.С.");
                 subject.setContractNumber("АВ2017-128199112");
                 subject.setContractDate(new Date());

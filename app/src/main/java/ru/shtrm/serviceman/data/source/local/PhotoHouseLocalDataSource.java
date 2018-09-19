@@ -6,7 +6,11 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
+import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.PhotoHouseDataSource;
 
@@ -70,4 +74,15 @@ public class PhotoHouseLocalDataSource implements PhotoHouseDataSource {
         return lastId.longValue();
     }
 
+    @Override
+    public PhotoHouse getLastPhotoByHouse(House house) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<PhotoHouse> photoHouses = realm.where(PhotoHouse.class).
+                equalTo("house.uuid", house.getUuid()).
+                findAllSorted("createdAt", Sort.DESCENDING);
+        if (!photoHouses.isEmpty())
+            return realm.copyFromRealm(photoHouses.first());
+        else
+            return null;
+    }
 }

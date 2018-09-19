@@ -81,10 +81,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
+                        android:text="@string/equipment_status"
                         android:gravity="start|center_vertical"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
                         android:textColor="@color/mdtp_white"
-                        android:textSize="16sp" />
+                        android:textSize="18sp" />
 
                     <!--
                                         <android.support.v7.widget.AppCompatTextView
@@ -196,7 +197,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="140dp"
         android:layout_marginEnd="5dp"
         android:src="@drawable/ic_plus_white_36dp"
         app:backgroundTint="@color/colorPrimary"
@@ -207,7 +208,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="70dp"
         android:layout_marginEnd="5dp"
         android:src="@drawable/baseline_camera_enhance_white_24dp"
         app:backgroundTint="@color/colorPrimary"

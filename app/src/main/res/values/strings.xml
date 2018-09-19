@@ -38,11 +38,11 @@
     <string name="login_error">! Ошибка ввода пин-кода для данного пользователя</string>
 
     <!--abonents-->
-    <string name="no_last_time">Нет даты обслуживания</string>
+    <string name="no_last_time">Нет обслуживания</string>
 
     <!--flats-->
     <string name="flat_abonent">Абонент</string>
-    <string name="flat_inn">ИНН</string>
+    <string name="flat_inn">ИНН/Договор</string>
 
     <!--equipments-->
     <string name="equipment_serial">Серийный номер:</string>

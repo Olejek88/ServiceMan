@@ -159,9 +159,9 @@
         android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@id/main.appbar"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="100dp"
+        android:layout_marginStart="@dimen/fab_margin"
         android:src="@drawable/ic_chevron_left_white_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal" />
@@ -171,7 +171,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
         android:src="@drawable/baseline_camera_enhance_white_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal" />

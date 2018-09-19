@@ -300,7 +300,8 @@ public class MapFragment extends Fragment implements MapContract.View {
         if (location != null) {
             GeoPoint point2 = new GeoPoint(location.getLatitude(), location.getLongitude());
             if (mapController != null && mapView != null && aOverlayItemArray != null) {
-                mapController.setCenter(point2);
+                if (mainActivityConnector.getPreferences(Context.MODE_PRIVATE).getBoolean("gps_center",true))
+                    mapController.setCenter(point2);
                 OverlayItem overlayItem = new OverlayItem("Вы здесь", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));
                 if (positionItemizedIconOverlay == null)

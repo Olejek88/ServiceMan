@@ -151,8 +151,11 @@
     <string name="notifications">Оповещения</string>
     <string name="gps">Сбор данных GPS</string>
     <string name="gps_desc">Необходимость сбора данных координат</string>
+    <string name="gps_center">Фокус карты</string>
+    <string name="gps_center_desc">Центровать карту по координатам</string>
     <string name="load_test_data">Загрузить тестовые данные</string>
     <string name="delete_test_data">Удалить справочники</string>
+    <string name="data">Данные</string>
 
     <string name="do_not_disturb_mode">Режим не беспокоить</string>
     <string name="do_not_disturb_mode_desc">Не оповещать меня в эти часы</string>

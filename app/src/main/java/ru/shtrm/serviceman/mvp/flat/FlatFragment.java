@@ -188,7 +188,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         statusSpinner.setAdapter(adapter);
         for (int pos = 0; pos < flatStatuses.size(); pos++) {
             FlatStatus flatStatus = flatStatuses.get(pos);
-            if (flatStatus!=null) {
+            if (flatStatus!=null && flat.getFlatStatus()!=null) {
                 if (flatStatus.getUuid().equals(flat.getFlatStatus().getUuid())) {
                     statusSpinner.setSelection(pos);
                 }
@@ -199,7 +199,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 FlatStatus flatStatus = adapter.getItem(position);
-                if (flatStatus!=null) {
+                if (flatStatus!=null && flat.getFlatStatus()!=null) {
                     if (!flatStatus.getUuid().equals(flat.getFlatStatus().getUuid()))
                         presenter.updateFlatStatus(flat, adapter.getItem(position));
                 }

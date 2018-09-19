@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/textViewAvatar"
             android:textColor="@android:color/white"
-            android:textSize="28sp"
+            android:textSize="30sp"
             android:layout_gravity="center" />
 
     </FrameLayout>

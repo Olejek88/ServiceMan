@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Date;
 
@@ -193,6 +194,8 @@ public class EquipmentActivity extends AppCompatActivity
                     messageRepository.saveMessage(message);
                     MainUtil.storePhotoMessage(message, photoUuid);
                     alertDialogAndroid.dismiss();
+                    Toast.makeText(activity.getApplicationContext(),"Добавлен комментарий",
+                            Toast.LENGTH_LONG).show();
                 }
                 else {
                     TextView error = mView.findViewById(R.id.dialogError);

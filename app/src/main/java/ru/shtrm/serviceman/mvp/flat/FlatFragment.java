@@ -145,7 +145,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         if (mToolbar !=null) {
             mToolbar.setTitle(flat.getFullTitle());
             if (flat.getHouse().getHouseType() != null) {
-                if(DensityUtil.getScreenHeight(mainActivityConnector)>1280) {
+                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280) {
                     mToolbar.setSubtitle(flat.getHouse().getHouseType().getTitle());
                 } else {
                     mToolbar.setTitle(flat.getFullTitle().concat(" - ").
@@ -158,7 +158,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             textViewInn.setText(resident.getInn());
             textViewAbonent.setText(resident.getOwner());
         }
-        if (subject!=null) {
+        if (subject != null) {
             textViewInn.setText(subject.getContractNumber());
             textViewAbonent.setText(subject.getOwner());
         }
@@ -199,7 +199,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
 
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (adapter.getItem(position)!=null) {
+                if (adapter.getItem(position) != null) {
                     if (!adapter.getItem(position).getUuid().equals(flat.getFlatStatus().getUuid()))
                         presenter.updateFlatStatus(flat, adapter.getItem(position));
                 }

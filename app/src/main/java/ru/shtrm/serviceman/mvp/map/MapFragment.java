@@ -194,10 +194,10 @@ public class MapFragment extends Fragment implements MapContract.View {
                 @Override
                 public void OnItemClick(View v, int position) {
                     House house = list.get(position);
-                    if (house!=null) {
+                    if (house != null) {
                         PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
                                 getLastPhotoByHouse(house);
-                        if (photoHouse!=null) {
+                        if (photoHouse != null) {
                             GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
                             mapController.setCenter(point2);
                         }
@@ -261,7 +261,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         List<House> houses = HouseLocalDataSource.getInstance().getHouses();
         for (House house : houses) {
             PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
-            if (photoHouse!=null) {
+            if (photoHouse != null) {
                 HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
                         "Дом", new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude()));
                 houseItem.house = house;
@@ -286,8 +286,8 @@ public class MapFragment extends Fragment implements MapContract.View {
             protected boolean onLongPressHelper(int index, OverlayItem item) {
                 House house = ((HouseOverlayItem) item).house;
                 String markerText = house.getFullTitle();
-                if (house.getHouseType()!=null)
-                    markerText=markerText.concat(" - ").concat(house.getHouseType().getTitle());
+                if (house.getHouseType() != null)
+                    markerText = markerText.concat(" - ").concat(house.getHouseType().getTitle());
                 Toast.makeText(mainActivityConnector, markerText, Toast.LENGTH_SHORT).show();
                 return super.onLongPressHelper(index, item);
             }
@@ -303,7 +303,7 @@ public class MapFragment extends Fragment implements MapContract.View {
                 mapController.setCenter(point2);
                 OverlayItem overlayItem = new OverlayItem("Вы здесь", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));
-                if (positionItemizedIconOverlay==null)
+                if (positionItemizedIconOverlay == null)
                     positionItemizedIconOverlay = new ItemizedIconOverlay<>(
                             mainActivityConnector, aOverlayItemArray, null);
 

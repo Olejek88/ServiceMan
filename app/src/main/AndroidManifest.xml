@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature android:name="android.hardware.camera" android:required="true" />
 
@@ -103,6 +104,10 @@
                 android:resource="@xml/widget_provider" />
         </receiver>
 -->
+        <!--<service android:name=".rest.SendGPSnLogService" />-->
+        <!--<service android:name=".rest.SendOrdersService" />-->
+        <service android:name=".service.ForegroundService" />
+        <service android:name=".service.GetReferenceService" />
 
     </application>
 

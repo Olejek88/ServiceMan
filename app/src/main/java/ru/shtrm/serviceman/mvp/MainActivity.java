@@ -61,6 +61,7 @@ import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.retrofit.UsersTask;
+import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
@@ -99,6 +100,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         currentSavedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_main);
+
+        // запускаем сервис который будет в фоне заниматься получением/отправкой данных
+        Intent intent = new Intent(this, ForegroundService.class);
+        startService(intent);
 
         if (PreferenceManager.getDefaultSharedPreferences(this).
                 getBoolean("navigation_bar_tint", true)) {

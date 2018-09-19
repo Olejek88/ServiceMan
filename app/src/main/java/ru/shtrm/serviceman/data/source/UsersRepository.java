@@ -3,8 +3,7 @@ package ru.shtrm.serviceman.data.source;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.List;
-
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.data.User;
 
 public class UsersRepository implements UsersDataSource {
@@ -28,7 +27,7 @@ public class UsersRepository implements UsersDataSource {
     }
 
     @Override
-    public List<User> getUsers() {
+    public RealmResults<User> getUsers() {
         return localDataSource.getUsers();
     }
 

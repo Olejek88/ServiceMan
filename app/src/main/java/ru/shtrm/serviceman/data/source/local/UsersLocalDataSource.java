@@ -3,9 +3,8 @@ package ru.shtrm.serviceman.data.source.local;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.List;
-
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersDataSource;
@@ -29,14 +28,12 @@ public class UsersLocalDataSource implements UsersDataSource {
     }
 
     @Override
-    public List<User> getUsers() {
+    public RealmResults<User> getUsers() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm
-                        .where(User.class)
-                        .notEqualTo("uuid", User.SERVICE_USER_UUID)
-                        .findAllSorted("name", Sort.ASCENDING)
-        );
+        return realm
+                .where(User.class)
+                .notEqualTo("uuid", User.SERVICE_USER_UUID)
+                .findAllSorted("name", Sort.ASCENDING);
     }
 
     public User getLastUser() {

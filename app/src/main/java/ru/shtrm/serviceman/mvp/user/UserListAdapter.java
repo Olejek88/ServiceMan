@@ -9,23 +9,24 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import java.util.List;
 
+import io.realm.RealmBaseAdapter;
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.User;
 
 
-public class UserListAdapter extends ArrayAdapter<User> {
+public class UserListAdapter extends RealmBaseAdapter<User> {
 
     private Context context;
     private List<User> users;
     private final LayoutInflater flater;
     private final int mResource;
 
-    public UserListAdapter(Context context, @LayoutRes int resource, List<User> users) {
-        super(context, resource, users);
+    public UserListAdapter(Context context, @LayoutRes int resource, RealmResults<User> users) {
+        super(users);
         this.context = context;
         mResource = resource;
         flater = LayoutInflater.from(context);
@@ -33,17 +34,17 @@ public class UserListAdapter extends ArrayAdapter<User> {
     }
 
     @Override
-    public int getCount(){
+    public int getCount() {
         return users.size();
     }
 
     @Override
-    public User getItem(int position){
+    public User getItem(int position) {
         return users.get(position);
     }
 
     @Override
-    public long getItemId(int position){
+    public long getItemId(int position) {
         return position;
     }
 
@@ -53,11 +54,12 @@ public class UserListAdapter extends ArrayAdapter<User> {
     }
 
     @Override
-    public @NonNull View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public @NonNull
+    View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         return createItemView(position, convertView, parent);
     }
 
-    private View createItemView(int position, View convertView, ViewGroup parent){
+    private View createItemView(int position, View convertView, ViewGroup parent) {
         final View view = flater.inflate(mResource, parent, false);
         User item = getItem(position);
 
@@ -66,10 +68,11 @@ public class UserListAdapter extends ArrayAdapter<User> {
         textViewTitle = view.findViewById(R.id.textViewUserName);
         textViewAvatar = view.findViewById(R.id.textViewAvatar);
         textViewTitle.setTypeface(null, Typeface.BOLD);
-        if (item!=null) {
+        if (item != null) {
             textViewTitle.setText(item.getName());
             textViewAvatar.setText(item.getName().substring(0, 1));
         }
+
         return view;
     }
 }

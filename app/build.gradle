@@ -111,6 +111,8 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
+    implementation 'io.realm:android-adapters:2.1.0'
+
     // Runner and rules
     androidTestImplementation "com.android.support.test:runner:$runnerRulesVersion"
     androidTestImplementation "com.android.support.test:rules:$runnerRulesVersion"

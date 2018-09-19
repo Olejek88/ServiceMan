@@ -2,8 +2,7 @@ package ru.shtrm.serviceman.mvp.user;
 
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 
@@ -25,9 +24,7 @@ public class UserPresenter implements UserContract.Presenter {
     }
 
     @Override
-    public List<User> loadUsers() {
-        List<User> users = userRepository.getUsers();
-        //view.showUsers(users);
-        return users;
+    public RealmResults<User> loadUsers() {
+        return userRepository.getUsers();
     }
 }

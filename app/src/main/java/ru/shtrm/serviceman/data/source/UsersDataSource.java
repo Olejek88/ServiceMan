@@ -2,13 +2,12 @@ package ru.shtrm.serviceman.data.source;
 
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.data.User;
 
 public interface UsersDataSource {
 
-    List<User> getUsers();
+    RealmResults<User> getUsers();
 
     User getUser(@NonNull String userUuid);
 

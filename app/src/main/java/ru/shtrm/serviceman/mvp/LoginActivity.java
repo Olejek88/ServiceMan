@@ -21,9 +21,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.List;
-
 import io.realm.Realm;
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Token;
@@ -158,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
         });
         pinCode.requestFocus();
 
-        List<User> users = presenter.loadUsers();
+        RealmResults<User> users = presenter.loadUsers();
         UserListAdapter adapter = new UserListAdapter(this, R.layout.item_user, users);
         userSelect.setAdapter(adapter);
     }

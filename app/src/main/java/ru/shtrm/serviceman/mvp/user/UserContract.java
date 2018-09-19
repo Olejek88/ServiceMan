@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.mvp.BasePresenter;
 import ru.shtrm.serviceman.mvp.BaseView;
@@ -15,6 +16,6 @@ public interface UserContract {
     }
 
     interface Presenter extends BasePresenter {
-        List<User> loadUsers();
+        RealmResults<User> loadUsers();
     }
 }

@@ -187,8 +187,11 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                 R.layout.simple_spinner_item, flatStatuses, R.color.mdtp_white);
         statusSpinner.setAdapter(adapter);
         for (int pos = 0; pos < flatStatuses.size(); pos++) {
-            if (flatStatuses.get(pos).getUuid().equals(flat.getFlatStatus().getUuid())) {
-                statusSpinner.setSelection(pos);
+            FlatStatus flatStatus = flatStatuses.get(pos);
+            if (flatStatus!=null) {
+                if (flatStatus.getUuid().equals(flat.getFlatStatus().getUuid())) {
+                    statusSpinner.setSelection(pos);
+                }
             }
         }
 

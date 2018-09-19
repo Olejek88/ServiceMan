@@ -129,6 +129,9 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 city = realmDB.createObject(City.class, 1);
                 city.setTitle("Нязепетровск");
+                city.setUuid(cityUuid);
+                city.setCreatedAt(new Date());
+                city.setChangedAt(new Date());
             }
         });
 
@@ -207,18 +210,6 @@ public class LoadTestData {
                 flat.setHouse(house1);
                 flat.setTitle("8");
                 flat.setFlatStatus(flatStatus);
-            }
-        });
-
-
-        realmDB.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                equipment1 = realmDB.createObject(Equipment.class, 1);
-                equipment1.setUuid(equipmentUuid1);
-                equipment1.setFlat(flat);
-                equipment1.setHouse(house1);
-                equipment1.setSerial("12345");
             }
         });
 

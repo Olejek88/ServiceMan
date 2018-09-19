@@ -1,14 +1,24 @@
 package ru.shtrm.serviceman.util;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,14 +44,17 @@ import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.MessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoMessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
-public class MainUtil {
+import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 
+public class MainUtil {
+    public static final int ACTIVITY_PHOTO_MESSAGE = 103;
     public static void setToolBarColor(Context context, Activity myActivityReference) {
         if (PreferenceManager.getDefaultSharedPreferences(context).
                 getBoolean("navigation_bar_tint", true)) {
@@ -225,5 +238,4 @@ public class MainUtil {
             ShortcutBadger.applyCount(context, (int)not_sended);
         }
     }
-
 }

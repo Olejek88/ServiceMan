@@ -16,7 +16,7 @@ public class AppRealm {
         init(context, "serviceman.realm");
     }
 
-    public static void init(Context context, String dbName) {
+    private static void init(Context context, String dbName) {
         Realm.init(context);
         RealmConfiguration realmConfig = new RealmConfiguration.Builder()
                 .name(dbName)

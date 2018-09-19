@@ -13,13 +13,6 @@
         android:id="@+id/imageAddMessage"
         android:src="@color/colorPrimary"/>
 
-    <TextView
-        android:id="@+id/dialogTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_message_title"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <EditText
         android:id="@+id/userMessage"
         android:inputType="textMultiLine"
@@ -33,7 +26,7 @@
         android:id="@+id/dialogError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/mdtp_red"
+        android:textColor="@color/red"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </LinearLayout>

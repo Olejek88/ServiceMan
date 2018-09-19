@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -51,6 +52,7 @@ import ru.shtrm.serviceman.util.MainUtil;
 import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
+import static ru.shtrm.serviceman.util.MainUtil.ACTIVITY_PHOTO_MESSAGE;
 
 public class FlatFragment extends Fragment implements FlatContract.View {
     private Activity mainActivityConnector = null;
@@ -120,33 +122,10 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            mainActivityConnector.onBackPressed();
-        }
-        int id = item.getItemId();
-        if (id == R.id.action_add_comment) {
-            MainActivity.createAddMessageDialog(mainActivityConnector, flat);
-            return true;
-        } else if (id == R.id.action_add_image) {
-            try {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, ACTIVITY_PHOTO);
-            } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
-            }
-            return true;
-        } else if (id == R.id.action_set_status) {
-            return true;
-        }
-
-        return true;
-    }
-
-    @Override
     public void initViews(View view) {
         FloatingActionButton make_photo = view.findViewById(R.id.add_photo);
         FloatingActionButton new_equipment = view.findViewById(R.id.add_equipment);
+        FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
 
         TextView textViewInn = view.findViewById(R.id.textViewFlatInn);
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
@@ -214,11 +193,11 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         }
 
         statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (adapter.getItem(position)!=null) {
-                    if (!adapter.getItem(position).getUuid().equals(flat.getFlatStatus().getUuid()))
+                FlatStatus flatStatus = adapter.getItem(position);
+                if (flatStatus!=null) {
+                    if (!flatStatus.getUuid().equals(flat.getFlatStatus().getUuid()))
                         presenter.updateFlatStatus(flat, adapter.getItem(position));
                 }
             }
@@ -250,6 +229,13 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                 intent.putExtra(FLAT_UUID, flat.getUuid());
                 intent.putExtra(HOUSE_UUID, flat.getHouse().getUuid());
                 startActivity(intent);
+            }
+        });
+
+        add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FlatActivity.createAddMessageDialog(mainActivityConnector,flat);
             }
         });
 
@@ -323,8 +309,6 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                         }
                     }
                 }
-                break;
-            default:
                 break;
         }
     }

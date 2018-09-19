@@ -139,29 +139,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            mainActivityConnector.onBackPressed();
-        }
-        int id = item.getItemId();
-        if (id == R.id.action_add_comment) {
-            MainActivity.createAddMessageDialog(mainActivityConnector, equipment.getFlat());
-            return true;
-        } else if (id == R.id.action_add_image) {
-            try {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, ACTIVITY_PHOTO);
-            } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
-            }
-            return true;
-        } else if (id == R.id.action_set_status) {
-            return true;
-        }
-        return true;
-    }
-
-    @Override
     public void initViews(View view) {
         final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
         final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);

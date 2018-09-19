@@ -27,6 +27,8 @@ import ru.shtrm.serviceman.db.migration.Migration5;
 import ru.shtrm.serviceman.db.migration.Migration6;
 import ru.shtrm.serviceman.db.migration.Migration7;
 import ru.shtrm.serviceman.db.migration.Migration8;
+import ru.shtrm.serviceman.db.migration.Migration9;
+import ru.shtrm.serviceman.db.migration.Migration10;
 
 class AppRealmMigration implements RealmMigration {
     private final String TAG = this.getClass().getName();
@@ -87,6 +89,16 @@ class AppRealmMigration implements RealmMigration {
 
         if (oldVersion == 7) {
             new Migration8().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 8) {
+            new Migration9().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 9) {
+            new Migration10().migration(realm);
             oldVersion++;
         }
 

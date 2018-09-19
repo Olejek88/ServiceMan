@@ -2,6 +2,7 @@ package ru.shtrm.serviceman.mvp.profile;
 
 import android.support.annotation.NonNull;
 
+import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
@@ -29,7 +30,7 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
     }
 
     private void fetchUserData() {
-        User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
+        User user = AuthorizedUser.getInstance().getUser();
         view.showUser(user);
     }
 }

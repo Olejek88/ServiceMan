@@ -1,18 +1,33 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.UUID;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class Alarm extends RealmObject {
 
-    @PrimaryKey
+    @Index
     private long _id;
+    @PrimaryKey
     private String uuid;
     private AlarmType alarmType;
     private AlarmStatus alarmStatus;
     private User user;
+    private boolean sent;
+
+    public Alarm() {
+        uuid = UUID.randomUUID().toString().toUpperCase();
+        sent = false;
+        Date createDate = new Date();
+        date = createDate;
+        createdAt = createDate;
+        changedAt = createDate;
+        user = AuthorizedUser.getInstance().getUser();
+    }
 
     public long get_id() {
         return _id;
@@ -102,6 +117,18 @@ public class Alarm extends RealmObject {
         this.changedAt = changedAt;
     }
 
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Alarm.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
+
     private Double longitude;
     private Double latitude;
     private String comment;
@@ -109,4 +136,11 @@ public class Alarm extends RealmObject {
     private Date createdAt;
     private Date changedAt;
 
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
+    }
 }

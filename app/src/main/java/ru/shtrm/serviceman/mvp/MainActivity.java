@@ -1,6 +1,7 @@
 package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -48,7 +50,6 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
@@ -59,8 +60,12 @@ import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
+import ru.shtrm.serviceman.retrofit.UsersTask;
 import ru.shtrm.serviceman.ui.PrefsActivity;
+import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
+
+import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -107,14 +112,18 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
+        // пытаемся получить список пользователей с сервера, с помощью сервисного пользователя
+        getUsersList();
+
         if (savedInstanceState != null) {
             isLogged = savedInstanceState.getBoolean("isLogged");
         } else {
-            User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
+            User user = AuthorizedUser.getInstance().getUser();
             if (user == null) {
                 user = UsersLocalDataSource.getInstance().getLastUser();
-                if (user != null)
-                    AuthorizedUser.getInstance().setId(user.getUuid());
+                if (user != null) {
+                    AuthorizedUser.getInstance().setUser(user);
+                }
             }
         }
 
@@ -151,8 +160,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (AuthorizedUser.getInstance().getId() != null) {
-            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        if (AuthorizedUser.getInstance().getUser() != null) {
+            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
             if (user != null) {
                 TextView profileName = navigationView.getHeaderView(0).findViewById(R.id.name);
                 profileName.setText(user.getName());
@@ -491,7 +500,7 @@ public class MainActivity extends AppCompatActivity
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.CAMERA
         };
-        if(!hasPermissions(this, PERMISSIONS)){
+        if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
     }
@@ -521,11 +530,11 @@ public class MainActivity extends AppCompatActivity
                     }
                     break;
                 case REQUEST_FINE_LOCATION:
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this,
-                            getResources().getString(R.string.message_no_gps_permission),
-                            Toast.LENGTH_SHORT).show();
-                }
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this,
+                                getResources().getString(R.string.message_no_gps_permission),
+                                Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case REQUEST_CAMERA_PERMISSION_CODE:
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
@@ -564,8 +573,13 @@ public class MainActivity extends AppCompatActivity
             toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
         }
-        LoadTestData.LoadTestUser();
-        //LoadTestData.LoadAllTestData4();
+
+        // добавляем сервисного пользователя
+        addServiceUser();
+
+//        LoadTestData.LoadTestUser();
+//        LoadTestData.LoadAllTestData4();
+
         return success;
     }
 
@@ -629,5 +643,63 @@ public class MainActivity extends AppCompatActivity
             _gpsListener = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.settings_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_add_comment) {
+            return true;
+        } else if (id == R.id.action_add_image) {
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, ACTIVITY_PHOTO);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
+            return true;
+        } else if (id == R.id.action_set_status) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void addServiceUser() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                User sUser = realm.where(User.class)
+                        .equalTo("uuid", User.SERVICE_USER_UUID)
+                        .findFirst();
+                if (sUser == null) {
+                    sUser = new User();
+                    sUser.set_id(User.getLastId() + 1);
+                    sUser.setUuid(User.SERVICE_USER_UUID);
+                    sUser.setName("sUser");
+                    sUser.setPin(MainUtil.MD5("qwerfvgtbsasljflasjflajsljdsa"));
+                    sUser.setContact("");
+                    realm.copyToRealmOrUpdate(sUser);
+                }
+            }
+        });
+        realm.close();
+    }
+
+    private void getUsersList() {
+        Realm realm = Realm.getDefaultInstance();
+        User sUser = realm.where(User.class).equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
+        if (sUser != null) {
+            UsersTask task = new UsersTask(getApplicationContext());
+            task.execute(sUser.getUuid(), sUser.getPin());
+        }
+
+        realm.close();
     }
 }

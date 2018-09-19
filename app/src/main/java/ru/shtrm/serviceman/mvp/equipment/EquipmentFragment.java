@@ -280,7 +280,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         measure.setCreatedAt(new Date());
         measure.setDate(new Date());
         measure.setEquipment(equipment);
-        measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId()));
+        measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid()));
         measure.setUuid(java.util.UUID.randomUUID().toString());
         MeasureLocalDataSource.getInstance().addMeasure(measure);
         Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();

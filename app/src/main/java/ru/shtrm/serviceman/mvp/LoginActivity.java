@@ -1,11 +1,13 @@
 package ru.shtrm.serviceman.mvp;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
@@ -25,6 +28,9 @@ import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.user.UserContract;
 import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+import ru.shtrm.serviceman.retrofit.TokenTask;
+import ru.shtrm.serviceman.util.MainUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -50,7 +56,40 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 User user = (User) userSelect.getSelectedItem();
-                checkUser(user.getUuid(), pinCode.getText().toString());
+                String enteredPin = pinCode.getText().toString();
+                String enteredPinMD5 = MainUtil.MD5(enteredPin);
+                AuthorizedUser aUser = AuthorizedUser.getInstance();
+
+                if (enteredPinMD5 != null && enteredPinMD5.equals(user.getPin())) {
+                    aUser.setValidToken(false);
+                    checkUser(user.getUuid(), pinCode.getText().toString());
+                    // достаём ранее сохранённый токен
+                    SharedPreferences sp = getApplicationContext().getSharedPreferences(user.getUuid(), MODE_PRIVATE);
+                    String token = sp.getString("token", null);
+                    // если токена нет, делаем запрос к серверу
+                    if (token == null) {
+                        TokenTask task = new TokenTask(getApplicationContext());
+                        task.execute(user.getUuid(), user.getPin());
+                    } else {
+                        aUser.setToken(token);
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                AuthorizedUser aUser = AuthorizedUser.getInstance();
+                                if (SManApiFactory.pingService()) {
+                                    Log.d("xxxx", "ping success");
+                                    aUser.setValidToken(true);
+                                } else {
+                                    Log.d("xxxx", "ping failed");
+                                    // TODO: проверить в чём дело
+                                    TokenTask task = new TokenTask(getApplicationContext());
+                                    task.execute(aUser.getUser().getUuid(), aUser.getUser().getPin());
+                                }
+                            }
+                        };
+                        new Thread(runnable).start();
+                    }
+                }
             }
         });
     }
@@ -86,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 loginError.setVisibility(View.GONE);
-                if (s.length()==4) {
+                if (s.length() == 4) {
                     Button b = findViewById(R.id.loginButton);
                     b.performClick();
                 }
@@ -104,8 +143,7 @@ public class LoginActivity extends AppCompatActivity {
         pinCode.requestFocus();
 
         List<User> users = presenter.loadUsers();
-        UserListAdapter adapter = new UserListAdapter(this,
-                R.layout.item_user, users);
+        UserListAdapter adapter = new UserListAdapter(this, R.layout.item_user, users);
         userSelect.setAdapter(adapter);
     }
 
@@ -115,7 +153,10 @@ public class LoginActivity extends AppCompatActivity {
         if (usersLocalDataSource != null) {
             if (usersLocalDataSource.checkUser(userUuid, pin)) {
                 AuthorizedUser aUser = AuthorizedUser.getInstance();
-                aUser.setId(userUuid);
+                Realm realm = Realm.getDefaultInstance();
+                User user = realm.where(User.class).equalTo("uuid", userUuid).findFirst();
+                aUser.setUser(realm.copyFromRealm(user));
+                realm.close();
                 finish();
             } else
                 loginError.setVisibility(View.VISIBLE);

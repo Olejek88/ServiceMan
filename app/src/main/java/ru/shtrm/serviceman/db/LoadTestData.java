@@ -20,6 +20,7 @@ import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.Subject;
 import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.util.MainUtil;
 
 public class LoadTestData {
     public static User user;
@@ -94,15 +95,15 @@ public class LoadTestData {
 
         final String userTestUuid = "4462ed77-9bf0-4542-b127-f4ecefce49da";
         // User --------------------
-        user = realmDB.where(User.class).findFirst();
+        user = realmDB.where(User.class).equalTo("uuid", userTestUuid).findFirst();
         if (user == null) {
             realmDB.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    user = realmDB.createObject(User.class, 1);
+                    user = realmDB.createObject(User.class, 2);
                     user.setUuid(userTestUuid);
                     user.setName("Иванов О.А.");
-                    user.setPin("1234");
+                    user.setPin(MainUtil.MD5("1234"));
                     user.setContact("+79227000293");
                 }
             });

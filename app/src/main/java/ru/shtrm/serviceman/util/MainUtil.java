@@ -154,7 +154,7 @@ public class MainUtil {
         PhotoEquipment photoEquipment = new PhotoEquipment();
         PhotoEquipmentLocalDataSource photoEquipmentRepository = PhotoEquipmentLocalDataSource.getInstance();
         GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
         photoEquipment.set_id(photoEquipmentRepository.getLastId()+1);
         photoEquipment.setEquipment(equipment);
         photoEquipment.setUuid(uuid);
@@ -173,7 +173,7 @@ public class MainUtil {
 
     public static void storePhotoHouse (House house, String uuid) {
         PhotoHouse photoHouse = new PhotoHouse();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
         PhotoHouseLocalDataSource photoHouseRepository = PhotoHouseLocalDataSource.getInstance();
         GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
         photoHouse.set_id(photoHouseRepository.getLastId()+1);
@@ -196,7 +196,7 @@ public class MainUtil {
         PhotoFlat photoFlat = new PhotoFlat();
         PhotoFlatLocalDataSource photoFlatRepository = PhotoFlatLocalDataSource.getInstance();
         GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getId());
+        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
         photoFlat.set_id(photoFlatRepository.getLastId()+1);
         photoFlat.setFlat(flat);
         photoFlat.setUuid(uuid);
@@ -237,5 +237,21 @@ public class MainUtil {
         if (not_sended > 0) {
             ShortcutBadger.applyCount(context, (int)not_sended);
         }
+    }
+
+    public static String MD5(String string) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(string.getBytes());
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

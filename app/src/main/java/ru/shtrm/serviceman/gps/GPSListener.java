@@ -8,9 +8,9 @@ import android.os.Bundle;
 import java.util.Date;
 
 import io.realm.Realm;
+import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
 import static java.lang.Math.abs;
 
@@ -54,16 +54,28 @@ public class GPSListener implements LocationListener, GpsStatus.Listener {
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
-                if (user!=null) {
-                    long next_id = GpsTrack.getLastId() + 1;
-                    GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
-                    gpstrack.setDate(new Date());
-                    gpstrack.setUserUuid(user.getUuid());
-                    gpstrack.setLatitude(latitude);
-                    gpstrack.setLongitude(longitude);
-                    realm.copyToRealmOrUpdate(gpstrack);
+                User user = AuthorizedUser.getInstance().getUser();
+                String uuid;
+                if (user != null) {
+                    userUuid = user.getUuid();
+                    uuid = user.getUuid();
+                } else {
+                    if (userUuid != null) {
+                        uuid = userUuid;
+                    } else {
+                        // нет ни текущего, ни "предыдущего" пользователя,
+                        // координаты "привязать" не к кому.
+                        return;
+                    }
                 }
+
+                long next_id = GpsTrack.getLastId() + 1;
+                GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
+                gpstrack.set_id(next_id);
+                gpstrack.setDate(new Date());
+                gpstrack.setUserUuid(uuid);
+                gpstrack.setLatitude(latitude);
+                gpstrack.setLongitude(longitude);
             }
         });
 

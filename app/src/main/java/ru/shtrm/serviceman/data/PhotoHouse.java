@@ -1,14 +1,18 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.UUID;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class PhotoHouse extends RealmObject {
 
-    @PrimaryKey
+    @Index
     private long _id;
+    @PrimaryKey
     private String uuid;
     private House house;
     private User user;
@@ -16,6 +20,15 @@ public class PhotoHouse extends RealmObject {
     private Double lattitude;
     private Date createdAt;
     private Date changedAt;
+    private boolean sent;
+
+    public PhotoHouse() {
+        uuid = UUID.randomUUID().toString().toUpperCase();
+        sent = false;
+        Date createDate = new Date();
+        createdAt = createDate;
+        changedAt = createDate;
+    }
 
     public long get_id() {
         return _id;
@@ -79,5 +92,25 @@ public class PhotoHouse extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Alarm.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 }

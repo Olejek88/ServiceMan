@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.User;
@@ -40,7 +41,7 @@ public class StreetLocalDataSource implements StreetDataSource {
     public List<Street> getStreetsByCurrentUser() {
         boolean present;
         Realm realm = Realm.getDefaultInstance();
-        User user = UsersLocalDataSource.getInstance().getAuthorisedUser();
+        User user = AuthorizedUser.getInstance().getUser();
         List<Street> resultStreet = new ArrayList<>();
         List<Street> allStreet = realm.copyFromRealm(
                 realm.where(Street.class).findAllSorted("title"));

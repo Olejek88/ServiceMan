@@ -1,9 +1,12 @@
 package ru.shtrm.serviceman.data;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
+    public static final String SERVICE_USER_UUID = "00000000-9bf0-4542-b127-f4ecefce49da";
+
     @PrimaryKey
     private long _id;
     private String uuid;
@@ -58,5 +61,17 @@ public class User extends RealmObject {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Alarm.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
     }
 }

@@ -1,8 +1,13 @@
 package ru.shtrm.serviceman.db.migration;
 
 import android.util.Log;
+
 import io.realm.DynamicRealm;
+import io.realm.DynamicRealmObject;
+import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
+import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.util.MainUtil;
 
 public class Migration8 implements IAppMigration {
 
@@ -10,12 +15,19 @@ public class Migration8 implements IAppMigration {
     public void migration(DynamicRealm realm) {
         Log.d(this.getClass().getSimpleName(), "from 7 version");
         RealmSchema schema = realm.getSchema();
-        schema.get("Alarm").addField("sent", boolean.class);
-        schema.get("Equipment").addField("sent", boolean.class);
-        schema.get("Measure").addField("sent", boolean.class);
-        schema.get("PhotoAlarm").addField("sent", boolean.class);
-        schema.get("PhotoEquipment").addField("sent", boolean.class);
-        schema.get("PhotoFlat").addField("sent", boolean.class);
-        schema.get("PhotoHouse").addField("sent", boolean.class);
+        schema.rename("PhotoAlert", "PhotoAlarm");
+        String[] classes = new String[]{
+                "Alarm",
+                "Equipment",
+                "PhotoAlarm",
+                "PhotoEquipment",
+                "PhotoFlat",
+                "PhotoHouse",
+                "Measure",
+        };
+        for (String className : classes
+                ) {
+            schema.get(className).removePrimaryKey().addPrimaryKey("uuid").addIndex("_id");
+        }
     }
 }

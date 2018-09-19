@@ -45,7 +45,10 @@ public class TokenTask extends AsyncTask<String, Void, Token> {
         if (token != null) {
             SharedPreferences sp = context.get().getSharedPreferences(token.getUsersUuid(), Context.MODE_PRIVATE);
             sp.edit().putString("token", token.getToken()).commit();
-            AuthorizedUser.getInstance().setToken(token.getToken());
+            // TODO: вместо этого нужно реализовать отправку сообщения, кому нужно его обработает!!!!
+            AuthorizedUser aUser = AuthorizedUser.getInstance();
+            aUser.setToken(token.getToken());
+            aUser.setValidToken(true);
         }
     }
 }

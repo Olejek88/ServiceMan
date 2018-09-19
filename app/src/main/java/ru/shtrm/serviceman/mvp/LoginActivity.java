@@ -30,6 +30,7 @@ import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 import ru.shtrm.serviceman.retrofit.TokenTask;
+import ru.shtrm.serviceman.util.MainUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -55,25 +56,40 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 User user = (User) userSelect.getSelectedItem();
-                checkUser(user.getUuid(), pinCode.getText().toString());
-                // достаём ранее сохранённый токен
-                SharedPreferences sp = getApplicationContext().getSharedPreferences(user.getUuid(), MODE_PRIVATE);
-                String token = sp.getString("token", null);
-                // если токена нет, делаем запрос к серверу
-                if (token == null) {
-                    TokenTask task = new TokenTask(getApplicationContext());
-                    task.execute(user.getUuid(), user.getPin());
-                } else {
-                    AuthorizedUser.getInstance().setToken(token);
-                    if (!SManApiFactory.pingService()) {
-                        Log.d("xxxx", "ping failed");
-                        // TODO: проверить в чём дело
-                        // TODO: если протух, получить новый
+                String enteredPin = pinCode.getText().toString();
+                String enteredPinMD5 = MainUtil.MD5(enteredPin);
+                AuthorizedUser aUser = AuthorizedUser.getInstance();
+
+                if (enteredPinMD5 != null && enteredPinMD5.equals(user.getPin())) {
+                    aUser.setValidToken(false);
+                    checkUser(user.getUuid(), pinCode.getText().toString());
+                    // достаём ранее сохранённый токен
+                    SharedPreferences sp = getApplicationContext().getSharedPreferences(user.getUuid(), MODE_PRIVATE);
+                    String token = sp.getString("token", null);
+                    // если токена нет, делаем запрос к серверу
+                    if (token == null) {
+                        TokenTask task = new TokenTask(getApplicationContext());
+                        task.execute(user.getUuid(), user.getPin());
                     } else {
-                        Log.d("xxxx", "ping success");
+                        aUser.setToken(token);
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                AuthorizedUser aUser = AuthorizedUser.getInstance();
+                                if (SManApiFactory.pingService()) {
+                                    Log.d("xxxx", "ping success");
+                                    aUser.setValidToken(true);
+                                } else {
+                                    Log.d("xxxx", "ping failed");
+                                    // TODO: проверить в чём дело
+                                    TokenTask task = new TokenTask(getApplicationContext());
+                                    task.execute(aUser.getUser().getUuid(), aUser.getUser().getPin());
+                                }
+                            }
+                        };
+                        new Thread(runnable).start();
                     }
                 }
-
             }
         });
     }

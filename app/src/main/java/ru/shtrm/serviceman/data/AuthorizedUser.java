@@ -5,6 +5,7 @@ public class AuthorizedUser {
     private User mUser;
     private String mToken;
     private static AuthorizedUser mInstance;
+    private boolean mIsValidToken;
 
     public static synchronized AuthorizedUser getInstance() {
         if (mInstance == null) {
@@ -55,5 +56,14 @@ public class AuthorizedUser {
     public void reset() {
         mToken = null;
         mUser = null;
+        mIsValidToken = false;
+    }
+
+    public boolean isValidToken() {
+        return mIsValidToken;
+    }
+
+    public void setValidToken(boolean isValidToken) {
+        mIsValidToken = isValidToken;
     }
 }

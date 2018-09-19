@@ -28,7 +28,7 @@ public class SubjectLocalDataSource implements SubjectDataSource {
     public Subject getSubject(@NonNull String uuid) {
         Realm realm = Realm.getDefaultInstance();
         Subject subject = realm.where(Subject.class).equalTo("uuid", uuid).findFirst();
-        if (subject!=null)
+        if (subject != null)
             return realm.copyFromRealm(subject);
         else
             return null;
@@ -38,7 +38,7 @@ public class SubjectLocalDataSource implements SubjectDataSource {
     public Subject getSubjectByFlat(@NonNull String uuid) {
         Realm realm = Realm.getDefaultInstance();
         Subject subject = realm.where(Subject.class).equalTo("flat.uuid", uuid).findFirst();
-        if (subject!=null)
+        if (subject != null)
             return realm.copyFromRealm(subject);
         else
             return null;
@@ -48,7 +48,7 @@ public class SubjectLocalDataSource implements SubjectDataSource {
     public Subject getSubjectByHouse(@NonNull String uuid) {
         Realm realm = Realm.getDefaultInstance();
         Subject subject = realm.where(Subject.class).equalTo("house.uuid", uuid).findFirst();
-        if (subject!=null)
+        if (subject != null)
             return realm.copyFromRealm(subject);
         else
             return null;

@@ -267,7 +267,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             mTitle.setText(currentHouse.getFullTitle());
             mObjectTitle.setText(currentHouse.getFullTitle());
             MainActivity.toolbar.setSubtitle(null);
-            if (currentHouse.getHouseType()!=null) {
+            if (currentHouse.getHouseType() != null) {
                 if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
                     MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
                 else
@@ -323,7 +323,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setAdapter(streetAdapter);
         }
         mImage.setImageResource(R.drawable.city);
-        if (currentStreet!=null) {
+        if (currentStreet != null) {
             MainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
             MainActivity.toolbar.setSubtitle(null);
         }

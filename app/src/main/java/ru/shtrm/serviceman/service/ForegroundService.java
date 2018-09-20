@@ -4,22 +4,25 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.GpsTrack;
+import ru.shtrm.serviceman.data.Journal;
 
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
     private static final long START_INTERVAL = 60000;
     private Handler getReference;
-
-//    private Handler sendLog;
-//    private Handler sendResult;
+    private Handler sendData;
 
     @Override
     public void onCreate() {
@@ -42,29 +45,19 @@ public class ForegroundService extends Service {
             }
         }, 0);
 
-        // запуск отправки логов и координат на сервер
+        // запуск отправки данных на сервер
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startSendLog();
+                startSendData();
             }
         }, 20000);
-
-        // запуск отправки результатов работы на сервер
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startSendResult();
-            }
-        }, 40000);
-
     }
 
     /**
      *
      */
-    private void startSendLog() {
-/*
+    private void startSendData() {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -72,12 +65,12 @@ public class ForegroundService extends Service {
                 Intent serviceIntent;
                 Bundle bundle = null;
 
-                Log.d(TAG, "startSendLog()");
+                Log.d(TAG, "startSendData()");
 
                 if (!isValidUser()) {
-                    Log.d(TAG, "Нет активного пользователя для отправки логов и координат на сервер.");
+                    Log.d(TAG, "Нет активного пользователя для отправки данных на сервер.");
                     // взводим следующий запуск
-                    sendLog.postDelayed(this, START_INTERVAL);
+                    sendData.postDelayed(this, START_INTERVAL);
                     return;
                 }
 
@@ -92,7 +85,7 @@ public class ForegroundService extends Service {
                     }
 
                     bundle = new Bundle();
-                    bundle.putLongArray(SendGPSnLogService.GPS_IDS, ids);
+                    bundle.putLongArray(SendDataService.GPS_IDS, ids);
                 }
 
                 RealmResults<Journal> logItems = realm.where(Journal.class)
@@ -105,28 +98,29 @@ public class ForegroundService extends Service {
 
                     if (bundle == null) {
                         bundle = new Bundle();
-                        bundle.putLongArray(SendGPSnLogService.LOG_IDS, ids);
+                        bundle.putLongArray(SendDataService.LOG_IDS, ids);
                     }
                 }
+
+                // TODO: реализовать выборку остальных данных для отправки
+
+                realm.close();
 
                 // стартуем сервис отправки данных на сервер
                 Context context = getApplicationContext();
                 if (bundle != null) {
-                    serviceIntent = new Intent(context, SendGPSnLogService.class);
-                    serviceIntent.setAction(SendGPSnLogService.ACTION);
+                    serviceIntent = new Intent(context, SendDataService.class);
+                    serviceIntent.setAction(SendDataService.ACTION);
                     serviceIntent.putExtras(bundle);
                     context.startService(serviceIntent);
                 }
 
-                realm.close();
-
                 // взводим следующий запуск
-                sendLog.postDelayed(this, START_INTERVAL);
+                sendData.postDelayed(this, START_INTERVAL);
             }
         };
-        sendLog = new Handler();
-        sendLog.postDelayed(runnable, START_INTERVAL);
-*/
+        sendData = new Handler();
+        sendData.postDelayed(runnable, START_INTERVAL);
     }
 
     /**

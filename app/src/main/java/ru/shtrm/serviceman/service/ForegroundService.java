@@ -16,6 +16,7 @@ import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.GpsTrack;
+import ru.shtrm.serviceman.data.IBaseRecord;
 import ru.shtrm.serviceman.data.Journal;
 
 public class ForegroundService extends Service {
@@ -23,6 +24,7 @@ public class ForegroundService extends Service {
     private static final long START_INTERVAL = 60000;
     private Handler getReference;
     private Handler sendData;
+    private static final int LIMIT_SIZE = 100;
 
     @Override
     public void onCreate() {
@@ -63,7 +65,7 @@ public class ForegroundService extends Service {
             public void run() {
                 long[] ids;
                 Intent serviceIntent;
-                Bundle bundle = null;
+                Bundle bundle = new Bundle();
 
                 Log.d(TAG, "startSendData()");
 
@@ -74,32 +76,25 @@ public class ForegroundService extends Service {
                     return;
                 }
 
-                // получаем данные для отправки
                 Realm realm = Realm.getDefaultInstance();
-                RealmResults<GpsTrack> gpsItems = realm.where(GpsTrack.class)
-                        .equalTo("sent", false).findAll();
-                if (gpsItems.size() > 0) {
-                    ids = new long[gpsItems.size()];
-                    for (int i = 0; i < gpsItems.size(); i++) {
-                        ids[i] = gpsItems.get(i).get_id();
-                    }
+                Long[] limitIds;
 
-                    bundle = new Bundle();
+                // получаем данные для отправки координат
+                RealmResults<GpsTrack> gpsItems = realm.where(GpsTrack.class).findAll().sort("_id");
+                if (gpsItems.size() > 0) {
+                    limitIds = getLimitElements(gpsItems);
+                    gpsItems = realm.where(GpsTrack.class).in("_id", limitIds).findAll();
+                    ids = getIds(gpsItems);
                     bundle.putLongArray(SendDataService.GPS_IDS, ids);
                 }
 
-                RealmResults<Journal> logItems = realm.where(Journal.class)
-                        .equalTo("sent", false).findAll();
+                // получаем данные для отправки журнала
+                RealmResults<Journal> logItems = realm.where(Journal.class).findAll().sort("_id");
                 if (logItems.size() > 0) {
-                    ids = new long[logItems.size()];
-                    for (int i = 0; i < logItems.size(); i++) {
-                        ids[i] = logItems.get(i).get_id();
-                    }
-
-                    if (bundle == null) {
-                        bundle = new Bundle();
-                        bundle.putLongArray(SendDataService.LOG_IDS, ids);
-                    }
+                    limitIds = getLimitElements(logItems);
+                    logItems = realm.where(Journal.class).in("_id", limitIds).findAll();
+                    ids = getIds(logItems);
+                    bundle.putLongArray(SendDataService.LOG_IDS, ids);
                 }
 
                 // TODO: реализовать выборку остальных данных для отправки
@@ -108,12 +103,11 @@ public class ForegroundService extends Service {
 
                 // стартуем сервис отправки данных на сервер
                 Context context = getApplicationContext();
-                if (bundle != null) {
-                    serviceIntent = new Intent(context, SendDataService.class);
-                    serviceIntent.setAction(SendDataService.ACTION);
-                    serviceIntent.putExtras(bundle);
-                    context.startService(serviceIntent);
-                }
+                serviceIntent = new Intent(context, SendDataService.class);
+                serviceIntent.setAction(SendDataService.ACTION);
+                serviceIntent.putExtras(bundle);
+                context.startService(serviceIntent);
+
 
                 // взводим следующий запуск
                 sendData.postDelayed(this, START_INTERVAL);
@@ -126,8 +120,62 @@ public class ForegroundService extends Service {
     /**
      *
      */
-    private void startSendResult() {
+    private void startGetReference() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "startGetReference()");
+
+                if (isValidUser()) {
+                    // стартуем сервис получения справочников
+                    Context context = getApplicationContext();
+                    Intent serviceIntent = new Intent(context, GetReferenceService.class);
+                    serviceIntent.setAction(GetReferenceService.ACTION);
+                    context.startService(serviceIntent);
+                } else {
+                    Log.d(TAG, "Нет активного пользователя для получения справочников.");
+                }
+
+                // взводим следующий запуск
+                getReference.postDelayed(this, START_INTERVAL);
+            }
+        };
+        getReference = new Handler();
+        getReference.postDelayed(runnable, START_INTERVAL);
+    }
+
+    private boolean isValidUser() {
+        AuthorizedUser user = AuthorizedUser.getInstance();
+        Log.e(TAG, "isValidToken = " + user.isValidToken());
+        return user.isValidToken();
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private Long[] getLimitElements(RealmResults<?> results) {
+        int limitElements = results.size() >= LIMIT_SIZE ? LIMIT_SIZE : results.size();
+        Long[] limitIds = new Long[limitElements];
+        for (int idx = 0; idx < limitIds.length; idx++) {
+            limitIds[idx] = ((IBaseRecord) (results.get(idx))).get_id();
+        }
+
+        return limitIds;
+    }
+
+    private long[] getIds(RealmResults<?> results) {
+        long[] ids = new long[results.size()];
+        for (int idx = 0; idx < ids.length; idx++) {
+            ids[idx] = ((IBaseRecord) (results.get(idx))).get_id();
+        }
+
+        return ids;
+    }
 /*
+    private void startSendResult() {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -184,46 +232,6 @@ public class ForegroundService extends Service {
         };
         sendResult = new Handler();
         sendResult.postDelayed(runnable, START_INTERVAL);
+    }
 */
-    }
-
-    /**
-     *
-     */
-    private void startGetReference() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "startGetReference()");
-
-                if (isValidUser()) {
-                    // стартуем сервис получения справочников
-                    Context context = getApplicationContext();
-                    Intent serviceIntent = new Intent(context, GetReferenceService.class);
-                    serviceIntent.setAction(GetReferenceService.ACTION);
-                    context.startService(serviceIntent);
-                } else {
-                    Log.d(TAG, "Нет активного пользователя для получения справочников.");
-                }
-
-                // взводим следующий запуск
-                getReference.postDelayed(this, START_INTERVAL);
-            }
-        };
-        getReference = new Handler();
-        getReference.postDelayed(runnable, START_INTERVAL);
-    }
-
-    private boolean isValidUser() {
-        AuthorizedUser user = AuthorizedUser.getInstance();
-        Log.e(TAG, "isValidToken = " + user.isValidToken());
-        return user.isValidToken();
-    }
-
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
 }

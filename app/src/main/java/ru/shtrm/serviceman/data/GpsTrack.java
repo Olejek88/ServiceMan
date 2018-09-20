@@ -6,7 +6,7 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class GpsTrack extends RealmObject implements ISend {
+public class GpsTrack extends RealmObject implements ISend, IBaseRecord {
     @PrimaryKey
     private long _id;
     private String userUuid;
@@ -18,12 +18,7 @@ public class GpsTrack extends RealmObject implements ISend {
     public GpsTrack() {
         sent = false;
         date = new Date();
-        User user = AuthorizedUser.getInstance().getUser();
-        if (user != null) {
-            userUuid = user.getUuid();
-        } else {
-            userUuid = User.SERVICE_USER_UUID;
-        }
+        userUuid = getActiveUserUuid();
     }
 
     public GpsTrack(double lat, double lon) {
@@ -31,6 +26,7 @@ public class GpsTrack extends RealmObject implements ISend {
         longitude = lon;
         sent = false;
         date = new Date();
+        userUuid = getActiveUserUuid();
     }
 
     public static long getLastId() {
@@ -92,4 +88,17 @@ public class GpsTrack extends RealmObject implements ISend {
     public void setSent(boolean sent) {
         this.sent = sent;
     }
+
+    private String getActiveUserUuid() {
+        User user = AuthorizedUser.getInstance().getUser();
+        String uuid;
+        if (user != null) {
+            uuid = user.getUuid();
+        } else {
+            uuid = User.SERVICE_USER_UUID;
+        }
+
+        return uuid;
+    }
+
 }

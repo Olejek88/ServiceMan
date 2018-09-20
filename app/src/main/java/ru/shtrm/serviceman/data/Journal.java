@@ -6,7 +6,7 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Journal extends RealmObject implements ISend {
+public class Journal extends RealmObject implements ISend, IBaseRecord {
     @PrimaryKey
     private long _id;
     private String userUuid;
@@ -91,9 +91,16 @@ public class Journal extends RealmObject implements ISend {
         journal.setDate(new Date());
         journal.setSent(false);
 
-        realm.beginTransaction();
+        boolean isTransaction = realm.isInTransaction();
+        if (!isTransaction) {
+            realm.beginTransaction();
+        }
+
         realm.copyToRealmOrUpdate(journal);
-        realm.commitTransaction();
+
+        if (!isTransaction) {
+            realm.commitTransaction();
+        }
 
         realm.close();
     }

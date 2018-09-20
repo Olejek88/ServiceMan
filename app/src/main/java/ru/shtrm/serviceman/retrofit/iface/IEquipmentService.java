@@ -1,6 +1,8 @@
 package ru.shtrm.serviceman.retrofit.iface;
 
 import java.util.List;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -12,5 +14,5 @@ public interface IEquipmentService {
     @GET("/equipment")
     Call<List<Equipment>> getData(@Query("changedAfter") String changeAfter);
     @POST("/equipment/create")
-    Call<Void> sendData(@Body List<Equipment> data);
+    Call<ResponseBody> sendData(@Body List<Equipment> data);
 }

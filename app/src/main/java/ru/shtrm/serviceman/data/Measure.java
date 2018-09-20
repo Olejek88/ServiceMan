@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class Measure extends RealmObject {
+public class Measure extends RealmObject implements ISend, IBaseRecord {
     @Index
     private long _id;
     @PrimaryKey

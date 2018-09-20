@@ -14,10 +14,13 @@ import android.util.Log;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.IBaseRecord;
 import ru.shtrm.serviceman.data.Journal;
+import ru.shtrm.serviceman.data.Measure;
 
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
@@ -97,7 +100,32 @@ public class ForegroundService extends Service {
                     bundle.putLongArray(SendDataService.LOG_IDS, ids);
                 }
 
-                // TODO: реализовать выборку остальных данных для отправки
+                // получаем данные для отправки аварий
+                RealmResults<Alarm> alarmItems = realm.where(Alarm.class).findAll().sort("_id");
+                if (alarmItems.size() > 0) {
+                    limitIds = getLimitElements(alarmItems);
+                    alarmItems = realm.where(Alarm.class).in("_id", limitIds).findAll();
+                    ids = getIds(alarmItems);
+                    bundle.putLongArray(SendDataService.ALARM_IDS, ids);
+                }
+
+                // получаем данные для отправки измерений
+                RealmResults<Measure> measureItems = realm.where(Measure.class).findAll().sort("_id");
+                if (measureItems.size() > 0) {
+                    limitIds = getLimitElements(measureItems);
+                    measureItems = realm.where(Measure.class).in("_id", limitIds).findAll();
+                    ids = getIds(measureItems);
+                    bundle.putLongArray(SendDataService.MEASURE_IDS, ids);
+                }
+
+                // получаем данные для отправки оборудования
+                RealmResults<Equipment> equItems = realm.where(Equipment.class).findAll().sort("_id");
+                if (equItems.size() > 0) {
+                    limitIds = getLimitElements(equItems);
+                    equItems = realm.where(Equipment.class).in("_id", limitIds).findAll();
+                    ids = getIds(equItems);
+                    bundle.putLongArray(SendDataService.EQUIPMENT_IDS, ids);
+                }
 
                 realm.close();
 
@@ -174,64 +202,4 @@ public class ForegroundService extends Service {
 
         return ids;
     }
-/*
-    private void startSendResult() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                long[] ids;
-                Intent serviceIntent;
-
-                Log.d(TAG, "startSendResult()");
-
-                if (!isValidUser()) {
-                    Log.d(TAG, "Нет активного пользователя для отправки нарядов на сервер.");
-                    // взводим следующий запуск
-                    sendResult.postDelayed(this, START_INTERVAL);
-                    return;
-                }
-
-                // получаем данные для отправки
-                AuthorizedUser user = AuthorizedUser.getInstance();
-                Realm realm = Realm.getDefaultInstance();
-                RealmResults<Orders> orders = realm.where(Orders.class)
-                        .beginGroup()
-                        .equalTo("user.uuid", user.getUuid())
-                        .equalTo("sent", false)
-                        .endGroup()
-                        .beginGroup()
-                        .equalTo("orderStatus.uuid", OrderStatus.Status.COMPLETE).or()
-                        .equalTo("orderStatus.uuid", OrderStatus.Status.UN_COMPLETE).or()
-//                        .equalTo("orderStatus.uuid", OrderStatus.Status.IN_WORK).or()
-                        .equalTo("orderStatus.uuid", OrderStatus.Status.CANCELED)
-                        .endGroup()
-                        .findAll();
-                if (orders.size() == 0) {
-                    Log.d(TAG, "Нет нарядов для отправки.");
-                    ids = null;
-                } else {
-                    ids = new long[orders.size()];
-                    for (int i = 0; i < orders.size(); i++) {
-                        ids[i] = orders.get(i).get_id();
-                    }
-                }
-
-                // стартуем сервис отправки данных на сервер
-                Context context = getApplicationContext();
-                serviceIntent = new Intent(context, SendOrdersService.class);
-                serviceIntent.setAction(SendOrdersService.ACTION);
-                Bundle bundle = new Bundle();
-                bundle.putLongArray(SendOrdersService.ORDERS_IDS, ids);
-                serviceIntent.putExtras(bundle);
-                context.startService(serviceIntent);
-                realm.close();
-
-                // взводим следующий запуск
-                sendResult.postDelayed(this, START_INTERVAL);
-            }
-        };
-        sendResult = new Handler();
-        sendResult.postDelayed(runnable, START_INTERVAL);
-    }
-*/
 }

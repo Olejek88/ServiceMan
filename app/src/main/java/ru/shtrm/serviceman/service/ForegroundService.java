@@ -21,6 +21,10 @@ import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.IBaseRecord;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.PhotoAlarm;
+import ru.shtrm.serviceman.data.PhotoEquipment;
+import ru.shtrm.serviceman.data.PhotoFlat;
+import ru.shtrm.serviceman.data.PhotoHouse;
 
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
@@ -101,7 +105,9 @@ public class ForegroundService extends Service {
                 }
 
                 // получаем данные для отправки аварий
-                RealmResults<Alarm> alarmItems = realm.where(Alarm.class).findAll().sort("_id");
+                RealmResults<Alarm> alarmItems = realm.where(Alarm.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
                 if (alarmItems.size() > 0) {
                     limitIds = getLimitElements(alarmItems);
                     alarmItems = realm.where(Alarm.class).in("_id", limitIds).findAll();
@@ -110,7 +116,9 @@ public class ForegroundService extends Service {
                 }
 
                 // получаем данные для отправки измерений
-                RealmResults<Measure> measureItems = realm.where(Measure.class).findAll().sort("_id");
+                RealmResults<Measure> measureItems = realm.where(Measure.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
                 if (measureItems.size() > 0) {
                     limitIds = getLimitElements(measureItems);
                     measureItems = realm.where(Measure.class).in("_id", limitIds).findAll();
@@ -119,12 +127,58 @@ public class ForegroundService extends Service {
                 }
 
                 // получаем данные для отправки оборудования
-                RealmResults<Equipment> equItems = realm.where(Equipment.class).findAll().sort("_id");
+                RealmResults<Equipment> equItems = realm.where(Equipment.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
                 if (equItems.size() > 0) {
                     limitIds = getLimitElements(equItems);
                     equItems = realm.where(Equipment.class).in("_id", limitIds).findAll();
                     ids = getIds(equItems);
                     bundle.putLongArray(SendDataService.EQUIPMENT_IDS, ids);
+                }
+
+                // получаем данные для отправки фотографий аварий
+                RealmResults<PhotoAlarm> photoAlarms = realm.where(PhotoAlarm.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
+                if (photoAlarms.size() > 0) {
+                    limitIds = getLimitElements(photoAlarms);
+                    photoAlarms = realm.where(PhotoAlarm.class).in("_id", limitIds).findAll();
+                    ids = getIds(photoAlarms);
+                    bundle.putLongArray(SendDataService.PHOTO_ALARM_IDS, ids);
+                }
+
+                // получаем данные для отправки фототографий домов
+                RealmResults<PhotoHouse> photoHouses = realm.where(PhotoHouse.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
+                if (photoHouses.size() > 0) {
+                    limitIds = getLimitElements(photoHouses);
+                    photoHouses = realm.where(PhotoHouse.class).in("_id", limitIds).findAll();
+                    ids = getIds(photoHouses);
+                    bundle.putLongArray(SendDataService.PHOTO_HOUSE_IDS, ids);
+                }
+
+                // получаем данные для отправки фотографий квартир
+                RealmResults<PhotoFlat> photoFlats = realm.where(PhotoFlat.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
+                if (photoFlats.size() > 0) {
+                    limitIds = getLimitElements(photoFlats);
+                    photoFlats = realm.where(PhotoFlat.class).in("_id", limitIds).findAll();
+                    ids = getIds(photoFlats);
+                    bundle.putLongArray(SendDataService.PHOTO_FLAT_IDS, ids);
+                }
+
+                // получаем данные для отправки фотографий оборудования
+                RealmResults<PhotoEquipment> photoEquipments = realm.where(PhotoEquipment.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
+                if (photoEquipments.size() > 0) {
+                    limitIds = getLimitElements(photoEquipments);
+                    photoEquipments = realm.where(PhotoEquipment.class).in("_id", limitIds).findAll();
+                    ids = getIds(photoEquipments);
+                    bundle.putLongArray(SendDataService.PHOTO_EQUIPMENT_IDS, ids);
                 }
 
                 realm.close();

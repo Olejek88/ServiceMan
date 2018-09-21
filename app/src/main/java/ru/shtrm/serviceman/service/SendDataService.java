@@ -19,6 +19,7 @@ import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class SendDataService extends Service {
@@ -28,6 +29,10 @@ public class SendDataService extends Service {
     public static final String ALARM_IDS = "alramIds";
     public static final String MEASURE_IDS = "measureIds";
     public static final String EQUIPMENT_IDS = "equipmentIds";
+    public static final String PHOTO_ALARM_IDS = "alarmIds";
+    public static final String PHOTO_HOUSE_IDS = "houseIds";
+    public static final String PHOTO_FLAT_IDS = "flatIds";
+    public static final String PHOTO_EQUIPMENT_IDS = "equipmentIds";
     private static final String TAG = GetReferenceService.class.getSimpleName();
     private boolean isRunning;
 
@@ -36,6 +41,10 @@ public class SendDataService extends Service {
     private long alarmIds[];
     private long measureIds[];
     private long equipmentIds[];
+    private long photoAlarmIds[];
+    private long photoHouseIds[];
+    private long photoFlatIds[];
+    private long photoEquipmentIds[];
 
     /**
      * Метод для выполнения отправки данных на сервер.
@@ -68,6 +77,26 @@ public class SendDataService extends Service {
             // отправка измерений
             if (measureIds != null && measureIds.length > 0) {
                 sendMeasure(realm, measureIds);
+            }
+
+            // отправка фотографий аварий
+            if (photoAlarmIds != null && photoAlarmIds.length > 0) {
+                sendPhotoAlarm(realm, photoAlarmIds);
+            }
+
+            // отправка фотографий домов
+            if (photoHouseIds != null && photoHouseIds.length > 0) {
+                sendPhotoHouse(realm, photoHouseIds);
+            }
+
+            // отправка фотографий квартир
+            if (photoFlatIds != null && photoFlatIds.length > 0) {
+                sendPhotoFlat(realm, photoFlatIds);
+            }
+
+            // отправка фотографий оборудования
+            if (photoEquipmentIds != null && photoEquipmentIds.length > 0) {
+                sendPhotoEquipment(realm, photoEquipmentIds);
             }
 
             realm.close();
@@ -194,48 +223,7 @@ public class SendDataService extends Service {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "Ошибка при отправке журнала.");
-            }
-        }
-
-        void sendMeasure(Realm realm, long[] array) {
-            int count = array.length;
-            Long[] data = new Long[count];
-            for (int i = 0; i < count; i++) {
-                data[i] = array[i];
-            }
-
-            RealmResults<Measure> items = realm.where(Measure.class).in("_id", data)
-                    .equalTo("sent", false)
-                    .findAll();
-            // отправляем данные с измерениями
-            Call<ResponseBody> call = SManApiFactory.getMeasureService().sendData(realm.copyFromRealm(items));
-            try {
-                Response response = call.execute();
-                ResponseBody result = (ResponseBody) response.body();
-                if (response.isSuccessful()) {
-                    JSONObject jObj = new JSONObject(result.string());
-                    // при сохранении данных на сервере произошли ошибки
-                    // данный флаг пока не используем
-//                        boolean success = (boolean) jObj.get("success");
-                    JSONArray jData = (JSONArray) jObj.get("data");
-                    // устанавливаем флаг отправки записям которые подтвердил сервер
-                    realm.beginTransaction();
-                    for (int idx = 0; idx < jData.length(); idx++) {
-                        JSONObject item = (JSONObject) jData.get(idx);
-                        Long _id = Long.parseLong(item.get("_id").toString());
-                        String uuid = item.get("uuid").toString();
-                        Measure sentItem = realm.where(Measure.class).equalTo("uuid", uuid).findFirst();
-                        // устанавливаем id присвоенное сервером
-                        sentItem.set_id(_id);
-                        sentItem.setSent(true);
-                    }
-
-                    realm.commitTransaction();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "Ошибка при отправке журнала.");
+                Log.e(TAG, "Ошибка при отправке аварий.");
             }
         }
 
@@ -247,7 +235,6 @@ public class SendDataService extends Service {
             }
 
             RealmResults<Equipment> items = realm.where(Equipment.class).in("_id", data)
-                    .equalTo("sent", false)
                     .findAll();
             // отправляем данные с оборудованием
             Call<ResponseBody> call = SManApiFactory.getEquipmentService().sendData(realm.copyFromRealm(items));
@@ -276,7 +263,96 @@ public class SendDataService extends Service {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "Ошибка при отправке журнала.");
+                Log.e(TAG, "Ошибка при отправке оборудования.");
+            }
+        }
+
+        void sendMeasure(Realm realm, long[] array) {
+            int count = array.length;
+            Long[] data = new Long[count];
+            for (int i = 0; i < count; i++) {
+                data[i] = array[i];
+            }
+
+            RealmResults<Measure> items = realm.where(Measure.class).in("_id", data)
+                    .findAll();
+            // отправляем данные с измерениями
+            Call<ResponseBody> call = SManApiFactory.getMeasureService().sendData(realm.copyFromRealm(items));
+            try {
+                Response response = call.execute();
+                ResponseBody result = (ResponseBody) response.body();
+                if (response.isSuccessful()) {
+                    JSONObject jObj = new JSONObject(result.string());
+                    // при сохранении данных на сервере произошли ошибки
+                    // данный флаг пока не используем
+//                        boolean success = (boolean) jObj.get("success");
+                    JSONArray jData = (JSONArray) jObj.get("data");
+                    // устанавливаем флаг отправки записям которые подтвердил сервер
+                    realm.beginTransaction();
+                    for (int idx = 0; idx < jData.length(); idx++) {
+                        JSONObject item = (JSONObject) jData.get(idx);
+                        Long _id = Long.parseLong(item.get("_id").toString());
+                        String uuid = item.get("uuid").toString();
+                        Measure sentItem = realm.where(Measure.class).equalTo("uuid", uuid).findFirst();
+                        // устанавливаем id присвоенное сервером
+                        sentItem.set_id(_id);
+                        sentItem.setSent(true);
+                    }
+
+                    realm.commitTransaction();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "Ошибка при отправке измерений.");
+            }
+        }
+
+        void sendPhotoAlarm(Realm realm, long[] array) {
+        }
+
+        void sendPhotoHouse(Realm realm, long[] array) {
+        }
+
+        void sendPhotoFlat(Realm realm, long[] array) {
+        }
+
+        void sendPhotoEquipment(Realm realm, long[] array) {
+            int count = array.length;
+            Long[] data = new Long[count];
+            for (int i = 0; i < count; i++) {
+                data[i] = array[i];
+            }
+
+            RealmResults<PhotoEquipment> items = realm.where(PhotoEquipment.class).in("_id", data)
+                    .findAll();
+            // отправляем данные с оборудованием
+            Call<ResponseBody> call = SManApiFactory.getPhotoEquipmentService().sendData(realm.copyFromRealm(items));
+            try {
+                Response response = call.execute();
+                ResponseBody result = (ResponseBody) response.body();
+                if (response.isSuccessful()) {
+                    JSONObject jObj = new JSONObject(result.string());
+                    // при сохранении данных на сервере произошли ошибки
+                    // данный флаг пока не используем
+//                        boolean success = (boolean) jObj.get("success");
+                    JSONArray jData = (JSONArray) jObj.get("data");
+                    // устанавливаем флаг отправки записям которые подтвердил сервер
+                    realm.beginTransaction();
+                    for (int idx = 0; idx < jData.length(); idx++) {
+                        JSONObject item = (JSONObject) jData.get(idx);
+                        Long _id = Long.parseLong(item.get("_id").toString());
+                        String uuid = item.get("uuid").toString();
+                        PhotoEquipment sentItem = realm.where(PhotoEquipment.class).equalTo("uuid", uuid).findFirst();
+                        // устанавливаем id присвоенное сервером
+                        sentItem.set_id(_id);
+                        sentItem.setSent(true);
+                    }
+
+                    realm.commitTransaction();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "Ошибка при отправке фотографий оборудования.");
             }
         }
     };
@@ -300,6 +376,10 @@ public class SendDataService extends Service {
             alarmIds = intent.getLongArrayExtra(ALARM_IDS);
             measureIds = intent.getLongArrayExtra(MEASURE_IDS);
             equipmentIds = intent.getLongArrayExtra(EQUIPMENT_IDS);
+            photoAlarmIds = intent.getLongArrayExtra(PHOTO_ALARM_IDS);
+            photoHouseIds = intent.getLongArrayExtra(PHOTO_HOUSE_IDS);
+            photoFlatIds = intent.getLongArrayExtra(PHOTO_FLAT_IDS);
+            photoEquipmentIds = intent.getLongArrayExtra(PHOTO_EQUIPMENT_IDS);
             new Thread(task).start();
         }
 

@@ -17,6 +17,12 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
     private AlarmType alarmType;
     private AlarmStatus alarmStatus;
     private User user;
+    private Double longitude;
+    private Double latitude;
+    private String comment;
+    private Date date;
+    private Date createdAt;
+    private Date changedAt;
     private boolean sent;
 
     public Alarm() {
@@ -128,13 +134,6 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
         realm.close();
         return lastId.longValue();
     }
-
-    private Double longitude;
-    private Double latitude;
-    private String comment;
-    private Date date;
-    private Date createdAt;
-    private Date changedAt;
 
     public boolean isSent() {
         return sent;

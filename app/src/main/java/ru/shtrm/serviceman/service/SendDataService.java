@@ -206,6 +206,7 @@ public class SendDataService extends Service {
             }
 
             RealmResults<Measure> items = realm.where(Measure.class).in("_id", data)
+                    .equalTo("sent", false)
                     .findAll();
             // отправляем данные с измерениями
             Call<ResponseBody> call = SManApiFactory.getMeasureService().sendData(realm.copyFromRealm(items));
@@ -246,6 +247,7 @@ public class SendDataService extends Service {
             }
 
             RealmResults<Equipment> items = realm.where(Equipment.class).in("_id", data)
+                    .equalTo("sent", false)
                     .findAll();
             // отправляем данные с оборудованием
             Call<ResponseBody> call = SManApiFactory.getEquipmentService().sendData(realm.copyFromRealm(items));

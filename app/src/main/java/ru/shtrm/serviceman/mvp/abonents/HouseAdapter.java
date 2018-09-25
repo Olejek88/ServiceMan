@@ -13,16 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.Measure;
-import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 
 public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -63,12 +59,11 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         else pvh.textViewDate.setText(R.string.no_last_time);
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
         pvh.textViewStatus.setText(item.getHouseStatus().getTitle());
-        pvh.textViewTitle.setText(item.getStreet().getTitle().concat(", ").concat(item.getTitle()));
-        if (item.getTitle().length()>1) {
+        pvh.textViewTitle.setText(item.getStreet().getTitle().concat(", ").concat(item.getNumber()));
+        if (item.getNumber().length() > 1) {
             pvh.textViewImage.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16.0f);
-            pvh.textViewImage.setText(item.getTitle().substring(0, 2));
-        }
-        else pvh.textViewImage.setText(item.getTitle().substring(0, 1));
+            pvh.textViewImage.setText(item.getNumber().substring(0, 2));
+        } else pvh.textViewImage.setText(item.getNumber().substring(0, 1));
         // TODO выдергивать последнее фото из фото?
 /*
         if (item.getUser()!=null)

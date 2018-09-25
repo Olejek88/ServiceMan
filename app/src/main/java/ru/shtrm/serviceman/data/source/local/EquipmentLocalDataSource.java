@@ -12,7 +12,6 @@ import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.source.EquipmentDataSource;
 
 public class EquipmentLocalDataSource implements EquipmentDataSource {
@@ -77,6 +76,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                equipment.setSent(false);
                 realm.copyToRealmOrUpdate(equipment);
             }
         });
@@ -105,6 +105,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                equipment.setSent(false);
                 equipment.setEquipmentStatus(equipmentStatus);
                 realm.copyToRealmOrUpdate(equipment);
             }

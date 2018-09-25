@@ -25,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.Measure;
@@ -45,7 +46,8 @@ public class SendDataService extends Service {
     public static final String PHOTO_HOUSE_IDS = "houseIds";
     public static final String PHOTO_FLAT_IDS = "flatIds";
     public static final String PHOTO_EQUIPMENT_IDS = "equipmentIds";
-    private static final String TAG = GetReferenceService.class.getSimpleName();
+    public static final String FLAT_IDS = "flatIds";
+    private static final String TAG = SendDataService.class.getSimpleName();
     private boolean isRunning;
 
     private long gpsIds[];
@@ -57,6 +59,7 @@ public class SendDataService extends Service {
     private long photoHouseIds[];
     private long photoFlatIds[];
     private long photoEquipmentIds[];
+    private long flatIds[];
 
     /**
      * Метод для выполнения отправки данных на сервер.
@@ -109,6 +112,11 @@ public class SendDataService extends Service {
             // отправка фотографий оборудования
             if (photoEquipmentIds != null && photoEquipmentIds.length > 0) {
                 sendPhotoEquipment(realm, photoEquipmentIds);
+            }
+
+            // отправка квартир
+            if (flatIds != null && flatIds.length > 0) {
+                sendFlat(realm, flatIds);
             }
 
             realm.close();
@@ -609,6 +617,45 @@ public class SendDataService extends Service {
                 }
             }
         }
+
+        void sendFlat(Realm realm, long[] array) {
+            int count = array.length;
+            Long[] data = new Long[count];
+            for (int i = 0; i < count; i++) {
+                data[i] = array[i];
+            }
+
+            RealmResults<Flat> items = realm.where(Flat.class).in("_id", data)
+                    .findAll();
+            // отправляем данные с оборудованием
+            Call<ResponseBody> call = SManApiFactory.getFlatService().sendData(realm.copyFromRealm(items));
+            try {
+                Response response = call.execute();
+                ResponseBody result = (ResponseBody) response.body();
+                if (response.isSuccessful()) {
+                    JSONObject jObj = new JSONObject(result.string());
+                    // при сохранении данных на сервере произошли ошибки
+                    // данный флаг пока не используем
+//                        boolean success = (boolean) jObj.get("success");
+                    JSONArray jData = (JSONArray) jObj.get("data");
+                    // устанавливаем флаг отправки записям которые подтвердил сервер
+                    realm.beginTransaction();
+                    for (int idx = 0; idx < jData.length(); idx++) {
+                        JSONObject item = (JSONObject) jData.get(idx);
+                        String uuid = item.get("uuid").toString();
+                        Flat sentItem = realm.where(Flat.class).equalTo("uuid", uuid).findFirst();
+                        sentItem.setSent(true);
+                    }
+
+                    realm.commitTransaction();
+                    Flat test = realm.where(Flat.class).equalTo("uuid", "flatUuid").findFirst();
+                    Log.d(TAG, "Flat sent after set 'true': " + test.isSent());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "Ошибка при отправке квартир.");
+            }
+        }
     };
 
     @Override
@@ -634,6 +681,7 @@ public class SendDataService extends Service {
             photoHouseIds = intent.getLongArrayExtra(PHOTO_HOUSE_IDS);
             photoFlatIds = intent.getLongArrayExtra(PHOTO_FLAT_IDS);
             photoEquipmentIds = intent.getLongArrayExtra(PHOTO_EQUIPMENT_IDS);
+            flatIds = intent.getLongArrayExtra(FLAT_IDS);
             new Thread(task).start();
         }
 

@@ -82,8 +82,8 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
         pvh.textViewTitle.setText(item.getHouse().getStreet().getTitle().concat(", ").
-                concat(item.getHouse().getTitle()).concat(", ").concat(item.getTitle()));
-        pvh.textViewImage.setText(item.getTitle().substring(0,1));
+                concat(item.getHouse().getNumber()).concat(", ").concat(item.getNumber()));
+        pvh.textViewImage.setText(item.getNumber().substring(0, 1));
         // TODO выдергивать последнее фото из фото?
 /*
         if (item.getUser()!=null)

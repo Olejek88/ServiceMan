@@ -17,6 +17,7 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.IBaseRecord;
 import ru.shtrm.serviceman.data.Journal;
@@ -179,6 +180,21 @@ public class ForegroundService extends Service {
                     photoEquipments = realm.where(PhotoEquipment.class).in("_id", limitIds).findAll();
                     ids = getIds(photoEquipments);
                     bundle.putLongArray(SendDataService.PHOTO_EQUIPMENT_IDS, ids);
+                }
+
+                // получаем данные для отправки квартиры (их нужно отправлять если у них сменился статус)
+                RealmResults<Flat> flats = realm.where(Flat.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
+                for (Flat flat : flats) {
+                    Log.d(TAG, "Flat " + flat.getUuid() + " selected befor sent: sent is " + flat.isSent());
+                }
+
+                if (flats.size() > 0) {
+                    limitIds = getLimitElements(flats);
+                    flats = realm.where(Flat.class).in("_id", limitIds).findAll();
+                    ids = getIds(flats);
+                    bundle.putLongArray(SendDataService.FLAT_IDS, ids);
                 }
 
                 realm.close();

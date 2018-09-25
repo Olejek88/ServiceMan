@@ -21,8 +21,10 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
+import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
@@ -257,7 +259,8 @@ public class SManApiFactory {
         builder.registerTypeAdapter(Date.class, new DateTypeDeserializer());
         builder.registerTypeAdapter(Equipment.class, new EquipmentSerializer());
         builder.registerTypeAdapter(Measure.class, new MeasureSerializer());
-        builder.registerTypeAdapter(Measure.class, new AlarmSerializer());
+        builder.registerTypeAdapter(Alarm.class, new AlarmSerializer());
+        builder.registerTypeAdapter(Flat.class, new FlatSerializer());
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Gson gson = builder.create();
         return new Retrofit.Builder()

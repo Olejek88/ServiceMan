@@ -297,8 +297,14 @@ public class GetReferenceService extends Service {
         try {
             Response<List<Flat>> response = call.execute();
             if (response.isSuccessful()) {
+                List<Flat> flats = response.body();
+                // для предотвращения отправки только что полученых данных на сервер
+                for (Flat flat : flats) {
+                    flat.setSent(true);
+                }
+
                 realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
+                realm.copyToRealmOrUpdate(flats);
                 realm.commitTransaction();
                 ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
@@ -366,8 +372,14 @@ public class GetReferenceService extends Service {
         try {
             Response<List<Equipment>> response = call.execute();
             if (response.isSuccessful()) {
+                List<Equipment> equipments = response.body();
+                // для предотвращения отправки только что полученых данных на сервер
+                for (Equipment equipment : equipments) {
+                    equipment.setSent(true);
+                }
+
                 realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
+                realm.copyToRealmOrUpdate(equipments);
                 realm.commitTransaction();
                 ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;

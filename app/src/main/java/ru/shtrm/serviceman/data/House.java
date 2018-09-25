@@ -10,7 +10,7 @@ public class House extends RealmObject {
     @PrimaryKey
     private long _id;
     private String uuid;
-    private String title;
+    private String number;
     private Street street;
     private HouseStatus houseStatus;
     private HouseType houseType;
@@ -57,12 +57,12 @@ public class House extends RealmObject {
         this.uuid = uuid;
     }
 
-    public String getTitle() {
-        return title;
+    public String getNumber() {
+        return number;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public Date getCreatedAt() {
@@ -82,6 +82,6 @@ public class House extends RealmObject {
     }
 
     public String getFullTitle() {
-        return getStreet().getTitle().concat(", ").concat(getTitle());
+        return getStreet().getTitle().concat(", ").concat(getNumber());
     }
 }

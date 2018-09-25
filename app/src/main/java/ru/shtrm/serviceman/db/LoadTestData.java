@@ -198,7 +198,7 @@ public class LoadTestData {
                 house1 = realmDB.createObject(House.class, 1);
                 house1.setUuid(houseUuid1);
                 house1.setStreet(street);
-                house1.setTitle("8А");
+                house1.setNumber("8А");
                 house1.setHouseStatus(houseStatus);
                 house1.setCreatedAt(new Date());
                 house1.setChangedAt(new Date());
@@ -210,7 +210,7 @@ public class LoadTestData {
                 house2 = realmDB.createObject(House.class, 2);
                 house2.setUuid(houseUuid2);
                 house2.setStreet(street);
-                house2.setTitle("6");
+                house2.setNumber("6");
                 house2.setHouseStatus(houseStatus);
                 house2.setCreatedAt(new Date());
                 house2.setChangedAt(new Date());
@@ -223,7 +223,7 @@ public class LoadTestData {
                 flat = realmDB.createObject(Flat.class, 1);
                 flat.setUuid(flatUuid);
                 flat.setHouse(house1);
-                flat.setTitle("8");
+                flat.setNumber("8");
                 flat.setFlatStatus(flatStatus);
                 flat.setCreatedAt(new Date());
                 flat.setChangedAt(new Date());
@@ -324,7 +324,7 @@ public class LoadTestData {
                 flat = realmDB.createObject(Flat.class, 3);
                 flat.setUuid(flatUuid2);
                 flat.setHouse(house1);
-                flat.setTitle("12");
+                flat.setNumber("12");
                 flat.setFlatStatus(flatStatus);
                 flat.setCreatedAt(new Date());
                 flat.setChangedAt(new Date());
@@ -436,7 +436,7 @@ public class LoadTestData {
                 house2 = realmDB.createObject(House.class, 3);
                 house2.setUuid(houseUuid3);
                 house2.setStreet(street);
-                house2.setTitle("16А");
+                house2.setNumber("16А");
                 house2.setHouseType(houseType);
                 house2.setHouseStatus(houseStatus);
             }
@@ -448,7 +448,7 @@ public class LoadTestData {
                 house3 = realmDB.createObject(House.class, 4);
                 house3.setUuid(houseUuid4);
                 house3.setStreet(street);
-                house3.setTitle("19");
+                house3.setNumber("19");
                 house3.setHouseType(houseType2);
                 house3.setHouseStatus(houseStatus);
             }
@@ -460,7 +460,7 @@ public class LoadTestData {
                 flat = realmDB.createObject(Flat.class, 5);
                 flat.setUuid(flatUuid3);
                 flat.setHouse(house2);
-                flat.setTitle("Котельная");
+                flat.setNumber("Котельная");
                 flat.setFlatType(flatType);
                 flat.setFlatStatus(flatStatus);
                 flat.setCreatedAt(new Date());
@@ -474,7 +474,7 @@ public class LoadTestData {
                 flat2 = realmDB.createObject(Flat.class, 6);
                 flat2.setUuid(flatUuid4);
                 flat2.setHouse(house3);
-                flat2.setTitle("Теплопункт");
+                flat2.setNumber("Теплопункт");
                 flat2.setFlatType(flatType);
                 flat2.setFlatStatus(flatStatus2);
                 flat2.setCreatedAt(new Date());

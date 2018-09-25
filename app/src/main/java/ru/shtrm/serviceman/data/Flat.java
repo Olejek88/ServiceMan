@@ -5,22 +5,24 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Flat extends RealmObject {
+public class Flat extends RealmObject implements ISend, IBaseRecord {
 
     @PrimaryKey
     private long _id;
     private String uuid;
-    private String title;
+    private String number;
     private House house;
     private FlatStatus flatStatus;
     private FlatType flatType;
     private int inhabitants;
     private Date createdAt;
     private Date changedAt;
+    private boolean sent;
 
     public FlatType getFlatType() {
         return flatType;
     }
+
     public House getHouse() {
         return house;
     }
@@ -57,12 +59,12 @@ public class Flat extends RealmObject {
         this.uuid = uuid;
     }
 
-    public String getTitle() {
-        return title;
+    public String getNumber() {
+        return number;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public Date getCreatedAt() {
@@ -83,6 +85,22 @@ public class Flat extends RealmObject {
 
     public String getFullTitle() {
         return getHouse().getStreet().getTitle().concat(", ").
-                concat(getHouse().getTitle()).concat(" - ").concat(getTitle());
+                concat(getHouse().getNumber()).concat(" - ").concat(getNumber());
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
+    }
+
+    public int getInhabitants() {
+        return inhabitants;
+    }
+
+    public void setInhabitants(int inhabitants) {
+        this.inhabitants = inhabitants;
     }
 }

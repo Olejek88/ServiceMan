@@ -32,7 +32,7 @@ public class FlatLocalDataSource implements FlatDataSource {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
                 realm.where(Flat.class).equalTo("house.uuid", house.getUuid()).
-                        findAllSorted("title"));
+                        findAllSorted("number"));
     }
 
     @Override
@@ -61,6 +61,7 @@ public class FlatLocalDataSource implements FlatDataSource {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                flat.setSent(false);
                 flat.setFlatStatus(flatStatus);
                 realm.copyToRealmOrUpdate(flat);
             }

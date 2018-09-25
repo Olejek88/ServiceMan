@@ -15,11 +15,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -41,7 +39,6 @@ import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ResidentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.SubjectLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
@@ -49,10 +46,8 @@ import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
-import static ru.shtrm.serviceman.util.MainUtil.ACTIVITY_PHOTO_MESSAGE;
 
 public class FlatFragment extends Fragment implements FlatContract.View {
     private Activity mainActivityConnector = null;
@@ -69,7 +64,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     private CircleImageView circleImageView;
     private TextView textViewPhotoDate;
 
-    public FlatFragment() {}
+    public FlatFragment() {
+    }
 
     public static FlatFragment newInstance() {
         return new FlatFragment();
@@ -100,7 +96,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                 return view;
             }
         }
-        if (getFragmentManager()!=null)
+        if (getFragmentManager() != null)
             getFragmentManager().popBackStack();
         return view;
     }
@@ -108,7 +104,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     @Override
     public void onResume() {
         super.onResume();
-        if (presenter!=null) {
+        if (presenter != null) {
             presenter.subscribe();
             presenter.loadEquipmentsByFlat(flat);
         }
@@ -117,7 +113,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     @Override
     public void onPause() {
         super.onPause();
-        if (presenter!=null)
+        if (presenter != null)
             presenter.unsubscribe();
     }
 
@@ -139,7 +135,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         circleImageView = view.findViewById(R.id.imageViewFlat);
 
-        if (mToolbar !=null) {
+        if (mToolbar != null) {
             mToolbar.setTitle(flat.getFullTitle());
             if (flat.getHouse().getHouseType() != null) {
                 if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280) {
@@ -151,7 +147,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             }
         }
 
-        if (resident!=null) {
+        if (resident != null) {
             textViewInn.setText(resident.getInn());
             textViewAbonent.setText(resident.getOwner());
         }
@@ -160,15 +156,15 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             textViewAbonent.setText(subject.getOwner());
         }
         //if (flat.getFlatStatus()!=null)
-          //  textViewStatus.setText(flat.getFlatStatus().getTitle());
+        //  textViewStatus.setText(flat.getFlatStatus().getTitle());
 
-        if (flat.getFlatType()!=null)
+        if (flat.getFlatType() != null)
             textViewTitle.setText(flat.getFlatType().getTitle());
         else
             textViewTitle.setText(flat.getFullTitle());
 
-        textViewFlat.setText(flat.getTitle().substring(0,1));
-        if (photoFlat!=null) {
+        textViewFlat.setText(flat.getNumber().substring(0, 1));
+        if (photoFlat != null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
                     format(photoFlat.getCreatedAt());
             textViewPhotoDate.setText(sDate);
@@ -176,8 +172,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
                     MainUtil.getPicturesDirectory(mainActivityConnector),
                     photoFlat.getUuid().concat(".jpg")));
-        }
-        else {
+        } else {
             circleImageView.setImageResource(R.drawable.flat);
             textViewPhotoDate.setText("нет фото");
         }
@@ -188,7 +183,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         statusSpinner.setAdapter(adapter);
         for (int pos = 0; pos < flatStatuses.size(); pos++) {
             FlatStatus flatStatus = flatStatuses.get(pos);
-            if (flatStatus!=null && flat.getFlatStatus()!=null) {
+            if (flatStatus != null && flat.getFlatStatus() != null) {
                 if (flatStatus.getUuid().equals(flat.getFlatStatus().getUuid())) {
                     statusSpinner.setSelection(pos);
                 }
@@ -199,11 +194,12 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 FlatStatus flatStatus = adapter.getItem(position);
-                if (flatStatus!=null && flat.getFlatStatus()!=null) {
+                if (flatStatus != null && flat.getFlatStatus() != null) {
                     if (!flatStatus.getUuid().equals(flat.getFlatStatus().getUuid()))
                         presenter.updateFlatStatus(flat, adapter.getItem(position));
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
             }
@@ -238,11 +234,11 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         add_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FlatActivity.createAddMessageDialog(mainActivityConnector,flat);
+                FlatActivity.createAddMessageDialog(mainActivityConnector, flat);
             }
         });
 
-        recyclerView =  view.findViewById(R.id.recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
@@ -256,12 +252,13 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         super.onAttach(context);
         mainActivityConnector = getActivity();
         // TODO решить что делать если контекст не приехал
-        if (mainActivityConnector==null)
+        if (mainActivityConnector == null)
             onDestroyView();
     }
 
     /**
      * Show flats with recycler view.
+     *
      * @param list The data.
      */
     @Override
@@ -304,7 +301,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                             String uuid = java.util.UUID.randomUUID().toString();
                             MainUtil.storeNewImage(bitmap, getContext(),
                                     800, uuid.concat(".jpg"));
-                            MainUtil.storePhotoFlat(flat,uuid);
+                            MainUtil.storePhotoFlat(flat, uuid);
                             circleImageView.setImageBitmap(bitmap);
                             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
                                     format(new Date());

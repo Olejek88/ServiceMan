@@ -3,18 +3,21 @@ package ru.shtrm.serviceman.data;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class PhotoMessage extends RealmObject {
+public class PhotoMessage extends RealmObject implements ISend, IBaseRecord {
 
-    @PrimaryKey
+    @Index
     private long _id;
+    @PrimaryKey
     private String uuid;
     private Message message;
     private Double longitude;
     private Double lattitude;
     private Date createdAt;
     private Date changedAt;
+    private boolean sent;
 
     public long get_id() {
         return _id;
@@ -70,5 +73,13 @@ public class PhotoMessage extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 }

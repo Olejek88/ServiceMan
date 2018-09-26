@@ -29,10 +29,12 @@ import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.PhotoAlarm;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.PhotoHouse;
+import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class SendDataService extends Service {
@@ -42,11 +44,13 @@ public class SendDataService extends Service {
     public static final String ALARM_IDS = "alramIds";
     public static final String MEASURE_IDS = "measureIds";
     public static final String EQUIPMENT_IDS = "equipmentIds";
-    public static final String PHOTO_ALARM_IDS = "alarmIds";
-    public static final String PHOTO_HOUSE_IDS = "houseIds";
-    public static final String PHOTO_FLAT_IDS = "flatIds";
-    public static final String PHOTO_EQUIPMENT_IDS = "equipmentIds";
+    public static final String PHOTO_ALARM_IDS = "photoAlarmIds";
+    public static final String PHOTO_HOUSE_IDS = "photoHouseIds";
+    public static final String PHOTO_FLAT_IDS = "photoFlatIds";
+    public static final String PHOTO_EQUIPMENT_IDS = "photoEquipmentIds";
     public static final String FLAT_IDS = "flatIds";
+    public static final String MESSAGE_IDS = "messageIds";
+    public static final String PHOTO_MESSAGE_IDS = "photoMessageIds";
     private static final String TAG = SendDataService.class.getSimpleName();
     private boolean isRunning;
 
@@ -60,6 +64,9 @@ public class SendDataService extends Service {
     private long photoFlatIds[];
     private long photoEquipmentIds[];
     private long flatIds[];
+    private long messageIds[];
+    private long photoMessageIds[];
+
 
     /**
      * Метод для выполнения отправки данных на сервер.
@@ -117,6 +124,16 @@ public class SendDataService extends Service {
             // отправка квартир
             if (flatIds != null && flatIds.length > 0) {
                 sendFlat(realm, flatIds);
+            }
+
+            // отправка сообщений
+            if (messageIds != null && messageIds.length > 0) {
+                sendMessage(realm, messageIds);
+            }
+
+            // отправка фотографий сообщений
+            if (photoMessageIds != null && photoMessageIds.length > 0) {
+                sendPhotoMessage(realm, photoMessageIds);
             }
 
             realm.close();
@@ -371,7 +388,6 @@ public class SendDataService extends Service {
                     if (response.isSuccessful()) {
                         Log.d(TAG, "successful");
                         JSONObject jObj = new JSONObject(result.string());
-                        Log.d(TAG, jObj.toString());
                         // при сохранении данных на сервере произошли ошибки
                         // данный флаг пока не используем
 //                            boolean success = (boolean) jObj.get("success");
@@ -444,7 +460,6 @@ public class SendDataService extends Service {
                     if (response.isSuccessful()) {
                         Log.d(TAG, "successful");
                         JSONObject jObj = new JSONObject(result.string());
-                        Log.d(TAG, jObj.toString());
                         // при сохранении данных на сервере произошли ошибки
                         // данный флаг пока не используем
 //                            boolean success = (boolean) jObj.get("success");
@@ -517,7 +532,6 @@ public class SendDataService extends Service {
                     if (response.isSuccessful()) {
                         Log.d(TAG, "successful");
                         JSONObject jObj = new JSONObject(result.string());
-                        Log.d(TAG, jObj.toString());
                         // при сохранении данных на сервере произошли ошибки
                         // данный флаг пока не используем
 //                            boolean success = (boolean) jObj.get("success");
@@ -590,7 +604,6 @@ public class SendDataService extends Service {
                     if (response.isSuccessful()) {
                         Log.d(TAG, "successful");
                         JSONObject jObj = new JSONObject(result.string());
-                        Log.d(TAG, jObj.toString());
                         // при сохранении данных на сервере произошли ошибки
                         // данный флаг пока не используем
 //                            boolean success = (boolean) jObj.get("success");
@@ -648,12 +661,120 @@ public class SendDataService extends Service {
                     }
 
                     realm.commitTransaction();
-                    Flat test = realm.where(Flat.class).equalTo("uuid", "flatUuid").findFirst();
-                    Log.d(TAG, "Flat sent after set 'true': " + test.isSent());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.e(TAG, "Ошибка при отправке квартир.");
+            }
+        }
+
+        void sendMessage(Realm realm, long[] array) {
+            int count = array.length;
+            Long[] data = new Long[count];
+            for (int i = 0; i < count; i++) {
+                data[i] = array[i];
+            }
+
+            RealmResults<Message> items = realm.where(Message.class).in("_id", data)
+                    .findAll();
+            // отправляем данные с сообщениями
+            Call<ResponseBody> call = SManApiFactory.getMessageService().sendData(realm.copyFromRealm(items));
+            try {
+                Response response = call.execute();
+                ResponseBody result = (ResponseBody) response.body();
+                if (response.isSuccessful()) {
+                    JSONObject jObj = new JSONObject(result.string());
+                    // при сохранении данных на сервере произошли ошибки
+                    // данный флаг пока не используем
+//                        boolean success = (boolean) jObj.get("success");
+                    JSONArray jData = (JSONArray) jObj.get("data");
+                    // устанавливаем флаг отправки записям которые подтвердил сервер
+                    realm.beginTransaction();
+                    for (int idx = 0; idx < jData.length(); idx++) {
+                        JSONObject item = (JSONObject) jData.get(idx);
+                        Long _id = Long.parseLong(item.get("_id").toString());
+                        String uuid = item.get("uuid").toString();
+                        Message sentItem = realm.where(Message.class).equalTo("uuid", uuid).findFirst();
+                        sentItem.set_id(_id);
+                        sentItem.setSent(true);
+                    }
+
+                    realm.commitTransaction();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "Ошибка при отправке сообщений.");
+            }
+        }
+
+        void sendPhotoMessage(Realm realm, long[] array) {
+            int count = array.length;
+            Long[] data = new Long[count];
+            for (int i = 0; i < count; i++) {
+                data[i] = array[i];
+            }
+
+            RealmResults<PhotoMessage> items = realm.where(PhotoMessage.class).in("_id", data)
+                    .findAll();
+            // добавляем в список файлы
+            RequestBody descr = RequestBody.create(MultipartBody.FORM, "Photos due execution operation.");
+
+            for (PhotoMessage file : items) {
+                List<MultipartBody.Part> list = new ArrayList<>();
+                try {
+                    String formId = "file";
+                    String fileUuid = file.getUuid();
+                    String fileName = fileUuid + ".jpg";
+                    File path = new File(getExternalFilesDir("") + "/" + fileName);
+
+                    Uri uri = Uri.fromFile(path);
+                    list.add(prepareFilePart(formId, uri));
+                    formId = "photo";
+                    list.add(MultipartBody.Part.createFormData(formId + "[_id]", String.valueOf(file.get_id())));
+                    list.add(MultipartBody.Part.createFormData(formId + "[uuid]", fileUuid));
+                    list.add(MultipartBody.Part.createFormData(formId + "[messageUuid]", file.getMessage().getUuid()));
+                    list.add(MultipartBody.Part.createFormData(formId + "[longitude]", String.valueOf(file.getLongitude())));
+                    list.add(MultipartBody.Part.createFormData(formId + "[latitude]", String.valueOf(file.getLattitude())));
+                    list.add(MultipartBody.Part.createFormData(formId + "[createdAt]", String.valueOf(file.getCreatedAt())));
+                    list.add(MultipartBody.Part.createFormData(formId + "[changedAt]", String.valueOf(file.getChangedAt())));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                // запросы делаем по одному, т.к. может сложиться ситуация когда будет попытка отправить
+                // объём данных превышающий ограничения на отправку POST запросом на сервере
+                Call<ResponseBody> call = SManApiFactory.getPhotoMessageService().sendData(descr, list);
+                try {
+                    Response response = call.execute();
+                    ResponseBody result = (ResponseBody) response.body();
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "successful");
+                        JSONObject jObj = new JSONObject(result.string());
+                        // при сохранении данных на сервере произошли ошибки
+                        // данный флаг пока не используем
+//                            boolean success = (boolean) jObj.get("success");
+                        JSONArray jData = (JSONArray) jObj.get("data");
+                        // устанавливаем флаг отправки записям которые подтвердил сервер
+                        realm.beginTransaction();
+                        for (int idx = 0; idx < jData.length(); idx++) {
+                            JSONObject item = (JSONObject) jData.get(idx);
+                            Long _id = Long.parseLong(item.get("_id").toString());
+                            String uuid = item.get("uuid").toString();
+                            PhotoMessage sentItem = realm.where(PhotoMessage.class)
+                                    .equalTo("uuid", uuid)
+                                    .findFirst();
+                            // устанавливаем id присвоенное сервером
+                            sentItem.set_id(_id);
+                            sentItem.setSent(true);
+                        }
+
+                        realm.commitTransaction();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "Ошибка при отправке фотографий сообщений.");
+                }
             }
         }
     };
@@ -682,6 +803,8 @@ public class SendDataService extends Service {
             photoFlatIds = intent.getLongArrayExtra(PHOTO_FLAT_IDS);
             photoEquipmentIds = intent.getLongArrayExtra(PHOTO_EQUIPMENT_IDS);
             flatIds = intent.getLongArrayExtra(FLAT_IDS);
+            messageIds = intent.getLongArrayExtra(MESSAGE_IDS);
+            photoMessageIds = intent.getLongArrayExtra(PHOTO_MESSAGE_IDS);
             new Thread(task).start();
         }
 

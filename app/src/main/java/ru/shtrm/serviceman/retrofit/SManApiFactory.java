@@ -26,6 +26,7 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmTypeService;
@@ -42,10 +43,12 @@ import ru.shtrm.serviceman.retrofit.iface.IHouseStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IJournalService;
 import ru.shtrm.serviceman.retrofit.iface.IMeasureService;
+import ru.shtrm.serviceman.retrofit.iface.IMessageService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoEquipmentService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoFlatService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoHouseService;
+import ru.shtrm.serviceman.retrofit.iface.IPhotoMessageService;
 import ru.shtrm.serviceman.retrofit.iface.IPing;
 import ru.shtrm.serviceman.retrofit.iface.IResidentService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
@@ -227,6 +230,16 @@ public class SManApiFactory {
     }
 
     @NonNull
+    public static IMessageService getMessageService() {
+        return getRetrofit().create(IMessageService.class);
+    }
+
+    @NonNull
+    public static IPhotoMessageService getPhotoMessageService() {
+        return getRetrofit().create(IPhotoMessageService.class);
+    }
+
+    @NonNull
     public static Retrofit getPrivateRetrofit() {
         return getRetrofit();
     }
@@ -261,6 +274,7 @@ public class SManApiFactory {
         builder.registerTypeAdapter(Measure.class, new MeasureSerializer());
         builder.registerTypeAdapter(Alarm.class, new AlarmSerializer());
         builder.registerTypeAdapter(Flat.class, new FlatSerializer());
+        builder.registerTypeAdapter(Message.class, new MessageSerializer());
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Gson gson = builder.create();
         return new Retrofit.Builder()

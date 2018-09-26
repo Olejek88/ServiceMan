@@ -22,10 +22,12 @@ import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.IBaseRecord;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.PhotoAlarm;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.PhotoHouse;
+import ru.shtrm.serviceman.data.PhotoMessage;
 
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
@@ -186,15 +188,36 @@ public class ForegroundService extends Service {
                 RealmResults<Flat> flats = realm.where(Flat.class)
                         .equalTo("sent", false)
                         .findAll().sort("_id");
-                for (Flat flat : flats) {
-                    Log.d(TAG, "Flat " + flat.getUuid() + " selected befor sent: sent is " + flat.isSent());
-                }
 
                 if (flats.size() > 0) {
                     limitIds = getLimitElements(flats);
                     flats = realm.where(Flat.class).in("_id", limitIds).findAll();
                     ids = getIds(flats);
                     bundle.putLongArray(SendDataService.FLAT_IDS, ids);
+                }
+
+                // получаем данные для отправки сообщений
+                RealmResults<Message> messages = realm.where(Message.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
+
+                if (messages.size() > 0) {
+                    limitIds = getLimitElements(messages);
+                    messages = realm.where(Message.class).in("_id", limitIds).findAll();
+                    ids = getIds(messages);
+                    bundle.putLongArray(SendDataService.MESSAGE_IDS, ids);
+                }
+
+                // получаем данные для отправки фотографий сообщений
+                RealmResults<PhotoMessage> photoMessages = realm.where(PhotoMessage.class)
+                        .equalTo("sent", false)
+                        .findAll().sort("_id");
+
+                if (photoMessages.size() > 0) {
+                    limitIds = getLimitElements(photoMessages);
+                    photoMessages = realm.where(PhotoMessage.class).in("_id", limitIds).findAll();
+                    ids = getIds(photoMessages);
+                    bundle.putLongArray(SendDataService.PHOTO_MESSAGE_IDS, ids);
                 }
 
                 realm.close();

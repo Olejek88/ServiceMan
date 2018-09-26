@@ -35,8 +35,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.FlatRepository;
@@ -112,7 +114,16 @@ public class MainActivity extends AppCompatActivity
         if (!initDB()) {
             finish();
         }
-
+/*
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Street> s = realm.where(Street.class).findAll();
+        realm.beginTransaction();
+        for (Street street : s) {
+            street.setTitle("123444");
+        }
+        realm.commitTransaction();
+        realm.close();
+*/
         // пытаемся получить список пользователей с сервера, с помощью сервисного пользователя
         getUsersList();
 

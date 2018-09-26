@@ -25,8 +25,21 @@ import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
+import ru.shtrm.serviceman.data.Resident;
+import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.Subject;
+import ru.shtrm.serviceman.data.UserHouse;
+import ru.shtrm.serviceman.retrofit.deserial.DateTypeDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.EquipmentDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.FlatDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.HouseDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.ResidentDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.StreetDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.SubjectDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.UserHouseDeserializer;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmTypeService;
@@ -54,7 +67,13 @@ import ru.shtrm.serviceman.retrofit.iface.IResidentService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
 import ru.shtrm.serviceman.retrofit.iface.ISubjectService;
 import ru.shtrm.serviceman.retrofit.iface.ITokenService;
+import ru.shtrm.serviceman.retrofit.iface.IUserHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
+import ru.shtrm.serviceman.retrofit.serial.AlarmSerializer;
+import ru.shtrm.serviceman.retrofit.serial.EquipmentSerializer;
+import ru.shtrm.serviceman.retrofit.serial.FlatSerializer;
+import ru.shtrm.serviceman.retrofit.serial.MeasureSerializer;
+import ru.shtrm.serviceman.retrofit.serial.MessageSerializer;
 
 public class SManApiFactory {
     private static final int CONNECT_TIMEOUT = 15;
@@ -240,6 +259,11 @@ public class SManApiFactory {
     }
 
     @NonNull
+    public static IUserHouseService getUserHouseService() {
+        return getRetrofit().create(IUserHouseService.class);
+    }
+
+    @NonNull
     public static Retrofit getPrivateRetrofit() {
         return getRetrofit();
     }
@@ -275,6 +299,13 @@ public class SManApiFactory {
         builder.registerTypeAdapter(Alarm.class, new AlarmSerializer());
         builder.registerTypeAdapter(Flat.class, new FlatSerializer());
         builder.registerTypeAdapter(Message.class, new MessageSerializer());
+        builder.registerTypeAdapter(Street.class, new StreetDeserializer());
+        builder.registerTypeAdapter(House.class, new HouseDeserializer());
+        builder.registerTypeAdapter(Flat.class, new FlatDeserializer());
+        builder.registerTypeAdapter(Equipment.class, new EquipmentDeserializer());
+        builder.registerTypeAdapter(UserHouse.class, new UserHouseDeserializer());
+        builder.registerTypeAdapter(Subject.class, new SubjectDeserializer());
+        builder.registerTypeAdapter(Resident.class, new ResidentDeserializer());
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Gson gson = builder.create();
         return new Retrofit.Builder()

@@ -1,4 +1,4 @@
-package ru.shtrm.serviceman.retrofit;
+package ru.shtrm.serviceman.retrofit.serial;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,19 +9,22 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import ru.shtrm.serviceman.data.Message;
+import ru.shtrm.serviceman.data.Alarm;
 
-public class MessageSerializer implements JsonSerializer<Message> {
+public class AlarmSerializer implements JsonSerializer<Alarm> {
     @Override
-    public JsonElement serialize(Message src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(Alarm src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject object = new JsonObject();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         object.addProperty("uuid", src.getUuid());
-        object.addProperty("flatUuid", src.getFlat().getUuid());
-        object.addProperty("userUuid", src.getUser().getUuid());
+        object.addProperty("alarmType", src.getAlarmType().getUuid());
+        object.addProperty("alarmStatus", src.getAlarmStatus().getUuid());
+        object.addProperty("user", src.getUser().getUuid());
+        object.addProperty("latitude", src.getLatitude());
+        object.addProperty("longitude", src.getLongitude());
         object.addProperty("date", sdf.format(src.getDate()));
-        object.addProperty("message", src.getMessage());
+        object.addProperty("comment", src.getComment());
         object.addProperty("createdAt", sdf.format(src.getCreatedAt()));
         object.addProperty("changedAt", sdf.format(src.getChangedAt()));
 

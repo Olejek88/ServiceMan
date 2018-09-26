@@ -31,6 +31,7 @@ import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.Subject;
 import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.UserHouse;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class GetReferenceService extends Service {
@@ -56,20 +57,16 @@ public class GetReferenceService extends Service {
             // обновляем справочники
             Realm realm = Realm.getDefaultInstance();
 
-            if (!updateAlarmStatus(realm)) {
-                Journal.add("AlarmStatus not updated.");
+            if (!updateCity(realm)) {
+                Journal.add("City not updated.");
             }
 
             if (!updateAlarmType(realm)) {
                 Journal.add("AlarmType not updated.");
             }
 
-            if (!updateCity(realm)) {
-                Journal.add("City not updated.");
-            }
-
-            if (!updateStreet(realm)) {
-                Journal.add("Street not updated.");
+            if (!updateAlarmStatus(realm)) {
+                Journal.add("AlarmStatus not updated.");
             }
 
             if (!updateHouseType(realm)) {
@@ -80,10 +77,6 @@ public class GetReferenceService extends Service {
                 Journal.add("HouseStatus not updated.");
             }
 
-            if (!updateHouse(realm)) {
-                Journal.add("House not updated.");
-            }
-
             if (!updateFlatType(realm)) {
                 Journal.add("FlatType not updated.");
             }
@@ -92,20 +85,36 @@ public class GetReferenceService extends Service {
                 Journal.add("FlatStatus not updated.");
             }
 
-            if (!updateFlat(realm)) {
-                Journal.add("Flat not updated.");
+            if (!updateEquipmentType(realm)) {
+                Journal.add("EquipmentType not updated.");
             }
 
             if (!updateEquipmentStatus(realm)) {
                 Journal.add("EquipmentStatus not updated.");
             }
 
-            if (!updateEquipmentType(realm)) {
-                Journal.add("EquipmentType not updated.");
+            if (!updateUser(realm)) {
+                Journal.add("User not updated.");
+            }
+
+            if (!updateStreet(realm)) {
+                Journal.add("Street not updated.");
+            }
+
+            if (!updateHouse(realm)) {
+                Journal.add("House not updated.");
+            }
+
+            if (!updateFlat(realm)) {
+                Journal.add("Flat not updated.");
             }
 
             if (!updateEquipment(realm)) {
                 Journal.add("Equipment not updated.");
+            }
+
+            if (!updateUserHouse(realm)) {
+                Journal.add("UserHouse not updated.");
             }
 
             if (!updateSubject(realm)) {
@@ -114,10 +123,6 @@ public class GetReferenceService extends Service {
 
             if (!updateResident(realm)) {
                 Journal.add("Resident not updated.");
-            }
-
-            if (!updateUser(realm)) {
-                Journal.add("User not updated.");
             }
 
             realm.close();
@@ -492,6 +497,29 @@ public class GetReferenceService extends Service {
         Call<List<HouseType>> call = SManApiFactory.getHouseTypeService().getData(lastUpdate);
         try {
             Response<List<HouseType>> response = call.execute();
+            if (response.isSuccessful()) {
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(response.body());
+                realm.commitTransaction();
+                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean updateUserHouse(Realm realm) {
+        String lastUpdate;
+        String rName = UserHouse.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
+        Call<List<UserHouse>> call = SManApiFactory.getUserHouseService().getData(lastUpdate);
+        try {
+            Response<List<UserHouse>> response = call.execute();
             if (response.isSuccessful()) {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(response.body());

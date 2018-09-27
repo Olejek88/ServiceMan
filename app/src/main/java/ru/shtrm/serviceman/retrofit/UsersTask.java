@@ -19,7 +19,6 @@ import retrofit2.Response;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.Token;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.mvp.MainActivity;
 
 public class UsersTask extends AsyncTask<String, Void, List<User>> {
 
@@ -96,6 +95,9 @@ public class UsersTask extends AsyncTask<String, Void, List<User>> {
                     break;
                 case Reason.NO_NETWORK:
                     Toast.makeText(context.get(), "Нет сети!", Toast.LENGTH_LONG).show();
+                    break;
+                case Reason.NOT_GET_TOKEN:
+                    Toast.makeText(context.get(), "Токен не получен", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     Toast.makeText(context.get(), "Неизвестная ошибка!", Toast.LENGTH_LONG).show();

@@ -14,7 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -72,7 +71,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
     private Street currentStreet;
-    private Flat currentFlat;
 
     private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
     private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
@@ -258,9 +256,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 public void OnItemClick(View v, int position) {
                     Flat flat = list.get(position);
                     Intent intent = new Intent(getActivity(), FlatActivity.class);
-                    intent.putExtra("FLAT_UUID", String.valueOf(list.get(position).getUuid()));
+                    intent.putExtra("FLAT_UUID", String.valueOf(flat.getUuid()));
                     startActivity(intent);
-                    currentFlat = flat;
                 }
             });
             recyclerView.setAdapter(flatAdapter);

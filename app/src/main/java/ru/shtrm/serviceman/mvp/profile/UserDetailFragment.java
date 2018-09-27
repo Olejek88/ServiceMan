@@ -89,7 +89,7 @@ public class UserDetailFragment extends Fragment
     }
 
     @Override
-    public void showUser(User user) {
+    public void showUser(@NonNull User user) {
         this.user = user;
         initViews(view);
     }

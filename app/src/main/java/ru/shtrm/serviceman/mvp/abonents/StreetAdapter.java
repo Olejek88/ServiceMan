@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +20,6 @@ import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @NonNull
-    private final Context context;
-
-    @NonNull
     private final LayoutInflater inflater;
 
     @NonNull
@@ -33,7 +29,6 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private OnRecyclerViewItemClickListener listener;
     
     StreetAdapter(@NonNull Context context, @NonNull List<Street> list) {
-        this.context = context;
         inflater = LayoutInflater.from(context);
         this.list = list;
     }
@@ -75,8 +70,7 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     /**
      * The view holder of package in home list.
      */
-    public class StreetsViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnCreateContextMenuListener {
+    public class StreetsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         AppCompatTextView textViewTitle;
         AppCompatTextView textViewImage;
@@ -84,7 +78,7 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         private OnRecyclerViewItemClickListener listener;
 
-        public StreetsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+        StreetsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
             textViewImage = itemView.findViewById(R.id.textViewImage);
@@ -92,8 +86,6 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             this.listener = listener;
             itemView.setOnClickListener(this);
-            itemView.setOnCreateContextMenuListener(this);
-
         }
 
         @Override
@@ -102,20 +94,5 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 listener.OnItemClick(v, getLayoutPosition());
             }
         }
-
-        /**
-         * Create the context menu.
-         * @param menu The context menu.
-         * @param v The view.
-         * @param menuInfo The menu information.
-         */
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            if (menu != null) {
-                //((MainActivity)context).setSelectedPackageId(list.get(getLayoutPosition()).getId());
-                //menu.add(Menu.NONE, R.id.action_share, 0, R.string.share);
-            }
-        }
     }
-
 }

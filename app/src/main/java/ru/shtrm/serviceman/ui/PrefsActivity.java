@@ -17,7 +17,7 @@ public class PrefsActivity extends AppCompatActivity {
 
     public static final String EXTRA_FLAG= "EXTRA_FLAG";
 
-    public static final int FLAG_SETTINGS = 0, FLAG_ABOUT = 1, FLAG_LICENSES = 2;
+    public static final int FLAG_SETTINGS = 0, FLAG_ABOUT = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,7 +65,8 @@ public class PrefsActivity extends AppCompatActivity {
 
     private void initViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar()!=null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 }

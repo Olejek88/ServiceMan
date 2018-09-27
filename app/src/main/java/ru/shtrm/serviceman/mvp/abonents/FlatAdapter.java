@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,7 +117,7 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * The view holder of package in home list.
      */
     public class FlatsViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnCreateContextMenuListener {
+            implements View.OnClickListener {
 
         AppCompatTextView textViewTitle;
         AppCompatTextView textViewDate;
@@ -129,7 +128,7 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private OnRecyclerViewItemClickListener listener;
 
-        public FlatsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+        FlatsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
             textViewStatus = itemView.findViewById(R.id.textObjectStatus);
@@ -140,7 +139,7 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             this.listener = listener;
             itemView.setOnClickListener(this);
-            itemView.setOnCreateContextMenuListener(this);
+            //itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
@@ -149,20 +148,5 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 listener.OnItemClick(v, getLayoutPosition());
             }
         }
-
-        /**
-         * Create the context menu.
-         * @param menu The context menu.
-         * @param v The view.
-         * @param menuInfo The menu information.
-         */
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            if (menu != null) {
-                //((MainActivity)context).setSelectedPackageId(list.get(getLayoutPosition()).getId());
-                //menu.add(Menu.NONE, R.id.action_share, 0, R.string.share);
-            }
-        }
     }
-
 }

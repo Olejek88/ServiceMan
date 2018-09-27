@@ -5,19 +5,15 @@ import android.support.annotation.NonNull;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
 public class UserDetailPresenter implements UserDetailContract.Presenter {
 
     @NonNull
     private UserDetailContract.View view;
 
-    public UserDetailPresenter(@NonNull UserDetailContract.View view,
-                               @NonNull UsersRepository usersRepository,
-                               @NonNull String userId) {
+    public UserDetailPresenter(@NonNull UserDetailContract.View view) {
         this.view = view;
-        if (this.view!=null)
-            this.view.setPresenter(this);
+        this.view.setPresenter(this);
     }
 
     @Override

@@ -156,6 +156,8 @@
     <string name="load_test_data">Загрузить тестовые данные</string>
     <string name="delete_test_data">Удалить справочники</string>
     <string name="data">Данные</string>
+    <string name="server_address">Адрес сервера</string>
+    <string name="server_key">server_ip</string>
 
     <string name="do_not_disturb_mode">Режим не беспокоить</string>
     <string name="do_not_disturb_mode_desc">Не оповещать меня в эти часы</string>

@@ -73,8 +73,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (enteredPinMD5 != null && enteredPinMD5.equals(user.getPin())) {
                     aUser.setValidToken(false);
                     checkUser(user.getUuid(), pinCode.getText().toString());
+                    SharedPreferences sp;
+                    // сохраняем uuid успешно вошедшего пользователя
+                    sp = getApplicationContext().getSharedPreferences("lastUser", MODE_PRIVATE);
+                    sp.edit().putString("uuid", user.getUuid()).apply();
                     // достаём ранее сохранённый токен
-                    SharedPreferences sp = getApplicationContext().getSharedPreferences(user.getUuid(), MODE_PRIVATE);
+                    sp = getApplicationContext().getSharedPreferences(user.getUuid(), MODE_PRIVATE);
                     String token = sp.getString("token", null);
                     // если токена нет, делаем запрос к серверу
                     if (token == null) {
@@ -157,6 +161,17 @@ public class LoginActivity extends AppCompatActivity {
         RealmResults<User> users = presenter.loadUsers();
         UserListAdapter adapter = new UserListAdapter(this, R.layout.item_user, users);
         userSelect.setAdapter(adapter);
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("lastUser", MODE_PRIVATE);
+        String lastUserUuid = sp.getString("uuid", null);
+        if (lastUserUuid != null) {
+            for (int i = 0; i < adapter.getCount(); i++) {
+                User user = adapter.getItem(i);
+                if (user != null && user.getUuid().equals(lastUserUuid)) {
+                    userSelect.setSelection(i);
+                    break;
+                }
+            }
+        }
     }
 
     void checkUser(String userUuid, String pin) {

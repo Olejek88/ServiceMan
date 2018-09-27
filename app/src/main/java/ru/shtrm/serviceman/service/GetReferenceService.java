@@ -38,7 +38,7 @@ public class GetReferenceService extends Service {
     public static final String ACTION = "ru.shtrm.serviceman.service.GET_REFERENCE";
     private static final String TAG = GetReferenceService.class.getSimpleName();
     private boolean isRuning;
-
+    private String userUuid;
     /**
      * Метод для выполнения приёма данных с сервера.
      */
@@ -53,6 +53,8 @@ public class GetReferenceService extends Service {
                 finishService();
                 return;
             }
+
+            userUuid = user.getUser().getUuid();
 
             // обновляем справочники
             Realm realm = Realm.getDefaultInstance();
@@ -134,17 +136,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateAlarmStatus(Realm realm) {
         String lastUpdate;
-        String rName = AlarmStatus.class.getSimpleName();
+        String rName = AlarmStatus.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<AlarmStatus>> call = SManApiFactory.getAlarmStatusService().getData(lastUpdate);
         try {
             Response<List<AlarmStatus>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<AlarmStatus> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -157,17 +163,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateAlarmType(Realm realm) {
         String lastUpdate;
-        String rName = AlarmType.class.getSimpleName();
+        String rName = AlarmType.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<AlarmType>> call = SManApiFactory.getAlarmTypeService().getData(lastUpdate);
         try {
             Response<List<AlarmType>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<AlarmType> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -180,17 +190,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateCity(Realm realm) {
         String lastUpdate;
-        String rName = City.class.getSimpleName();
+        String rName = City.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<City>> call = SManApiFactory.getCityService().getData(lastUpdate);
         try {
             Response<List<City>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<City> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -203,17 +217,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateStreet(Realm realm) {
         String lastUpdate;
-        String rName = Street.class.getSimpleName();
+        String rName = Street.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Street>> call = SManApiFactory.getStreetService().getData(lastUpdate);
         try {
             Response<List<Street>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<Street> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -226,17 +244,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateHouseStatus(Realm realm) {
         String lastUpdate;
-        String rName = HouseStatus.class.getSimpleName();
+        String rName = HouseStatus.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<HouseStatus>> call = SManApiFactory.getHouseStatusService().getData(lastUpdate);
         try {
             Response<List<HouseStatus>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<HouseStatus> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -249,17 +271,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateHouse(Realm realm) {
         String lastUpdate;
-        String rName = House.class.getSimpleName();
+        String rName = House.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<House>> call = SManApiFactory.getHouseService().getData(lastUpdate);
         try {
             Response<List<House>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<House> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -272,17 +298,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateFlatStatus(Realm realm) {
         String lastUpdate;
-        String rName = FlatStatus.class.getSimpleName();
+        String rName = FlatStatus.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<FlatStatus>> call = SManApiFactory.getFlatStatusService().getData(lastUpdate);
         try {
             Response<List<FlatStatus>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<FlatStatus> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -295,23 +325,26 @@ public class GetReferenceService extends Service {
 
     private boolean updateFlat(Realm realm) {
         String lastUpdate;
-        String rName = Flat.class.getSimpleName();
+        String rName = Flat.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Flat>> call = SManApiFactory.getFlatService().getData(lastUpdate);
         try {
             Response<List<Flat>> response = call.execute();
             if (response.isSuccessful()) {
-                List<Flat> flats = response.body();
-                // для предотвращения отправки только что полученых данных на сервер
-                for (Flat flat : flats) {
-                    flat.setSent(true);
+                List<Flat> list = response.body();
+                if (list.size() > 0) {
+                    // для предотвращения отправки только что полученых данных на сервер
+                    for (Flat flat : list) {
+                        flat.setSent(true);
+                    }
+
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 }
 
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(flats);
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -324,17 +357,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateEquipmentStatus(Realm realm) {
         String lastUpdate;
-        String rName = EquipmentStatus.class.getSimpleName();
+        String rName = EquipmentStatus.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<EquipmentStatus>> call = SManApiFactory.getEquipmentStatusService().getData(lastUpdate);
         try {
             Response<List<EquipmentStatus>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<EquipmentStatus> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -347,17 +384,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateEquipmentType(Realm realm) {
         String lastUpdate;
-        String rName = EquipmentType.class.getSimpleName();
+        String rName = EquipmentType.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<EquipmentType>> call = SManApiFactory.getEquipmentTypeService().getData(lastUpdate);
         try {
             Response<List<EquipmentType>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<EquipmentType> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -370,23 +411,26 @@ public class GetReferenceService extends Service {
 
     private boolean updateEquipment(Realm realm) {
         String lastUpdate;
-        String rName = Equipment.class.getSimpleName();
+        String rName = Equipment.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Equipment>> call = SManApiFactory.getEquipmentService().getData(lastUpdate);
         try {
             Response<List<Equipment>> response = call.execute();
             if (response.isSuccessful()) {
-                List<Equipment> equipments = response.body();
-                // для предотвращения отправки только что полученых данных на сервер
-                for (Equipment equipment : equipments) {
-                    equipment.setSent(true);
+                List<Equipment> list = response.body();
+                if (list.size() > 0) {
+                    // для предотвращения отправки только что полученых данных на сервер
+                    for (Equipment equipment : list) {
+                        equipment.setSent(true);
+                    }
+
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 }
 
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(equipments);
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
                 return true;
             } else {
                 return false;
@@ -399,17 +443,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateSubject(Realm realm) {
         String lastUpdate;
-        String rName = Subject.class.getSimpleName();
+        String rName = Subject.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Subject>> call = SManApiFactory.getSubjectService().getData(lastUpdate);
         try {
             Response<List<Subject>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<Subject> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -422,17 +470,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateResident(Realm realm) {
         String lastUpdate;
-        String rName = Resident.class.getSimpleName();
+        String rName = Resident.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<Resident>> call = SManApiFactory.getResidentService().getData(lastUpdate);
         try {
             Response<List<Resident>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<Resident> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -445,17 +497,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateUser(Realm realm) {
         String lastUpdate;
-        String rName = User.class.getSimpleName();
+        String rName = User.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<User>> call = SManApiFactory.getUsersService().getData(lastUpdate);
         try {
             Response<List<User>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<User> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -468,17 +524,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateFlatType(Realm realm) {
         String lastUpdate;
-        String rName = FlatType.class.getSimpleName();
+        String rName = FlatType.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<FlatType>> call = SManApiFactory.getFlatTypeService().getData(lastUpdate);
         try {
             Response<List<FlatType>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<FlatType> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -491,17 +551,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateHouseType(Realm realm) {
         String lastUpdate;
-        String rName = HouseType.class.getSimpleName();
+        String rName = HouseType.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<HouseType>> call = SManApiFactory.getHouseTypeService().getData(lastUpdate);
         try {
             Response<List<HouseType>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<HouseType> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;
@@ -514,17 +578,21 @@ public class GetReferenceService extends Service {
 
     private boolean updateUserHouse(Realm realm) {
         String lastUpdate;
-        String rName = UserHouse.class.getSimpleName();
+        String rName = UserHouse.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<UserHouse>> call = SManApiFactory.getUserHouseService().getData(lastUpdate);
         try {
             Response<List<UserHouse>> response = call.execute();
             if (response.isSuccessful()) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                List<UserHouse> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
                 return true;
             } else {
                 return false;

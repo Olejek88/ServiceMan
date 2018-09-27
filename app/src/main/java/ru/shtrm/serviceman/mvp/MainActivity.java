@@ -683,6 +683,7 @@ public class MainActivity extends AppCompatActivity
         Realm realm = Realm.getDefaultInstance();
         User sUser = realm.where(User.class).equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
         if (sUser != null) {
+            // TODO: реализовать подписку на сообщение SERVICE_AUTH_RESULT
             UsersTask task = new UsersTask(getApplicationContext());
             task.execute(sUser.getUuid(), sUser.getPin());
         }

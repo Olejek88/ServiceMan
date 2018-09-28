@@ -97,12 +97,14 @@ public class UsersTask extends AsyncTask<String, Void, List<User>> {
                     Toast.makeText(context.get(), "Нет сети!", Toast.LENGTH_LONG).show();
                     break;
                 case Reason.NOT_GET_TOKEN:
-                    Toast.makeText(context.get(), "Токен не получен", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context.get(), "Не получили токен!", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     Toast.makeText(context.get(), "Неизвестная ошибка!", Toast.LENGTH_LONG).show();
                     break;
             }
+
+            // TODO: реализовать отправку сообщения SERVICE_AUTH_RESULT
         }
     }
 

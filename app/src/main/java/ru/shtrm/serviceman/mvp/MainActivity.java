@@ -633,7 +633,7 @@ public class MainActivity extends AppCompatActivity
     private boolean isSkipGPS() {
         SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext());
-        return sp.getBoolean(getString(R.string.gps), false);
+        return sp.getBoolean("gps", false);
     }
 
     @Override

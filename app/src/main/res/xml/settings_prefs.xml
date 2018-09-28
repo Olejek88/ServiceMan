@@ -10,7 +10,7 @@
         <CheckBoxPreference
             android:key="gps"
             android:title="@string/gps"
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:summary="@string/gps_desc" />
 
         <CheckBoxPreference

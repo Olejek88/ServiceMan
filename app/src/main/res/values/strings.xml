@@ -149,7 +149,7 @@
 
     <!--Settings-->
     <string name="notifications">Оповещения</string>
-    <string name="gps">Сбор данных GPS</string>
+    <string name="gps">Не собирать данные GPS</string>
     <string name="gps_desc">Необходимость сбора данных координат</string>
     <string name="gps_center">Фокус карты</string>
     <string name="gps_center_desc">Центровать карту по координатам</string>

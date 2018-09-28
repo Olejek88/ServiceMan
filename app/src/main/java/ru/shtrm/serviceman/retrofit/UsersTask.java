@@ -116,7 +116,7 @@ public class UsersTask extends AsyncTask<String, Void, List<User>> {
 
     private List<User> getUsersList(Date date) {
         List<User> users = null;
-        String dateParam = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(date);
+        String dateParam = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(date);
         Call<List<User>> res = ServiceApiFactory.getUsersService().getData(dateParam);
         this.rc = Reason.OK;
         try {

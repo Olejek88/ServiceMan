@@ -7,7 +7,10 @@ import java.util.List;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.UserHouse;
@@ -82,4 +85,19 @@ public class HouseLocalDataSource implements HouseDataSource {
                 realm.where(House.class).equalTo("uuid", uuid).
                         findFirst());
     }
+
+    @Override
+    public void updateHouseStatus(final House house, final HouseStatus houseStatus) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                house.setHouseStatus(houseStatus);
+                realm.copyToRealmOrUpdate(house);
+            }
+        });
+        realm.close();
+    }
+
 }

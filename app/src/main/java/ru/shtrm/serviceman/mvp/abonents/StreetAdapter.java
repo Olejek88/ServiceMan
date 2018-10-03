@@ -44,8 +44,10 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         Street item = list.get(position);
         StreetsViewHolder pvh = (StreetsViewHolder) holder;
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
-        pvh.textViewTitle.setText(item.getCity().getTitle().concat(", ул.").concat(item.getTitle()));
-        pvh.textViewImage.setText(item.getTitle().substring(0,1));
+        if (item.getCity()!=null)
+            pvh.textViewTitle.setText(item.getCity().getTitle().concat(", ул.").concat(item.getTitle()));
+        if (item.getTitle()!=null)
+            pvh.textViewImage.setText(item.getTitle().substring(0,1));
     }
 
     @Override

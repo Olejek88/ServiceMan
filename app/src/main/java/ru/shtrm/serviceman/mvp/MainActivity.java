@@ -35,10 +35,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.FlatRepository;
@@ -262,6 +260,12 @@ public class MainActivity extends AppCompatActivity
                 intent = new Intent(MainActivity.this, PrefsActivity.class);
                 intent.putExtra(PrefsActivity.EXTRA_FLAG, PrefsActivity.FLAG_ABOUT);
                 startActivity(intent);
+                break;
+            case R.id.nav_exit:
+                Intent intentFS = new Intent(this, ForegroundService.class);
+                stopService(intentFS);
+                finishActivity(0);
+                finish();
                 break;
         }
 

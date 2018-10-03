@@ -111,9 +111,9 @@ public class AddEquipmentFragment extends Fragment {
             public void onClick(View v) {
                 hideImm();
                 String title = editTextSerial.getText().toString();
-                if (title.length() < 5) {
-                    showTitleError();
-                    return;
+                if (title.length() < 1) {
+                    //showTitleError();
+                    //return;
                 }
                 int res = storeEquipment();
                 if (res==0) {

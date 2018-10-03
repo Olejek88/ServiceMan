@@ -7,6 +7,7 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Measure;
 
 public class MeasureRepository implements MeasureDataSource {
@@ -52,6 +53,11 @@ public class MeasureRepository implements MeasureDataSource {
     @Override
     public Measure getLastMeasureByFlat(Flat flat){
         return localDataSource.getLastMeasureByFlat(flat);
+    }
+
+    @Override
+    public Measure getLastMeasureByHouse(House house){
+        return localDataSource.getLastMeasureByHouse(house);
     }
 
     @Override

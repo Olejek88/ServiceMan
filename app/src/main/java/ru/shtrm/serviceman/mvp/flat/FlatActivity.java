@@ -6,11 +6,14 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -19,6 +22,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import ru.shtrm.serviceman.R;
@@ -43,6 +48,9 @@ public class FlatActivity extends AppCompatActivity
     private FlatFragment fragment;
     private static ImageView add_photo;
     private static String photoUuid;
+    private static Bitmap storeBitmap=null;
+    private static File photoFile;
+
     public static final String FLAT_UUID = "FLAT_UUID";
     public static final String HOUSE_UUID = "HOUSE_UUID";
 
@@ -108,17 +116,16 @@ public class FlatActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ACTIVITY_PHOTO_MESSAGE:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null && data.getExtras() != null) {
-                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                        if (bitmap != null) {
-                            photoUuid = java.util.UUID.randomUUID().toString();
-                            MainUtil.storeNewImage(bitmap, getApplicationContext(),
-                                    800, photoUuid.concat(".jpg"));
-                            if (add_photo != null)
-                                add_photo.setImageBitmap(bitmap);
-                        }
-                    }
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                // берем половину изображения, больше не нужно
+                options.inSampleSize = 2;
+                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                if (bitmap != null) {
+                    storeBitmap = bitmap;
+                    if (add_photo != null)
+                        add_photo.setImageBitmap(bitmap);
+                    if (photoFile!=null)
+                        photoFile.delete();
                 }
                 break;
         }
@@ -154,9 +161,18 @@ public class FlatActivity extends AppCompatActivity
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    activity.startActivityForResult(intent, ACTIVITY_PHOTO_MESSAGE);
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
+                    photoUuid = java.util.UUID.randomUUID().toString();
+                    photoFile = MainUtil.createImageFile(photoUuid, activity);
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(activity,
+                                "ru.shtrm.serviceman.fileprovider",
+                                photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        activity.startActivityForResult(intent, ACTIVITY_PHOTO_MESSAGE);
+                    }
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
@@ -185,6 +201,8 @@ public class FlatActivity extends AppCompatActivity
                     message.setCreatedAt(new Date());
                     message.setChangedAt(new Date());
                     messageRepository.saveMessage(message);
+                    MainUtil.storeNewImage(storeBitmap, activity,
+                            800, uuid.concat(".jpg"));
                     MainUtil.storePhotoMessage(message, photoUuid);
                     alertDialogAndroid.dismiss();
                 }

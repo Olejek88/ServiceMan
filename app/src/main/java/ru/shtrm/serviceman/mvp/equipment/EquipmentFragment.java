@@ -431,6 +431,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         switch (requestCode) {
             case ACTIVITY_PHOTO:
                 if (resultCode == Activity.RESULT_OK) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 2; // половина изображения
                     Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                     if (bitmap != null) {
                         String uuid = java.util.UUID.randomUUID().toString();

@@ -449,7 +449,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 if (resultCode == Activity.RESULT_OK) {
                     switch (currentLevel) {
                         case LEVEL_FLAT:
-                            // TODO сделать красиво
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inSampleSize = 2; // половина изображения
                             Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                             if (bitmap != null) {
                                 String uuid = java.util.UUID.randomUUID().toString();

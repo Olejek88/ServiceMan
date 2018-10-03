@@ -2,7 +2,6 @@ package ru.shtrm.serviceman.mvp.equipment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -51,7 +50,6 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
@@ -60,7 +58,6 @@ import ru.shtrm.serviceman.data.source.MeasureRepository;
 import ru.shtrm.serviceman.data.source.PhotoEquipmentRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
@@ -231,8 +228,13 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             @Override
             public void onClick(View v) {
                 // если есть данные - вводим их, иначе сохраняем оборудование
-                if (textInputMeasure.getText().toString().length()>0)
+                if (textInputMeasure.getText().toString().length()>0 &&
+                        textInputMeasure.getText().toString().indexOf('.') > -1)
                     createMeasure();
+                else
+                    Toast.makeText(mainActivityConnector,
+                            "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
+                            Toast.LENGTH_LONG).show();
                 mChart.refreshDrawableState();
                 // не дать возможность вводить по несколько раз
                 storeEditEquipment(editTextSerial.getText().toString(),
@@ -359,12 +361,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setDrawLabels(false);
-/*
-        leftAxis.setLabelCount(8);
-        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        leftAxis.setSpaceTop(15f);
-*/
-
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setDrawGridLines(false);
         rightAxis.setLabelCount(8);

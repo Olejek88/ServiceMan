@@ -303,11 +303,6 @@ public class AddEquipmentFragment extends Fragment {
                     Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                     if (bitmap != null) {
                         storeBitmap = bitmap;
-                        //photoUuid = java.util.UUID.randomUUID().toString();
-/*
-                        MainUtil.storeNewImage(bitmap, getContext(),
-                                800, photoUuid.concat(".jpg"));
-*/
                         imageView.setImageBitmap(bitmap);
                         if (photoFile!=null)
                             photoFile.delete();

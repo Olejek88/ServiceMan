@@ -83,6 +83,7 @@
                             android:drawablePadding="16dp"
                             android:drawableStart="@drawable/ic_assignment_black_24dp"
                             android:drawableTint="@color/colorPrimaryText"
+                            android:hint="@string/equipment_serial"
                             android:inputType="text"
                             android:textColor="@color/colorPrimaryText"
                             tools:targetApi="m" />
@@ -118,6 +119,7 @@
                         android:layout_marginLeft="30dp"
                         android:layout_marginRight="30dp"
                         android:text="@string/equipment_test_date"
+                        android:hint="@string/equipment_test_date"
                         android:textSize="16sp"
                         android:drawablePadding="16dp"
                         android:drawableStart="@drawable/ic_settings_black_24dp"

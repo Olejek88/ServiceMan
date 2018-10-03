@@ -29,6 +29,6 @@ public class EquipmentTypeLocalDataSource implements EquipmentTypeDataSource {
     public List<EquipmentType> getEquipmentTypes() {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(EquipmentType.class).findAllSorted("title"));
+                realm.where(EquipmentType.class).findAllSorted("_id"));
     }
 }

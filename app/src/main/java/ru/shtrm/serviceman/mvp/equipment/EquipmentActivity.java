@@ -53,9 +53,7 @@ public class EquipmentActivity extends AppCompatActivity
     private static ImageView add_photo;
     private static String photoUuid;
     private static Bitmap storeBitmap=null;
-
     private static File photoFile;
-//    private String photoUuid;
 
     public static final String EQUIPMENT_UUID = "EQUIPMENT_UUID";
 
@@ -124,6 +122,8 @@ public class EquipmentActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ACTIVITY_PHOTO_MESSAGE:
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 2; // половина изображения
                 Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 if (bitmap != null) {
                     storeBitmap = bitmap;

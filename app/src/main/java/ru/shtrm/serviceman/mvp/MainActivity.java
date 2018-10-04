@@ -1,12 +1,15 @@
 package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -58,6 +61,7 @@ import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
+import ru.shtrm.serviceman.retrofit.TokenTask;
 import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -89,6 +93,27 @@ public class MainActivity extends AppCompatActivity
     private LocationManager _locationManager;
     private GPSListener _gpsListener;
     private Thread checkGPSThread;
+    private BroadcastReceiver networkBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            boolean isOff = true;
+            if (extras != null) {
+                Object result = extras.get(ConnectivityManager.EXTRA_NO_CONNECTIVITY);
+                if (result == null) {
+                    isOff = false;
+                } else {
+                    isOff = true;
+                }
+            }
+
+            AuthorizedUser aUser = AuthorizedUser.getInstance();
+            User user = aUser.getUser();
+            if (!isOff && !aUser.isValidToken() && user != null) {
+                new TokenTask(getApplicationContext(), User.SERVICE_USER_UUID, user.getPin()).execute();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +179,10 @@ public class MainActivity extends AppCompatActivity
             checkGPSThread.interrupt();
         }
         //sendBroadcast(AppWidgetProvider.getRefreshBroadcastIntent(getApplicationContext()));
+
+        if (Build.VERSION.SDK_INT <= 27) {
+            unregisterReceiver(networkBroadcastReceiver);
+        }
     }
 
     @Override
@@ -169,6 +198,11 @@ public class MainActivity extends AppCompatActivity
         }
         //if (_gpsListener==null)
         CheckRunGPSListener();
+
+        if (Build.VERSION.SDK_INT <= 27) {
+            registerReceiver(networkBroadcastReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
     }
 
     /**

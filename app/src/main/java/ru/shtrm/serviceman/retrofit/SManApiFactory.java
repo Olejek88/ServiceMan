@@ -62,7 +62,7 @@ import ru.shtrm.serviceman.retrofit.iface.IPhotoEquipmentService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoFlatService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoMessageService;
-import ru.shtrm.serviceman.retrofit.iface.IPing;
+import ru.shtrm.serviceman.retrofit.iface.IPingService;
 import ru.shtrm.serviceman.retrofit.iface.IResidentService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
 import ru.shtrm.serviceman.retrofit.iface.ISubjectService;
@@ -244,8 +244,8 @@ public class SManApiFactory {
     }
 
     @NonNull
-    public static IPing getPingService() {
-        return getRetrofit().create(IPing.class);
+    public static IPingService getPingService() {
+        return getRetrofit().create(IPingService.class);
     }
 
     @NonNull
@@ -309,7 +309,7 @@ public class SManApiFactory {
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Gson gson = builder.create();
         return new Retrofit.Builder()
-                .baseUrl(Api.API_BASE)
+                .baseUrl(Api.API_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(CLIENT)
                 .build();

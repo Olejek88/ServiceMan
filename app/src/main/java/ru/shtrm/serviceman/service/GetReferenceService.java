@@ -1,7 +1,9 @@
 package ru.shtrm.serviceman.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -33,12 +35,14 @@ import ru.shtrm.serviceman.data.Subject;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.UserHouse;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
+import ru.shtrm.serviceman.retrofit.ServiceApiFactory;
 
 public class GetReferenceService extends Service {
     public static final String ACTION = "ru.shtrm.serviceman.service.GET_REFERENCE";
     private static final String TAG = GetReferenceService.class.getSimpleName();
     private boolean isRuning;
     private String userUuid;
+
     /**
      * Метод для выполнения приёма данных с сервера.
      */
@@ -95,8 +99,14 @@ public class GetReferenceService extends Service {
                 Journal.add("EquipmentStatus not updated.");
             }
 
-            if (!updateUser(realm)) {
-                Journal.add("User not updated.");
+            if (AuthorizedUser.getInstance().isValidToken()) {
+                if (!updateUser(realm)) {
+                    Journal.add("User not updated.");
+                }
+            } else {
+                if (!updateUserByService(realm)) {
+                    Journal.add("User not updated by service user.");
+                }
             }
 
             if (!updateStreet(realm)) {
@@ -501,6 +511,41 @@ public class GetReferenceService extends Service {
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
         Call<List<User>> call = SManApiFactory.getUsersService().getData(lastUpdate);
+        try {
+            Response<List<User>> response = call.execute();
+            if (response.isSuccessful()) {
+                List<User> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean updateUserByService(Realm realm) {
+        String lastUpdate;
+        String rName = User.class.getSimpleName();
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
+        SharedPreferences sp = getSharedPreferences(User.SERVICE_USER_UUID, Context.MODE_PRIVATE);
+        String token = sp.getString("token", null);
+        if (token == null) {
+            return false;
+        } else {
+            ServiceApiFactory.setToken(token);
+        }
+
+        Call<List<User>> call = ServiceApiFactory.getUsersService().getData(lastUpdate);
         try {
             Response<List<User>> response = call.execute();
             if (response.isSuccessful()) {

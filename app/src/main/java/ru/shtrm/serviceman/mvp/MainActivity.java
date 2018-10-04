@@ -35,10 +35,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.FlatRepository;
@@ -60,7 +58,6 @@ import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
-import ru.shtrm.serviceman.retrofit.UsersTask;
 import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -114,37 +111,26 @@ public class MainActivity extends AppCompatActivity
         if (!initDB()) {
             finish();
         }
-/*
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Street> s = realm.where(Street.class).findAll();
-        realm.beginTransaction();
-        for (Street street : s) {
-            street.setTitle("123444");
-        }
-        realm.commitTransaction();
-        realm.close();
-*/
-        // пытаемся получить список пользователей с сервера, с помощью сервисного пользователя
-        getUsersList();
 
-        if (savedInstanceState != null) {
-            isLogged = savedInstanceState.getBoolean("isLogged");
-        } else {
-            User user = AuthorizedUser.getInstance().getUser();
-            if (user == null) {
-                user = UsersLocalDataSource.getInstance().getLastUser();
-                if (user != null) {
-                    AuthorizedUser.getInstance().setUser(user);
-                }
-            }
-        }
+//        if (savedInstanceState != null) {
+//            isLogged = savedInstanceState.getBoolean("isLogged");
+//        } else {
+//            User user = AuthorizedUser.getInstance().getUser();
+//            if (user == null) {
+//                user = UsersLocalDataSource.getInstance().getLastUser();
+//                if (user != null) {
+//                    AuthorizedUser.getInstance().setUser(user);
+//                }
+//            }
+//        }
 
-        // обнуляем текущего активного пользователя
-        AuthorizedUser.getInstance().reset();
         if (!isLogged) {
+            // обнуляем текущего активного пользователя
+            AuthorizedUser.getInstance().reset();
             Intent loginIntent = new Intent(this, LoginActivity.class);
             startActivityForResult(loginIntent, LOGIN);
         }
+
         initViews();
         initFragments(currentSavedInstanceState);
         //MainUtil.setBadges(getApplicationContext());
@@ -162,6 +148,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
+        Log.d("xxxx", "MainActivity:onPause()");
         super.onPause();
         if (checkGPSThread != null) {
             checkGPSThread.interrupt();
@@ -171,6 +158,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        Log.d("xxxx", "MainActivity:onResume()");
         super.onResume();
         if (AuthorizedUser.getInstance().getUser() != null) {
             User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
@@ -278,6 +266,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Log.d("xxxx", "MainActivity.onSaveInstanceState()");
         //outState.putSerializable(CURRENT_FILTERING_KEY, questionsPresenter.getFiltering());
         super.onSaveInstanceState(outState);
         Menu menu = navigationView.getMenu();
@@ -676,18 +665,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        realm.close();
-    }
-
-    private void getUsersList() {
-        Realm realm = Realm.getDefaultInstance();
-        User sUser = realm.where(User.class).equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
-        if (sUser != null) {
-            // TODO: реализовать подписку на сообщение SERVICE_AUTH_RESULT
-            UsersTask task = new UsersTask(getApplicationContext());
-            task.execute(sUser.getUuid(), sUser.getPin());
-        }
-
         realm.close();
     }
 }

@@ -1,9 +1,6 @@
 package ru.shtrm.serviceman.mvp;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +10,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -21,19 +20,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Token;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.user.UserContract;
 import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
-import ru.shtrm.serviceman.retrofit.SManApiFactory;
-import ru.shtrm.serviceman.retrofit.TokenTask;
+import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class LoginActivity extends AppCompatActivity {
@@ -41,15 +37,6 @@ public class LoginActivity extends AppCompatActivity {
     private Spinner userSelect;
     private EditText pinCode;
     private TextView loginError;
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String token = intent.getStringExtra("token");
-            AuthorizedUser.getInstance().setToken(token);
-            unregisterReceiver(this);
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             getWindow().setNavigationBarColor(
                     ContextCompat.getColor(this, R.color.colorPrimaryDark));
         }
+
         initViews();
 
         Button loginButton = findViewById(R.id.loginButton);
@@ -68,43 +56,24 @@ public class LoginActivity extends AppCompatActivity {
                 User user = (User) userSelect.getSelectedItem();
                 String enteredPin = pinCode.getText().toString();
                 String enteredPinMD5 = MainUtil.MD5(enteredPin);
-                AuthorizedUser aUser = AuthorizedUser.getInstance();
 
                 if (enteredPinMD5 != null && enteredPinMD5.equals(user.getPin())) {
+                    // вошедшего пользователя устанавливаем как активного
+                    AuthorizedUser aUser = AuthorizedUser.getInstance();
+                    aUser.reset();
+                    aUser.setUser(user);
                     aUser.setValidToken(false);
-                    checkUser(user.getUuid(), pinCode.getText().toString());
-                    SharedPreferences sp;
+
                     // сохраняем uuid успешно вошедшего пользователя
+                    SharedPreferences sp;
                     sp = getApplicationContext().getSharedPreferences("lastUser", MODE_PRIVATE);
                     sp.edit().putString("uuid", user.getUuid()).apply();
-                    // достаём ранее сохранённый токен
-                    sp = getApplicationContext().getSharedPreferences(user.getUuid(), MODE_PRIVATE);
-                    String token = sp.getString("token", null);
-                    // если токена нет, делаем запрос к серверу
-                    if (token == null) {
-                        TokenTask task = new TokenTask(getApplicationContext());
-                        task.execute(user.getUuid(), user.getPin());
-                        registerReceiver(receiver, new IntentFilter(Token.TOKEN_INTENT));
-                    } else {
-                        aUser.setToken(token);
-                        Runnable runnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                AuthorizedUser aUser = AuthorizedUser.getInstance();
-                                if (SManApiFactory.pingService()) {
-                                    Log.d("xxxx", "ping success");
-                                    aUser.setValidToken(true);
-                                } else {
-                                    Log.d("xxxx", "ping failed");
-                                    // TODO: проверить в чём дело
-                                    registerReceiver(receiver, new IntentFilter(Token.TOKEN_INTENT));
-                                    TokenTask task = new TokenTask(getApplicationContext());
-                                    task.execute(aUser.getUser().getUuid(), aUser.getUser().getPin());
-                                }
-                            }
-                        };
-                        new Thread(runnable).start();
-                    }
+
+                    // завершаем окно входа
+                    setResult(RESULT_OK);
+                    finish();
+                } else {
+                    loginError.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -174,24 +143,34 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    void checkUser(String userUuid, String pin) {
-        setResult(RESULT_OK);
-        UsersLocalDataSource usersLocalDataSource = UsersLocalDataSource.getInstance();
-        if (usersLocalDataSource != null) {
-            if (usersLocalDataSource.checkUser(userUuid, pin)) {
-                AuthorizedUser aUser = AuthorizedUser.getInstance();
-                Realm realm = Realm.getDefaultInstance();
-                User user = realm.where(User.class).equalTo("uuid", userUuid).findFirst();
-                aUser.setUser(realm.copyFromRealm(user));
-                realm.close();
-                finish();
-            } else
-                loginError.setVisibility(View.VISIBLE);
-        }
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return keyCode == KeyEvent.KEYCODE_BACK || super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Настройки").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent = new Intent(LoginActivity.this, PrefsActivity.class);
+                intent.putExtra(PrefsActivity.EXTRA_FLAG, PrefsActivity.FLAG_SETTINGS);
+                startActivity(intent);
+                return true;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("xxxx", "LoginActivity:onPause()");
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d("xxxx", "LoginActivity:onResume()");
+        super.onResume();
     }
 }

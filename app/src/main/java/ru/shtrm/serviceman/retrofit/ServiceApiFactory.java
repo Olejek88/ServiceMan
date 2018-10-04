@@ -19,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.retrofit.deserial.DateTypeDeserializer;
+import ru.shtrm.serviceman.retrofit.iface.IPingService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
 
 public class ServiceApiFactory {
@@ -70,6 +71,11 @@ public class ServiceApiFactory {
         return getRetrofit().create(IUsersService.class);
     }
 
+    @NonNull
+    public static IPingService getPingService() {
+        return getRetrofit().create(IPingService.class);
+    }
+
     /**
      * Метод без указания специфической обработки элементов json.
      *
@@ -100,7 +106,7 @@ public class ServiceApiFactory {
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Gson gson = builder.create();
         return new Retrofit.Builder()
-                .baseUrl(Api.API_BASE)
+                .baseUrl(Api.API_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(CLIENT)
                 .build();

@@ -10,7 +10,7 @@ public class RetrofitClient {
 
     private static class ClientHolder {
         private static Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Api.API_BASE)
+                .baseUrl(Api.API_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

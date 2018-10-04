@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -11,8 +12,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.util.Date;
+import java.util.List;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Response;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
@@ -28,12 +34,18 @@ import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.PhotoMessage;
+import ru.shtrm.serviceman.data.ReferenceUpdate;
+import ru.shtrm.serviceman.data.Token;
+import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+import ru.shtrm.serviceman.retrofit.ServiceApiFactory;
 
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
     private static final long START_INTERVAL = 60000;
     private Handler getReference;
     private Handler sendData;
+    private Handler serviceUserToken;
     private static final int LIMIT_SIZE = 100;
 
     @Override
@@ -49,13 +61,21 @@ public class ForegroundService extends Service {
         notification = builder.build();
         startForeground(777, notification);
 
+        // запуск получения токена для сервисного пользователя
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startGetServiceToken();
+            }
+        }, 0);
+
         // запуск получения справочников с сервера
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 startGetReference();
             }
-        }, 0);
+        }, 20000);
 
         // запуск отправки данных на сервер
         new Handler().postDelayed(new Runnable() {
@@ -63,7 +83,7 @@ public class ForegroundService extends Service {
             public void run() {
                 startSendData();
             }
-        }, 20000);
+        }, 40000);
     }
 
     /**
@@ -263,6 +283,92 @@ public class ForegroundService extends Service {
         };
         getReference = new Handler();
         getReference.postDelayed(runnable, START_INTERVAL);
+    }
+
+    /**
+     *
+     */
+    private void startGetServiceToken() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "startGetServiceToken()");
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences sp = getSharedPreferences(User.SERVICE_USER_UUID, Context.MODE_PRIVATE);
+                        String token = sp.getString("token", null);
+
+                        if (token == null) {
+                            Realm realm = Realm.getDefaultInstance();
+                            String pinHash;
+                            User sUser = realm.where(User.class)
+                                    .equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
+
+                            if (sUser != null) {
+                                pinHash = sUser.getPin();
+                                realm.close();
+                            } else {
+                                realm.close();
+                                return;
+                            }
+
+                            Call<Token> call = SManApiFactory.getTokenService()
+                                    .getToken(User.SERVICE_USER_UUID, pinHash);
+                            try {
+                                Response<Token> response = call.execute();
+                                if (response.isSuccessful()) {
+                                    token = response.body().getToken();
+                                    sp.edit().putString("token", token).commit();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        if (token != null) {
+                            boolean isPingOk = false;
+                            ServiceApiFactory.setToken(token);
+                            Call<Void> call = ServiceApiFactory.getPingService().ping();
+                            try {
+                                isPingOk = call.execute().isSuccessful();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            if (isPingOk) {
+                                ServiceApiFactory.setToken(token);
+
+                                String lastUpdateDate = ReferenceUpdate.lastChangedAsStr(User.class.getSimpleName());
+                                Date updateDate = new Date();
+                                Call<List<User>> res = ServiceApiFactory.getUsersService().getData(lastUpdateDate);
+                                try {
+                                    Response<List<User>> response = res.execute();
+                                    if (response.isSuccessful()) {
+                                        List<User> users = response.body();
+                                        Realm realm = Realm.getDefaultInstance();
+                                        ReferenceUpdate.saveReferenceData(User.class.getSimpleName(), updateDate);
+                                        realm.beginTransaction();
+                                        realm.copyToRealmOrUpdate(users);
+                                        realm.commitTransaction();
+                                        realm.close();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                };
+                new Thread(runnable).start();
+
+                // взводим следующий запуск
+                serviceUserToken.postDelayed(this, START_INTERVAL);
+            }
+        };
+        Log.d("xxxx", "Взвели получение токена и пользоваетлей для сервисного пользователя.");
+        serviceUserToken = new Handler();
+        serviceUserToken.postDelayed(runnable, 0);
     }
 
     private boolean isValidUser() {

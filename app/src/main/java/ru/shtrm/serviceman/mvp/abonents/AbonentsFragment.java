@@ -121,6 +121,18 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
     public void onResume() {
         super.onResume();
         presenter.subscribe();
+        switch (currentLevel) {
+            case LEVEL_FLAT:
+                presenter.loadFlats(currentHouse);
+                break;
+            case LEVEL_HOUSE:
+                presenter.loadHouses(currentStreet);
+                break;
+            case LEVEL_STREET:
+                presenter.loadStreets();
+                break;
+            default:
+        }
     }
 
     @Override

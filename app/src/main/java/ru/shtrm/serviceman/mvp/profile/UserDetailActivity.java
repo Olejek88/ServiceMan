@@ -8,8 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.source.UsersRepository;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class UserDetailActivity extends AppCompatActivity
@@ -43,11 +41,7 @@ public class UserDetailActivity extends AppCompatActivity
                     .commit();
         }
 
-        new UserDetailPresenter(
-                fragment,
-                UsersRepository.getInstance(UsersLocalDataSource.getInstance()),
-                getIntent().getStringExtra(USER_ID));
-
+        new UserDetailPresenter(fragment);
     }
 
     @Override

@@ -69,6 +69,12 @@
             android:label="@string/service_app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".mvp.profile.UserDetailActivity"
+            android:label="@string/service_app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!--
         <activity
             android:name=".mvp.addalarm.AddAlarmActivity"
@@ -109,6 +115,16 @@
         <service android:name=".service.SendDataService" />
         <service android:name=".service.ForegroundService" />
         <service android:name=".service.GetReferenceService" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="ru.shtrm.serviceman.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
 
     </application>
 

@@ -78,6 +78,7 @@
     <string name="nav_switch_theme">Режим день/ночь</string>
     <string name="nav_settings">Настройки</string>
     <string name="nav_about">О сервисе</string>
+    <string name="nav_exit">Выход</string>
     <!--navigation drawer end-->
 
     <!--profile fragment-->
@@ -126,7 +127,7 @@
 
     <!--add question-->
     <string name="tint_question_text">Описание</string>
-    <string name="wrong_title">Вопрос не указан</string>
+    <string name="wrong_title">Серийный номер не указан</string>
     <string name="require_permission">Нет разрешений на запись фотографий</string>
     <string name="question">Вопрос</string>
     <string name="question_exist">Вопрос с таким названием уже есть</string>
@@ -156,6 +157,8 @@
     <string name="load_test_data">Загрузить тестовые данные</string>
     <string name="delete_test_data">Удалить справочники</string>
     <string name="data">Данные</string>
+    <string name="server_address">Адрес сервера</string>
+    <string name="server_key">server_ip</string>
 
     <string name="do_not_disturb_mode">Режим не беспокоить</string>
     <string name="do_not_disturb_mode_desc">Не оповещать меня в эти часы</string>

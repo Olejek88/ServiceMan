@@ -25,10 +25,10 @@ public class FlatPresenter implements FlatContract.Presenter {
     @NonNull
     private EquipmentRepository equipmentRepository;
 
-    public FlatPresenter(@NonNull FlatContract.View view,
-                               @NonNull FlatRepository flatsRepository,
-                                @NonNull EquipmentRepository equipmentRepository,
-                                @NonNull FlatStatusRepository flatStatusRepository) {
+    FlatPresenter(@NonNull FlatContract.View view,
+                  @NonNull FlatRepository flatsRepository,
+                  @NonNull EquipmentRepository equipmentRepository,
+                  @NonNull FlatStatusRepository flatStatusRepository) {
         this.view = view;
         this.flatsRepository = flatsRepository;
         this.flatStatusRepository = flatStatusRepository;

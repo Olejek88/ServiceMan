@@ -2,11 +2,12 @@ package ru.shtrm.serviceman.mvp.equipment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -14,10 +15,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -34,6 +35,8 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,9 +61,7 @@ import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.flat.FlatActivity;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -82,6 +83,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
     private TextView textViewPhotoDate;
+
+    private File photoFile;
+    private String photoUuid;
 
     protected BarChart mChart;
     Calendar myCalendar;
@@ -224,8 +228,13 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             @Override
             public void onClick(View v) {
                 // если есть данные - вводим их, иначе сохраняем оборудование
-                if (textInputMeasure.getText().toString().length()>0)
+                if (textInputMeasure.getText().toString().length()>0 &&
+                        textInputMeasure.getText().toString().indexOf('.') > -1)
                     createMeasure();
+                else
+                    Toast.makeText(mainActivityConnector,
+                            "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
+                            Toast.LENGTH_LONG).show();
                 mChart.refreshDrawableState();
                 // не дать возможность вводить по несколько раз
                 storeEditEquipment(editTextSerial.getText().toString(),
@@ -241,9 +250,18 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent, ACTIVITY_PHOTO);
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
+                    photoUuid = java.util.UUID.randomUUID().toString();
+                    photoFile = MainUtil.createImageFile(photoUuid, mainActivityConnector);
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(mainActivityConnector,
+                                "ru.shtrm.serviceman.fileprovider",
+                                photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, ACTIVITY_PHOTO);
+                    }
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
@@ -284,6 +302,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         measure.setUuid(java.util.UUID.randomUUID().toString());
         MeasureLocalDataSource.getInstance().addMeasure(measure);
         Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
+        // обновляем ярлык количества не отправленных измерений
+        MainUtil.setBadges(mainActivityConnector);
     }
 
     void checkRepository() {
@@ -341,12 +361,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setDrawLabels(false);
-/*
-        leftAxis.setLabelCount(8);
-        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        leftAxis.setSpaceTop(15f);
-*/
-
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setDrawGridLines(false);
         rightAxis.setLabelCount(8);
@@ -413,19 +427,19 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         switch (requestCode) {
             case ACTIVITY_PHOTO:
                 if (resultCode == Activity.RESULT_OK) {
-                    if (data != null && data.getExtras() != null) {
-                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                        if (bitmap != null) {
-                            String uuid = java.util.UUID.randomUUID().toString();
-                            MainUtil.storeNewImage(bitmap, getContext(),
-                                    800, uuid.concat(".jpg"));
-                            MainUtil.storePhotoEquipment(equipment,uuid);
-                            //photoEquipmentRepository.savePhotoEquipment(photoEquipment);
-                            circleImageView.setImageBitmap(bitmap);
-                            String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
-                                    format(new Date());
-                            textViewPhotoDate.setText(sDate);
-                        }
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 2; // половина изображения
+                    Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                    if (bitmap != null) {
+                        String uuid = java.util.UUID.randomUUID().toString();
+                        MainUtil.storeNewImage(bitmap, getContext(),
+                                800, uuid.concat(".jpg"));
+                        MainUtil.storePhotoEquipment(equipment, uuid);
+                        photoFile.delete();
+                        circleImageView.setImageBitmap(bitmap);
+                        String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
+                                format(new Date());
+                        textViewPhotoDate.setText(sDate);
                     }
                 }
                 break;

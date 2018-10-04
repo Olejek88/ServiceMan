@@ -26,7 +26,7 @@ public class ImagePreviewActivity extends AppCompatActivity {
         final ImagesDataSource imagesDataSource =
             ImagesRepository.getInstance(ImagesLocalDataSource.getInstance());
 */
-        Intent intent = getIntent();
+        //Intent intent = getIntent();
 /*
         if (intent!=null && imagesDataSource!=null) {
             String imageId = intent.getStringExtra(IMAGE_ID);

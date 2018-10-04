@@ -26,9 +26,9 @@ public class EquipmentStatusListAdapter extends ArrayAdapter<EquipmentStatus> {
     private final int mResource;
     private final int color;
 
-    public EquipmentStatusListAdapter(Context context, @LayoutRes int resource,
-                                      List<EquipmentStatus> equipmentStatuses,
-                                      int color) {
+    EquipmentStatusListAdapter(Context context, @LayoutRes int resource,
+                               List<EquipmentStatus> equipmentStatuses,
+                               int color) {
         super(context, resource, equipmentStatuses);
         this.context = context;
         mResource = resource;

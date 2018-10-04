@@ -58,7 +58,7 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         AppCompatTextView textViewAvatar;
         CircleImageView circleImageView;
 
-        public UsersViewHolder(View itemView) {
+        UsersViewHolder(View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
             textViewAvatar = itemView.findViewById(R.id.textViewAvatar);

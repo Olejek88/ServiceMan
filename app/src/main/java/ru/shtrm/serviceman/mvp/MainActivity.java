@@ -45,7 +45,6 @@ import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.FlatRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.StreetRepository;
-import ru.shtrm.serviceman.data.source.UsersRepository;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity
 
         initViews();
         initFragments(currentSavedInstanceState);
-        //MainUtil.setBadges(getApplicationContext());
+        MainUtil.setBadges(getApplicationContext());
     }
 
     @Override
@@ -286,6 +285,12 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra(PrefsActivity.EXTRA_FLAG, PrefsActivity.FLAG_ABOUT);
                 startActivity(intent);
                 break;
+            case R.id.nav_exit:
+                Intent intentFS = new Intent(this, ForegroundService.class);
+                stopService(intentFS);
+                finishActivity(0);
+                finish();
+                break;
         }
 
         drawer = findViewById(R.id.drawer_layout);
@@ -392,9 +397,7 @@ public class MainActivity extends AppCompatActivity
 
         CheckPermission();
 
-        new UserDetailPresenter(profileFragment,
-                UsersRepository.getInstance(UsersLocalDataSource.getInstance()),
-                "");
+        new UserDetailPresenter(profileFragment);
         new MapPresenter(mapFragment,
                 HouseRepository.getInstance(HouseLocalDataSource.getInstance()));
 

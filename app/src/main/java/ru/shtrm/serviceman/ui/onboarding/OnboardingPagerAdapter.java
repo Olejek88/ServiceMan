@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 public class OnboardingPagerAdapter extends FragmentPagerAdapter {
 
-    public OnboardingPagerAdapter(FragmentManager fm) {
+    OnboardingPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 

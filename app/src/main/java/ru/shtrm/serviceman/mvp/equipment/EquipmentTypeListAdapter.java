@@ -21,13 +21,11 @@ public class EquipmentTypeListAdapter extends ArrayAdapter<EquipmentType> {
 
     private List<EquipmentType> equipmentTypes;
 
-    private Context context;
     private final LayoutInflater flater;
     private final int mResource;
 
-    public EquipmentTypeListAdapter(Context context, @LayoutRes int resource, List<EquipmentType> equipmentTypes) {
+    EquipmentTypeListAdapter(Context context, @LayoutRes int resource, List<EquipmentType> equipmentTypes) {
         super(context, resource, equipmentTypes);
-        this.context = context;
         mResource = resource;
         flater = LayoutInflater.from(context);
         this.equipmentTypes = equipmentTypes;

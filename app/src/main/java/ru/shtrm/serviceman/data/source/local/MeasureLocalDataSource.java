@@ -9,6 +9,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.source.MeasureDataSource;
 
@@ -80,10 +81,21 @@ public class MeasureLocalDataSource implements MeasureDataSource {
     }
 
     @Override
+    public Measure getLastMeasureByHouse(House house) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Measure> measures  = realm.where(Measure.class).
+                equalTo("equipment.flat.house.uuid", house.getUuid()).
+                findAllSorted("date");
+        if (measures.size()>0)
+            return realm.copyFromRealm(measures.first());
+        else
+            return null;
+    }
+
+    @Override
     public long getUnsentMeasuresCount() {
         Realm realm = Realm.getDefaultInstance();
         //TODO uncomment when ready
-        //return realm.where(Measure.class).equalTo("sent",0).count();
-        return 0;
+        return realm.where(Measure.class).equalTo("sent",false).count();
     }
 }

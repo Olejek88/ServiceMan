@@ -21,16 +21,14 @@ public class FlatStatusListAdapter extends ArrayAdapter<FlatStatus> {
 
     private List<FlatStatus> FlatStatuses;
 
-    private Context context;
     private final LayoutInflater flater;
     private final int mResource;
     private final int color;
 
-    public FlatStatusListAdapter(Context context, @LayoutRes int resource,
-                                 List<FlatStatus> FlatStatuses,
-                                 int color) {
+    FlatStatusListAdapter(Context context, @LayoutRes int resource,
+                          List<FlatStatus> FlatStatuses,
+                          int color) {
         super(context, resource, FlatStatuses);
-        this.context = context;
         mResource = resource;
         flater = LayoutInflater.from(context);
         this.FlatStatuses = FlatStatuses;

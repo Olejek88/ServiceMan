@@ -1,24 +1,19 @@
 package ru.shtrm.serviceman.util;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -44,14 +39,11 @@ import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.MessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoMessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-
-import static ru.shtrm.serviceman.mvp.abonents.WorkFragment.ACTIVITY_PHOTO;
 
 public class MainUtil {
     public static final int ACTIVITY_PHOTO_MESSAGE = 103;
@@ -74,21 +66,15 @@ public class MainUtil {
     }
 
     public static String getPicturesDirectory(Context context) {
-    String path = Environment.getExternalStorageDirectory()
+        return Environment.getExternalStorageDirectory()
             + "/Android/data/"
             + context.getPackageName()
             + "/Files"
             + File.separator;
-        return path;
     }
 
     public static Bitmap storeNewImage(Bitmap image, Context context, int width, String image_name) {
-        final String imageName = image_name;
         File mediaStorageDir = new File(getPicturesDirectory(context));
-
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-        // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 if (isExternalStorageWritable()) {
@@ -115,8 +101,6 @@ public class MainUtil {
                     myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     fos.flush();
                     fos.close();
-
-                    // TODO store to realm
                     return myBitmap;
                 }
             }
@@ -128,26 +112,28 @@ public class MainUtil {
         return null;
     }
 
-    public static boolean isExternalStorageWritable() {
+    private static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
-    public File createImageFile(String type, Context context) throws IOException {
+    public static File createImageFile(String uuid, Context context) throws IOException {
         // Create an image file name
-        String mCurrentPhotoPath;
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.US).format(new Date());
-        String imageFileName = type + "_" + timeStamp + "_";
-        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
+        File mediaStorageDir = new File(getPicturesDirectory(context));
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                if (isExternalStorageWritable()) {
+                    Toast.makeText(context, "Нет разрешений на запись данных",
+                            Toast.LENGTH_LONG).show();
+                    return null;
+                }
+            }
+        }
+        return File.createTempFile(
+                uuid,  /* prefix */
                 ".jpg",         /* suffix */
-                storageDir      /* directory */
+                mediaStorageDir      /* directory */
         );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
     }
 
     public static void storePhotoEquipment (Equipment equipment, String uuid) {
@@ -253,5 +239,31 @@ public class MainUtil {
         }
 
         return null;
+    }
+    
+    public static String getLastPhotoFilePath(@NonNull Activity activity) {
+        String[] projection = new String[]{
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_TAKEN,
+                MediaStore.Images.ImageColumns.MIME_TYPE
+        };
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        ContentResolver resolver = activity.getContentResolver();
+        String orderBy = android.provider.MediaStore.Video.Media.DATE_TAKEN + " DESC";
+        Cursor cursor = resolver.query(uri, projection, null, null, orderBy);
+
+        // TODO: реализовать удаление записи о фотке котрую мы "забрали"
+        //resolver.delete(uri,);
+        String result;
+        if (cursor != null && cursor.moveToFirst()) {
+            int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            result = cursor.getString(column_index_data);
+            cursor.close();
+        } else {
+            result = null;
+        }
+        return result;
     }
 }

@@ -20,7 +20,7 @@ public final class ImageGridAdapter extends BaseAdapter {
     @NonNull
     private final Context context;
 
-    public static final String IMAGE_ID = "IMAGE_ID";
+    private static final String IMAGE_ID = "IMAGE_ID";
 
     private List<Image> mItems;
     private final LayoutInflater mInflater;

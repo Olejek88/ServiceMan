@@ -20,14 +20,12 @@ import ru.shtrm.serviceman.data.User;
 
 public class UserListAdapter extends RealmBaseAdapter<User> {
 
-    private Context context;
     private List<User> users;
     private final LayoutInflater flater;
     private final int mResource;
 
     public UserListAdapter(Context context, @LayoutRes int resource, RealmResults<User> users) {
         super(users);
-        this.context = context;
         mResource = resource;
         flater = LayoutInflater.from(context);
         this.users = users;

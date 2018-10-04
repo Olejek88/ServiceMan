@@ -294,35 +294,64 @@ public class ForegroundService extends Service {
             public void run() {
                 Log.d(TAG, "startGetServiceToken()");
                 Runnable runnable = new Runnable() {
+                    String getToken(String uuid, String hash) {
+                        String token = null;
+                        Call<Token> call = SManApiFactory.getTokenService()
+                                .getToken(uuid, hash);
+                        try {
+                            Response<Token> response = call.execute();
+                            if (response.isSuccessful()) {
+                                token = response.body().getToken();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return token;
+                    }
+
+                    void getUsers() {
+                        if (!AuthorizedUser.getInstance().isValidToken()) {
+                            String lastUpdateDate = ReferenceUpdate.lastChangedAsStr(User.class.getSimpleName());
+                            Date updateDate = new Date();
+                            Call<List<User>> res = ServiceApiFactory.getUsersService().getData(lastUpdateDate);
+                            try {
+                                Response<List<User>> response = res.execute();
+                                if (response.isSuccessful()) {
+                                    List<User> users = response.body();
+                                    Realm realm = Realm.getDefaultInstance();
+                                    ReferenceUpdate.saveReferenceData(User.class.getSimpleName(), updateDate);
+                                    realm.beginTransaction();
+                                    realm.copyToRealmOrUpdate(users);
+                                    realm.commitTransaction();
+                                    realm.close();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
                     @Override
                     public void run() {
                         SharedPreferences sp = getSharedPreferences(User.SERVICE_USER_UUID, Context.MODE_PRIVATE);
                         String token = sp.getString("token", null);
+                        String pinHash;
+                        Realm realm = Realm.getDefaultInstance();
+                        User sUser = realm.where(User.class)
+                                .equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
+                        if (sUser != null) {
+                            pinHash = sUser.getPin();
+                            realm.close();
+                        } else {
+                            realm.close();
+                            return;
+                        }
 
                         if (token == null) {
-                            Realm realm = Realm.getDefaultInstance();
-                            String pinHash;
-                            User sUser = realm.where(User.class)
-                                    .equalTo("uuid", User.SERVICE_USER_UUID).findFirst();
-
-                            if (sUser != null) {
-                                pinHash = sUser.getPin();
-                                realm.close();
-                            } else {
-                                realm.close();
-                                return;
-                            }
-
-                            Call<Token> call = SManApiFactory.getTokenService()
-                                    .getToken(User.SERVICE_USER_UUID, pinHash);
-                            try {
-                                Response<Token> response = call.execute();
-                                if (response.isSuccessful()) {
-                                    token = response.body().getToken();
-                                    sp.edit().putString("token", token).commit();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            token = getToken(User.SERVICE_USER_UUID, pinHash);
+                            if (token != null) {
+                                sp.edit().putString("token", token).commit();
                             }
                         }
 
@@ -337,24 +366,13 @@ public class ForegroundService extends Service {
                             }
 
                             if (isPingOk) {
-                                ServiceApiFactory.setToken(token);
-
-                                String lastUpdateDate = ReferenceUpdate.lastChangedAsStr(User.class.getSimpleName());
-                                Date updateDate = new Date();
-                                Call<List<User>> res = ServiceApiFactory.getUsersService().getData(lastUpdateDate);
-                                try {
-                                    Response<List<User>> response = res.execute();
-                                    if (response.isSuccessful()) {
-                                        List<User> users = response.body();
-                                        Realm realm = Realm.getDefaultInstance();
-                                        ReferenceUpdate.saveReferenceData(User.class.getSimpleName(), updateDate);
-                                        realm.beginTransaction();
-                                        realm.copyToRealmOrUpdate(users);
-                                        realm.commitTransaction();
-                                        realm.close();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                getUsers();
+                            } else {
+                                token = getToken(User.SERVICE_USER_UUID, pinHash);
+                                if (token != null) {
+                                    sp.edit().putString("token", token).commit();
+                                    ServiceApiFactory.setToken(token);
+                                    getUsers();
                                 }
                             }
                         }

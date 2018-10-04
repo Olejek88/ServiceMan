@@ -20,8 +20,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.UsersRepository;
@@ -29,6 +31,7 @@ import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.mvp.user.UserContract;
 import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
+import ru.shtrm.serviceman.retrofit.TokenTask;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -61,8 +64,15 @@ public class LoginActivity extends AppCompatActivity {
                     // вошедшего пользователя устанавливаем как активного
                     AuthorizedUser aUser = AuthorizedUser.getInstance();
                     aUser.reset();
-                    aUser.setUser(user);
+                    Realm realm = Realm.getDefaultInstance();
+                    aUser.setUser(realm.copyFromRealm(user));
+                    realm.close();
                     aUser.setValidToken(false);
+
+                    // запускаем поток для получения токена
+                    if (App.isInternetOn(getApplicationContext())) {
+                        new TokenTask(getApplicationContext(), user.getUuid(), user.getPin()).execute();
+                    }
 
                     // сохраняем uuid успешно вошедшего пользователя
                     SharedPreferences sp;

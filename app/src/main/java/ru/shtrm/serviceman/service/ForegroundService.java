@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -53,7 +54,14 @@ public class ForegroundService extends Service {
         super.onCreate();
         Log.d(TAG, "onCreate()");
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "sman")
+        String channelId;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channelId = "";
+        } else {
+            channelId = "sman";
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.mipmap.ic_service)
                 .setContentTitle("Сервисмен")
                 .setContentText("Получение/отправка данных");

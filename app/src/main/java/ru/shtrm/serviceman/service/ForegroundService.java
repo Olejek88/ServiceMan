@@ -1,10 +1,14 @@
 package ru.shtrm.serviceman.service;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,7 +60,7 @@ public class ForegroundService extends Service {
 
         String channelId;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelId = "";
+            channelId = createNotificationChannel();
         } else {
             channelId = "sman";
         }
@@ -92,6 +96,22 @@ public class ForegroundService extends Service {
                 startSendData();
             }
         }, 40000);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel() {
+        String channelId = "sman";
+        String channelName = "My Background Service";
+        NotificationChannel channel = new NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_NONE);
+        channel.setLightColor(Color.BLUE);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (service != null) {
+            service.createNotificationChannel(channel);
+        }
+
+        return channelId;
     }
 
     /**

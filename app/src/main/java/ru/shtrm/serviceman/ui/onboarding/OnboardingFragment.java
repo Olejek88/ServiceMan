@@ -63,13 +63,13 @@ public class OnboardingFragment extends Fragment {
                 break;
             case 2:
                 sectionImg.setBackgroundResource(R.drawable.baseline_add_a_photo_black_48dp);
-                sectionLabel.setText(R.string.onboarding_section_3);
-                sectionIntro.setText(R.string.onboarding_intro_3);
+                sectionLabel.setText(R.string.onboarding_section_4);
+                sectionIntro.setText(R.string.onboarding_intro_4);
                 break;
             case 3:
                 sectionImg.setBackgroundResource(R.drawable.baseline_priority_high_black_48dp);
-                sectionLabel.setText(R.string.onboarding_section_4);
-                sectionIntro.setText(R.string.onboarding_intro_4);
+                sectionLabel.setText(R.string.onboarding_section_6);
+                sectionIntro.setText(R.string.onboarding_intro_6);
                 break;
             case 4:
                 sectionImg.setBackgroundResource(R.drawable.baseline_create_black_48dp);

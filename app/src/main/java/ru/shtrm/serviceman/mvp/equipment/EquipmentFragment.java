@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -148,6 +149,10 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
         final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);
         final TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
+
+        LinearLayout equipment_measure = view.findViewById(R.id.equipment_measure);
+        LinearLayout equipment_measure_input = view.findViewById(R.id.equipment_measure_input);
+
         FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
         FloatingActionButton fab_delete = view.findViewById(R.id.fab_delete);

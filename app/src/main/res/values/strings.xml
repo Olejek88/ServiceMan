@@ -23,6 +23,8 @@
     <string name="onboarding_intro_4">Вводите в систему все, что обнаружили</string>
     <string name="onboarding_section_5">Заносите в систему показания приборов</string>
     <string name="onboarding_intro_5">После выбора в списке расходомера - вводите данные</string>
+    <string name="onboarding_section_6">Выполняйте задачи по обслуживанию</string>
+    <string name="onboarding_intro_6">Отмечайте все операции в чек-листе</string>
     <string name="onboarding_finish_button_description_wait">Пожалуйста подождите…</string>
     <!--onboarding end-->
 

@@ -220,8 +220,8 @@ public class MainUtil {
 
     public static void setBadges(Context context) {
         long not_sended = MeasureLocalDataSource.getInstance().getUnsentMeasuresCount();
-        if (not_sended > 0) {
-            ShortcutBadger.applyCount(context, (int)not_sended);
+        if (not_sended > 1) {
+            ShortcutBadger.applyCount(context, (int)not_sended-1);
         }
     }
 

@@ -77,7 +77,7 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
         TimeUnit timeUnit = TimeUnit.DAYS;
         long days = timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
-        if (days>7) {
+        if (days>4) {
             pvh.layoutObjectItem.setBackgroundColor(context.getResources().
                     getColor(R.color.colorRowFailed));
             if (item.getHouseStatus() != null) {

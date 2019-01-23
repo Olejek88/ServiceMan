@@ -299,7 +299,7 @@ public class AddEquipmentFragment extends Fragment {
             case ACTIVITY_PHOTO:
                 if (resultCode == Activity.RESULT_OK) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 2; // половина изображения
+                    options.inSampleSize = 4; // половина изображения
                     Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                     if (bitmap != null) {
                         storeBitmap = bitmap;

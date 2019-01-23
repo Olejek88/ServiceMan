@@ -18,6 +18,7 @@ public class Equipment extends RealmObject implements ISend, IBaseRecord {
     private EquipmentType equipmentType;
     private EquipmentStatus equipmentStatus;
     private String serial;
+    private String tag;
     private Date testDate;
     private Date createdAt;
     private Date changedAt;
@@ -29,6 +30,14 @@ public class Equipment extends RealmObject implements ISend, IBaseRecord {
         Date createDate = new Date();
         createdAt = createDate;
         changedAt = createDate;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public long get_id() {

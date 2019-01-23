@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatDelegate;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.AuthorizedUser;
+//import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.db.AppRealm;
 import ru.shtrm.serviceman.retrofit.Api;
 import ru.shtrm.serviceman.util.SettingsUtil;
@@ -39,7 +39,7 @@ public class App extends Application {
         }
 
         // инициализируем синглтон с данными о активном пользователе на уровне приложения
-        AuthorizedUser authorizedUser = AuthorizedUser.getInstance();
+        // AuthorizedUser authorizedUser = AuthorizedUser.getInstance();
 
         // инициализируем базу данных Realm
         AppRealm.init(this);
@@ -58,10 +58,8 @@ public class App extends Application {
 
             NetworkInfo niWiFi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if (niWiFi != null) {
-                if (niWiFi.getState() == NetworkInfo.State.CONNECTED ||
-                        niWiFi.getState() == NetworkInfo.State.CONNECTING) {
-                    return true;
-                }
+                return niWiFi.getState() == NetworkInfo.State.CONNECTED ||
+                        niWiFi.getState() == NetworkInfo.State.CONNECTING;
             }
         }
 

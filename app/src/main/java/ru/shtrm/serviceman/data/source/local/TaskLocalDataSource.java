@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Operation;
@@ -33,9 +34,9 @@ public class TaskLocalDataSource implements TaskDataSource {
     public List<Task> getTaskByEquipment(Equipment equipment, String  status) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(Task.class).equalTo("equipment.uuid", equipment.getUuid()).
+                realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
                         equalTo("workStatus.uuid", status).
-                        findAllSorted("createdAt DESC"));
+                        findAllSorted("createdAt", Sort.ASCENDING));
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TaskLocalDataSource implements TaskDataSource {
         return realm.copyFromRealm(
                 realm.where(Task.class).equalTo("flat.uuid", flat.getUuid()).
                         equalTo("workStatus.uuid", status).
-                        findAllSorted("createdAt DESC"));
+                        findAllSorted("createdAt", Sort.ASCENDING));
     }
 
     @Override

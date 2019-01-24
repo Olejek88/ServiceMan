@@ -181,7 +181,6 @@
 
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
-
             <ScrollView
                 android:id="@+id/equipment_scroll_view"
                 android:layout_width="match_parent"
@@ -211,9 +210,20 @@
                         android:divider="#333333"
                         android:dividerHeight="1px"
                         android:scrollbarAlwaysDrawVerticalTrack="true" />
+
+                    <LinearLayout
+                        android:id="@+id/emptyView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="invisible" />
                 </FrameLayout>
             </ScrollView>
         </LinearLayout>
+
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -226,6 +236,7 @@
         app:fabSize="normal"
         app:layout_anchor="@id/equipment_measure"
         app:layout_anchorGravity="right" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/make_photo"

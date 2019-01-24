@@ -23,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,6 +56,7 @@ import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
@@ -65,6 +67,7 @@ import ru.shtrm.serviceman.data.source.PhotoEquipmentRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.OperationLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
@@ -129,10 +132,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (equipment != null) {
             photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(equipment);
             initViews(view);
-        }
-        else {
+        } else {
             equipmentRepository.deleteEmptyEquipment();
-            if (getActivity()!=null)
+            if (getActivity() != null)
                 getActivity().finishActivity(0);
         }
         setHasOptionsMenu(true);
@@ -181,7 +183,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         //textViewType.setText(equipment.getEquipmentType().getTitle());
         //textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
         SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
-        if (equipment.getTestDate()!=null)
+        if (equipment.getTestDate() != null)
             textViewDate.setText(sDf.format(equipment.getTestDate()));
         else
             textViewDate.setText(R.string.no_last_time);
@@ -189,12 +191,12 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
 
-        if (mToolbar !=null) {
+        if (mToolbar != null) {
             Flat flat = equipment.getFlat();
-            if (flat!=null) {
+            if (flat != null) {
                 if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
                     mToolbar.setSubtitle(flat.getFullTitle());
-                if (equipment.getEquipmentType()!=null)
+                if (equipment.getEquipmentType() != null)
                     mToolbar.setTitle(equipment.getEquipmentType().getTitle());
                 else
                     mToolbar.setTitle(R.string.equipment_unknown);
@@ -215,7 +217,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
         EquipmentStatusListAdapter adapter = new EquipmentStatusListAdapter(mainActivityConnector,
-                R.layout.simple_spinner_item, equipmentStatuses,R.color.colorPrimaryDark);
+                R.layout.simple_spinner_item, equipmentStatuses, R.color.colorPrimaryDark);
         statusSpinner.setAdapter(adapter);
 
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -279,8 +281,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(intent, ACTIVITY_PHOTO);
                     }
-                }
-                catch (IOException e1) {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -289,7 +290,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         add_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EquipmentActivity.createAddMessageDialog(mainActivityConnector,equipment.getFlat());
+                EquipmentActivity.createAddMessageDialog(mainActivityConnector, equipment.getFlat());
             }
         });
 
@@ -297,7 +298,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             @Override
             public void onClick(View v) {
                 equipmentRepository.deleteEquipment(equipment);
-                if (getActivity()!=null)
+                if (getActivity() != null)
                     getActivity().finishActivity(0);
             }
         });
@@ -308,11 +309,12 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         //gridView.setVisibility(View.INVISIBLE);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        fillListViewOperations(equipment);
     }
 
     void createMeasure() {
         Measure measure = new Measure();
-        measure.set_id(measureRepository.getLastId()+1);
+        measure.set_id(measureRepository.getLastId() + 1);
         measure.setValue(Double.valueOf(textInputMeasure.getText().toString()));
         measure.setChangedAt(new Date());
         measure.setCreatedAt(new Date());
@@ -343,7 +345,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     void storeEditEquipment(String serial, EquipmentStatus equipmentStatus) {
         equipment.setChangedAt(new Date());
-        if (myCalendar.getTime()!=null)
+        if (myCalendar.getTime() != null)
             equipment.setTestDate(myCalendar.getTime());
         else
             equipment.setTestDate(new Date());
@@ -391,7 +393,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     private void setData() {
         int count;
-        ArrayList <String> xVals = new ArrayList<>();
+        ArrayList<String> xVals = new ArrayList<>();
         XAxis xAxis = mChart.getXAxis();
 
         List<Measure> measures = MeasureLocalDataSource.getInstance().getMeasuresByEquipment(equipment);
@@ -424,10 +426,12 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
-        private ArrayList <String>mValues;
+        private ArrayList<String> mValues;
+
         MyXAxisValueFormatter(ArrayList<String> values) {
             this.mValues = values;
         }
+
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             return mValues.get((int) value);
@@ -467,7 +471,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 break;
         }
     }
-    
+
     // Operations----------------------------------------------------------------------------------------
     private void fillListViewOperations(Equipment equipment) {
         Activity activity = getActivity();
@@ -476,9 +480,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         }
 
         List<Task> tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.UN_COMPLETE);
-        if (tasks.size()>0)
-        if (tasks.get(0).getOperations() != null) {
-            OperationAdapter operationAdapter = new OperationAdapter(activity, tasks.get(0).getOperations());
+        if (tasks.size() > 0) {
+            List<Operation> operations = OperationLocalDataSource.getInstance().getOperationByTask(tasks.get(0));
+            OperationAdapter operationAdapter = new OperationAdapter(activity, operations);
             recyclerView.setAdapter(operationAdapter);
         }
     }

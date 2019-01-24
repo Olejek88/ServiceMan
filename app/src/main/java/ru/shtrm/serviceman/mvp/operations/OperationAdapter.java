@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import java.util.List;
 
@@ -49,13 +51,46 @@ public class OperationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final Operation item = list.get(position);
-        OperationViewHolder pvh = (OperationViewHolder) holder;
+        final OperationViewHolder pvh = (OperationViewHolder) holder;
         pvh.textViewOperationTitle.setText(item.getOperationTemplate().getTitle());
         pvh.textViewOperationDescription.setText(item.getOperationTemplate().getDescription());
         if (item.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE))
             pvh.checkBox.setChecked(true);
         else
             pvh.checkBox.setChecked(false);
+
+        pvh.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                WorkStatus complete = WorkStatusLocalDataSource.getInstance().
+                        getWorkStatusByUuid(WorkStatus.Status.COMPLETE);
+                if (complete!=null) {
+                    OperationLocalDataSource.getInstance().setOperationStatus(item, complete);
+                }
+                pvh.checkBox.setChecked(true);
+                boolean finish = TaskLocalDataSource.getInstance().checkAllOperationsComplete(item.getTask());
+                if (finish) {
+                    TaskLocalDataSource.getInstance().setTaskStatus(item.getTask(), complete);
+                }
+            }
+        });
+
+        pvh.checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // set status
+                WorkStatus complete = WorkStatusLocalDataSource.getInstance().
+                        getWorkStatusByUuid(WorkStatus.Status.COMPLETE);
+                if (complete!=null) {
+                    OperationLocalDataSource.getInstance().setOperationStatus(item, complete);
+                }
+                pvh.checkBox.setChecked(true);
+                boolean finish = TaskLocalDataSource.getInstance().checkAllOperationsComplete(item.getTask());
+                if (finish) {
+                    TaskLocalDataSource.getInstance().setTaskStatus(item.getTask(), complete);
+                }
+            }
+        });
         pvh.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +106,6 @@ public class OperationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             }
         });
-
     }
 
     @Override
@@ -79,9 +113,11 @@ public class OperationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return list.size();
     }
 
+/*
     public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.listener = listener;
     }
+*/
 
     /**
      * Update the data. Keep the data is the latest.
@@ -93,27 +129,26 @@ public class OperationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         notifyDataSetChanged();
     }
 
-    public class OperationViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class OperationViewHolder extends RecyclerView.ViewHolder {
         AppCompatTextView textViewOperationTitle;
         AppCompatTextView textViewOperationDescription;
         CheckBox checkBox;
 
-        private OnRecyclerViewItemClickListener listener;
+        //private OnRecyclerViewItemClickListener listener;
 
         OperationViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewOperationDescription = itemView.findViewById(R.id.textViewOperationDescription);
             textViewOperationTitle = itemView.findViewById(R.id.textViewOperationTitle);
             checkBox = itemView.findViewById(R.id.operationCheckbox);
-
-            this.listener = listener;
-            itemView.setOnClickListener(this);
-        }
-        @Override
-        public void onClick(View v) {
-            if (this.listener != null) {
-                listener.OnItemClick(v, getLayoutPosition());
-            }
+            textViewOperationTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("z","z");
+                }
+            });
+            //this.listener = listener;
+            //itemView.setOnClickListener(this);
         }
     }
 }

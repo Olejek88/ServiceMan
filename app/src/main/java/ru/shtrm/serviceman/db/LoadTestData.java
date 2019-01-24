@@ -16,10 +16,14 @@ import ru.shtrm.serviceman.data.FlatType;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.HouseType;
+import ru.shtrm.serviceman.data.Operation;
+import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.Subject;
+import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.User;
+import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class LoadTestData {
@@ -56,6 +60,7 @@ public class LoadTestData {
 
     public static Resident resident;
     public static Subject subject;
+    public static Equipment equipment;
 
     final static String flatUuid = "1dd4d4f8-5c98-4444-86ed-97ddddf";
     final static String flatUuid2 = "1dd4d4f8-5c98-4444-86ed-97deedf";
@@ -88,6 +93,23 @@ public class LoadTestData {
     final static String houseUuid3 = "12345678-5c98-4444-86ed-97dddde";
     final static String houseUuid4 = "87654321-5c98-4444-86ed-97dddde";
     final static String subjectUuid = "82128989-5c98-4444-86ed-97dddde";
+
+    private static Task task;
+    final static String taskUuid = "82128989-5c98-4444-86ed-9788998";
+
+    private static WorkStatus workStatus;
+    final static String workStatusCompleteUuid = "626FC9E9-9F1F-4DE7-937D-74DAD54ED751";
+    final static String workStatusUnCompleteUuid = "0F733A22-B65A-4D96-AF86-34F7E6A62B0B";
+
+    private static Operation operation;
+    private static Operation operation2;
+    final static String operationUuid1 = "62128919-5c98-4444-86ed-9788992";
+    final static String operationUuid2 = "52128939-5c98-4444-86ed-9788993";
+
+    private static OperationTemplate operationTemplate;
+    final static String operationTemplateUuid = "52128989-5c98-4444-86ed-9788995";
+    private static OperationTemplate operationTemplate2;
+    final static String operationTemplateUuid2 = "22128989-5c98-4444-86ed-9722995";
 
     public static void LoadTestUser() {
         final Realm realmDB;
@@ -516,6 +538,126 @@ public class LoadTestData {
         });
 
         realmDB.close();
+    }
+
+    public static void LoadAllTestData5() {
+        final Realm realmDB;
+        realmDB = Realm.getDefaultInstance();
+        user = realmDB.where(User.class).findFirst();
+        flat = realmDB.where(Flat.class).findFirst();
+        equipment = realmDB.where(Equipment.class).findFirst();
+
+        equipmentType = realmDB.where(EquipmentType.class).findFirst();
+        equipmentStatus = realmDB.where(EquipmentStatus.class).findFirst();
+
+        task = realmDB.where(Task.class).findFirst();
+        operationTemplate = realmDB.where(OperationTemplate.class).equalTo("uuid",operationTemplateUuid).findFirst();
+        operationTemplate2 = realmDB.where(OperationTemplate.class).equalTo("uuid",operationTemplateUuid2).findFirst();
+
+/*
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                workStatus= realmDB.createObject(WorkStatus.class, workStatusCompleteUuid);
+                workStatus.setTitle("Закончен");
+                workStatus.setChangedAt(new Date());
+                workStatus.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                workStatus= realmDB.createObject(WorkStatus.class, workStatusUnCompleteUuid);
+                workStatus.setTitle("Не закончен");
+                workStatus.setChangedAt(new Date());
+                workStatus.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                task= realmDB.createObject(Task.class, taskUuid);
+                task.setComment("Без комментария");
+                task.setFlat(flat);
+                task.setWorkStatus(workStatus);
+                task.setEquipment(equipment);
+                task.setChangedAt(new Date());
+                task.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                operationTemplate=realmDB.createObject(OperationTemplate.class, operationTemplateUuid);
+                operationTemplate.setDescription("Нужно выявить, не сопровождается ли образование пламени характерным хлопком, не гаснет ли пламя самопроизвольно, оценить равномерность горения.");
+                operationTemplate.setTitle("Проверка горения горелок");
+                operationTemplate.setNormative(100);
+                operationTemplate.setChangedAt(new Date());
+                operationTemplate.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                operationTemplate2=realmDB.createObject(OperationTemplate.class, operationTemplateUuid2);
+                operationTemplate2.setDescription("Проверка герметичности соединения газовой плиты с трубой газопровода. Это можно сделать при помощи мыльного раствора.");
+                operationTemplate2.setTitle("Проверка газовой плиты");
+                operationTemplate2.setNormative(420);
+                operationTemplate2.setChangedAt(new Date());
+                operationTemplate2.setCreatedAt(new Date());
+            }
+        });
+
+*/
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                operation=realmDB.createObject(Operation.class, operationUuid1);
+                operation.setWorkStatus(workStatus);
+                operation.setTask(task);
+                operation.setOperationTemplate(operationTemplate);
+                operation.setChangedAt(new Date());
+                operation.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                operation2=realmDB.createObject(Operation.class, operationUuid2);
+                operation2.setWorkStatus(workStatus);
+                operation2.setTask(task);
+                operation2.setOperationTemplate(operationTemplate2);
+                operation2.setChangedAt(new Date());
+                operation2.setCreatedAt(new Date());
+            }
+        });
+
+        realmDB.close();
+    }
+
+    public static void LoadAllTestData6() {
+        final Realm realmDB;
+        realmDB = Realm.getDefaultInstance();
+        workStatus = realmDB.where(WorkStatus.class).equalTo("uuid",workStatusUnCompleteUuid).findFirst();
+        operation = realmDB.where(Operation.class).equalTo("uuid",operationUuid1).findFirst();
+        operation2 = realmDB.where(Operation.class).equalTo("uuid",operationUuid2).findFirst();
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                operation.setWorkStatus(workStatus);
+            }
+        });
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                operation2.setWorkStatus(workStatus);
+            }
+        });
     }
 
     public static void DeleteSomeData() {

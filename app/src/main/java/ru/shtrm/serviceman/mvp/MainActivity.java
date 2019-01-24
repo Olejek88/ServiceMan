@@ -50,6 +50,7 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
@@ -615,8 +616,7 @@ public class MainActivity extends AppCompatActivity
         // добавляем сервисного пользователя
         addServiceUser();
 
-//        LoadTestData.LoadTestUser();
-//        LoadTestData.LoadAllTestData4();
+//        LoadTestData.LoadAllTestData6();
 
         return success;
     }

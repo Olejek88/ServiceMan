@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Operation;
@@ -35,7 +36,7 @@ public class OperationLocalDataSource implements OperationDataSource {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
                 realm.where(Operation.class).equalTo("task.uuid", task.getUuid()).
-                        findAllSorted("createdAt DESC"));
+                        findAllSorted("createdAt", Sort.DESCENDING));
     }
 
     @Override

@@ -17,12 +17,15 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +56,8 @@ import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
+import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
@@ -61,8 +66,11 @@ import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
+import ru.shtrm.serviceman.mvp.operations.OperationAdapter;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -80,6 +88,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private PhotoEquipmentRepository photoEquipmentRepository;
     private MeasureRepository measureRepository;
     private EquipmentRepository equipmentRepository;
+    private RecyclerView recyclerView;
 
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
@@ -87,6 +96,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     private File photoFile;
     private String photoUuid;
+    private boolean firstMeasureClick = false;
 
     protected BarChart mChart;
     Calendar myCalendar;
@@ -149,9 +159,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
         final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);
         final TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
-
-        LinearLayout equipment_measure = view.findViewById(R.id.equipment_measure);
-        LinearLayout equipment_measure_input = view.findViewById(R.id.equipment_measure_input);
+        final LinearLayout equipment_measure = view.findViewById(R.id.equipment_measure);
+        final LinearLayout equipment_measure_input = view.findViewById(R.id.equipment_measure_input);
 
         FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
@@ -228,28 +237,34 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
-
         enter_measure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // если есть данные - вводим их, иначе сохраняем оборудование
-                if (textInputMeasure.getText().toString().length()>0 &&
-                        textInputMeasure.getText().toString().indexOf('.') > -1)
-                    createMeasure();
-                else
-                    Toast.makeText(mainActivityConnector,
-                            "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
-                            Toast.LENGTH_LONG).show();
-                mChart.refreshDrawableState();
-                // не дать возможность вводить по несколько раз
-                storeEditEquipment(editTextSerial.getText().toString(),
-                        (EquipmentStatus) statusSpinner.getSelectedItem());
-                if (getActivity()!=null) {
-                    getActivity().finishActivity(0);
-                    getActivity().onBackPressed();
+                if (firstMeasureClick) {
+                    // если есть данные - вводим их, иначе сохраняем оборудование
+                    if (textInputMeasure.getText().toString().length() > 0 &&
+                            textInputMeasure.getText().toString().indexOf('.') > -1)
+                        createMeasure();
+                    else
+                        Toast.makeText(mainActivityConnector,
+                                "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
+                                Toast.LENGTH_LONG).show();
+                    mChart.refreshDrawableState();
+                    // не дать возможность вводить по несколько раз
+                    storeEditEquipment(editTextSerial.getText().toString(),
+                            (EquipmentStatus) statusSpinner.getSelectedItem());
+                    if (getActivity() != null) {
+                        getActivity().finishActivity(0);
+                        getActivity().onBackPressed();
+                    }
+                } else {
+                    firstMeasureClick = true;
+                    equipment_measure.setVisibility(View.VISIBLE);
+                    equipment_measure_input.setVisibility(View.VISIBLE);
                 }
             }
         });
+
         make_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,8 +306,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
         //gridView.invalidateViews();
         //gridView.setVisibility(View.INVISIBLE);
-        //recyclerView = view.findViewById(R.id.recyclerView);
-        //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     void createMeasure() {
@@ -450,6 +465,21 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 break;
             default:
                 break;
+        }
+    }
+    
+    // Operations----------------------------------------------------------------------------------------
+    private void fillListViewOperations(Equipment equipment) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        List<Task> tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.UN_COMPLETE);
+        if (tasks.size()>0)
+        if (tasks.get(0).getOperations() != null) {
+            OperationAdapter operationAdapter = new OperationAdapter(activity, tasks.get(0).getOperations());
+            recyclerView.setAdapter(operationAdapter);
         }
     }
 }

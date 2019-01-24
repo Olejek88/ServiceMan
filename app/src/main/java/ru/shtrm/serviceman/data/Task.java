@@ -2,6 +2,7 @@ package ru.shtrm.serviceman.data;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -18,6 +19,7 @@ public class Task extends RealmObject {
     private Date endDate;
     private Date createdAt;
     private Date changedAt;
+    private RealmList<Operation> operations;
 
     public String getComment() {
         return comment;
@@ -98,4 +100,9 @@ public class Task extends RealmObject {
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
     }
+    
+    public RealmList<Operation> getOperations() {
+        return operations;
+    }
+
 }

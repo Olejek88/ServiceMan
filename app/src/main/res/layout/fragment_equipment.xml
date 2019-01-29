@@ -33,7 +33,7 @@
             <LinearLayout
                 android:id="@+id/equipment_header"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="140dp"
                 android:background="@color/colorPrimaryDark"
                 android:orientation="horizontal">
 
@@ -51,13 +51,15 @@
                         android:layout_marginStart="5dp"
                         android:src="@color/colorPrimary" />
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/textViewEquipment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:textColor="@color/mdtp_white"
-                        android:textSize="100sp" />
+                    <!--
+                                        <android.support.v7.widget.AppCompatTextView
+                                            android:id="@+id/textViewEquipment"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:textColor="@color/mdtp_white"
+                                            android:textSize="100sp" />
+                    -->
 
                     <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/textViewPhotoDate"
@@ -78,6 +80,17 @@
                     android:gravity="center_vertical"
                     android:orientation="vertical">
 
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/labelEquipmentStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="start|center_vertical"
+                        android:text="@string/equipment_status"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="14sp" />
+
                     <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/spinnerEquipmentStatus"
                         android:layout_width="wrap_content"
@@ -88,30 +101,32 @@
                         android:spinnerMode="dropdown"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/mdtp_white"
-                        android:textSize="16sp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/labelEquipmentSerial"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:gravity="start|center_vertical"
-                        android:text="@string/equipment_serial"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="@color/colorPrimaryText"
                         android:textSize="14sp" />
 
-                    <android.support.v7.widget.AppCompatEditText
-                        android:id="@+id/editTextEquipmentSerial"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:gravity="start|center_vertical"
-                        android:inputType="text"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="@color/mdtp_white"
-                        android:textSize="16sp" />
+                    <!--
+                                        <android.support.v7.widget.AppCompatTextView
+                                            android:id="@+id/labelEquipmentSerial"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="5dp"
+                                            android:gravity="start|center_vertical"
+                                            android:text="@string/equipment_serial"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                            android:textColor="@color/colorPrimaryText"
+                                            android:textSize="14sp" />
+
+                                        <android.support.v7.widget.AppCompatEditText
+                                            android:id="@+id/editTextEquipmentSerial"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginEnd="10dp"
+                                            android:layout_marginStart="10dp"
+                                            android:gravity="start|center_vertical"
+                                            android:inputType="text"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                            android:textColor="@color/mdtp_white"
+                                            android:textSize="16sp" />
+                    -->
 
                     <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/labelEquipmentDate"
@@ -119,7 +134,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:gravity="start|center_vertical"
-                        android:text="@string/equipment_date"
+                        android:text="@string/equipment_task_date"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/colorPrimaryText"
                         android:textSize="14sp" />
@@ -132,7 +147,7 @@
                         android:gravity="start|center_vertical"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/mdtp_white"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -153,7 +168,7 @@
             <LinearLayout
                 android:id="@+id/equipment_measure_input"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="60dp"
                 android:background="@color/gray_200"
                 android:orientation="vertical"
                 android:padding="5dp"
@@ -181,49 +196,56 @@
 
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
-            <ScrollView
-                android:id="@+id/equipment_scroll_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="60dp"
-                android:fillViewport="true">
 
-                <FrameLayout
+            <RelativeLayout
+                android:id="@+id/scroll_view"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/task"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:background="@color/colorPrimary"
+                    android:gravity="start|center_vertical"
+                    android:padding="3dp"
+                    android:text="@string/task"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/mdtp_white"
+                    android:textSize="14sp" />
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        android:fadeScrollbars="true"
-                        android:scrollbarFadeDuration="1"
-                        android:scrollbars="vertical" />
+                <ListView
+                    android:id="@+id/list_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/task"
+                    android:divider="#333333"
+                    android:dividerHeight="1px"
+                    android:scrollbarAlwaysDrawVerticalTrack="true" />
 
-                    <ListView
-                        android:id="@+id/list_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:divider="#333333"
-                        android:dividerHeight="1px"
-                        android:scrollbarAlwaysDrawVerticalTrack="true" />
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/task_archive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/list_view"
+                    android:background="@color/colorPrimary"
+                    android:gravity="start|center_vertical"
+                    android:padding="3dp"
+                    android:text="@string/task_archive"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/mdtp_white"
+                    android:textSize="14sp" />
 
-                    <LinearLayout
-                        android:id="@+id/emptyView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:visibility="invisible" />
-                </FrameLayout>
-            </ScrollView>
+                <ListView
+                    android:id="@+id/list_view_archive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/task_archive"
+                    android:divider="#333333"
+                    android:dividerHeight="1px"
+                    android:scrollbarAlwaysDrawVerticalTrack="true" />
+            </RelativeLayout>
         </LinearLayout>
-
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton

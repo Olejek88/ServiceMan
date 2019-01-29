@@ -40,6 +40,19 @@ android {
 //    }
 }
 
+def rd = property('rootDir')
+Properties prop = new Properties()
+prop.load(new FileInputStream("${rd}/local.properties"))
+def localRepo = prop.getProperty('localRepo')
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+        url "file://${localRepo}"
+    }
+}
+
 ext {
     supportLibVersion = '27.0.2'
     rxjavaVersion = '2.0.1'
@@ -116,4 +129,12 @@ dependencies {
     // Runner and rules
     androidTestImplementation "com.android.support.test:runner:$runnerRulesVersion"
     androidTestImplementation "com.android.support.test:rules:$runnerRulesVersion"
+    
+    // Drivers
+    implementation 'me.dm7.barcodescanner:zbar:1.8.3'
+    implementation 'android.hardware:uhf-tools:1.0@aar'
+    implementation 'android.hardware.p6300:p6300uart:1.0@aar'
+    implementation 'com.google.zxing:core:3.2.0'
+    implementation 'com.google.zxing:android-integration:3.2.0'
+//    implementation 'com.google.code.gson:gson:2.8.0'
 }

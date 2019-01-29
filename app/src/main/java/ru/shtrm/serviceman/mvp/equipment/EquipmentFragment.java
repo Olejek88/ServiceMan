@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -92,6 +93,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private MeasureRepository measureRepository;
     private EquipmentRepository equipmentRepository;
     private RecyclerView recyclerView;
+    private ListView listView;
+    private ListView listView_archive;
 
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
@@ -158,7 +161,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     @Override
     public void initViews(View view) {
-        final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
+        //final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
         final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);
         final TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
         final LinearLayout equipment_measure = view.findViewById(R.id.equipment_measure);
@@ -168,18 +171,15 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
         FloatingActionButton fab_delete = view.findViewById(R.id.fab_delete);
         FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
-        //TextView textViewEquipment = view.findViewById(R.id.textViewEquipment);
-        //TextView textViewType = view.findViewById(R.id.textViewEquipmentTitle);
-        //GridView gridView = view.findViewById(R.id.gridview);
-        myCalendar = Calendar.getInstance();
 
+        myCalendar = Calendar.getInstance();
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         textInputMeasure = view.findViewById(R.id.addMeasureValue);
         circleImageView = view.findViewById(R.id.imageViewEquipment);
 
         initChart(view);
 
-        editTextSerial.setText(equipment.getSerial());
+        //editTextSerial.setText(equipment.getSerial());
         //textViewType.setText(equipment.getEquipmentType().getTitle());
         //textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
         SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
@@ -253,8 +253,10 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                                 Toast.LENGTH_LONG).show();
                     mChart.refreshDrawableState();
                     // не дать возможность вводить по несколько раз
+/*
                     storeEditEquipment(editTextSerial.getText().toString(),
                             (EquipmentStatus) statusSpinner.getSelectedItem());
+*/
                     if (getActivity() != null) {
                         getActivity().finishActivity(0);
                         getActivity().onBackPressed();
@@ -307,9 +309,14 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
         //gridView.invalidateViews();
         //gridView.setVisibility(View.INVISIBLE);
+        listView = view.findViewById(R.id.list_view);
+        listView_archive = view.findViewById(R.id.list_view_archive);
+/*
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        fillListViewOperations(equipment);
+*/
+        fillListViewOperations(equipment, 0);
+        fillListViewOperations(equipment, 1);
     }
 
     void createMeasure() {
@@ -473,17 +480,47 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     // Operations----------------------------------------------------------------------------------------
-    private void fillListViewOperations(Equipment equipment) {
+    private void fillListViewOperations(Equipment equipment, int type) {
         Activity activity = getActivity();
+        List<Task> tasks;
         if (activity == null) {
             return;
         }
-
-        List<Task> tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.UN_COMPLETE);
+        if (type == 0)
+            tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.UN_COMPLETE);
+        else
+            tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.COMPLETE);
         if (tasks.size() > 0) {
             List<Operation> operations = OperationLocalDataSource.getInstance().getOperationByTask(tasks.get(0));
             OperationAdapter operationAdapter = new OperationAdapter(activity, operations);
-            recyclerView.setAdapter(operationAdapter);
+            if (type == 0) {
+                listView.setAdapter(operationAdapter);
+                //setListViewHeightBasedOnChildren(listView);
+            }
+            else {
+                listView_archive.setAdapter(operationAdapter);
+                setListViewHeightBasedOnChildren(listView_archive);
+            }
         }
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }

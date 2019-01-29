@@ -1,28 +1,32 @@
 package ru.shtrm.serviceman.mvp.flat;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,11 +52,14 @@ import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.equipment.AddEquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
+import ru.shtrm.serviceman.rfid.RfidDialog;
+import ru.shtrm.serviceman.rfid.RfidDriverBase;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
 import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
+import static ru.shtrm.serviceman.rfid.RfidDialog.TAG;
 
 public class FlatFragment extends Fragment implements FlatContract.View {
     private Activity mainActivityConnector = null;
@@ -71,6 +78,8 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     private CircleImageView circleImageView;
     private TextView textViewPhotoDate;
 
+    private SharedPreferences sp;
+
     public FlatFragment() {
     }
 
@@ -88,6 +97,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_flat, container, false);
+        sp = PreferenceManager.getDefaultSharedPreferences(mainActivityConnector);
         Bundle b = getArguments();
         if (b != null) {
             String flatUuid = b.getString(FLAT_UUID);
@@ -289,10 +299,18 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         equipmentAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
             @Override
             public void OnItemClick(View v, int position) {
-                Intent intent = new Intent(getContext(), EquipmentActivity.class);
-                String uuid = list.get(position).getUuid();
-                intent.putExtra("EQUIPMENT_UUID", String.valueOf(uuid));
-                startActivity(intent);
+                Equipment equipment = list.get(position);
+                String uuid = equipment.getUuid();
+                //final String expectedTagId = equipment.getTag();
+                final String expectedTagId = "111";
+                boolean ask_tags = sp.getBoolean("without_tags_mode", true);
+                if (!ask_tags && expectedTagId!=null && !expectedTagId.equals("")) {
+                    runRfidDialog(expectedTagId, uuid);
+                } else {
+                    Intent intent = new Intent(getContext(), EquipmentActivity.class);
+                    intent.putExtra("EQUIPMENT_UUID", String.valueOf(uuid));
+                    startActivity(intent);
+                }
             }
         });
         //showEmptyView(list.isEmpty());
@@ -328,5 +346,50 @@ public class FlatFragment extends Fragment implements FlatContract.View {
                 }
                 break;
         }
+    }
+
+    private RfidDialog rfidDialog;
+    private void runRfidDialog(String expectedTagId, final String uuid) {
+        final String expectedTagUuid = expectedTagId;
+        final Activity activity = getActivity();
+
+        if (activity == null) {
+            return;
+        }
+        Log.d(TAG, "Ожидаемая метка: " + expectedTagId);
+        Handler handler = new Handler(new Handler.Callback() {
+
+            @Override
+            public boolean handleMessage(android.os.Message message) {
+                if (message.what == RfidDriverBase.RESULT_RFID_SUCCESS) {
+                    String[] tagIds = (String[]) message.obj;
+                    if (tagIds == null) {
+                        Toast.makeText(getContext(), "Не верное оборудование!", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    String tagId = tagIds[0].substring(4);
+                    Log.d(TAG, "Ид метки получили: " + tagId);
+                    if (!expectedTagUuid.equals(tagId)) {
+                        Toast.makeText(getContext(), "Не верное оборудование!", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Intent intent = new Intent(getContext(), EquipmentActivity.class);
+                        intent.putExtra("EQUIPMENT_UUID", String.valueOf(uuid));
+                        startActivity(intent);
+                    }
+                } else {
+                    Log.d(TAG, "Ошибка чтения метки!");
+                    Toast.makeText(getContext(), "Ошибка чтения метки.", Toast.LENGTH_SHORT).show();
+                }
+                // закрываем диалог
+                rfidDialog.dismiss();
+                return false;
+            }
+        });
+
+        rfidDialog = new RfidDialog();
+        rfidDialog.setHandler(handler);
+        rfidDialog.readMultiTagId(expectedTagId);
+        rfidDialog.show(activity.getFragmentManager(), TAG);
     }
 }

@@ -616,8 +616,7 @@ public class MainActivity extends AppCompatActivity
         // добавляем сервисного пользователя
         addServiceUser();
 
-//        LoadTestData.LoadAllTestData6();
-
+        //LoadTestData.LoadAllTestData7();
         return success;
     }
 

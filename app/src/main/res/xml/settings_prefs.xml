@@ -22,15 +22,30 @@
     <PreferenceCategory android:title="@string/data">
 
         <EditTextPreference
-            android:key="@string/server_key"
-            android:title="@string/server_address"
             android:defaultValue="api.serviceman.tehnosber.ru"
-            android:dialogTitle="@string/server_address" />
-        <Preference
+            android:dialogTitle="@string/server_address"
+            android:key="@string/server_key"
+            android:title="@string/server_address" />
+        <ListPreference
+            android:icon="@drawable/pref_rfid"
+            android:key="@string/rfidDriverListPrefKey"
+            android:title="@string/pref_rfid_driver" />
 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="without_tags_mode"
+            android:title="@string/dont_ask_text_tags" />
+
+        <!--
+                <PreferenceScreen
+                    android:icon="@drawable/pref_rfid"
+                    android:key="@string/rfidDrvSettingKey"
+                    android:title="Настройки драйвера RFID" />
+        -->
+
+        <Preference
             android:key="@string/load_test_data"
             android:title="@string/load_test_data" />
-
         <Preference
             android:key="@string/delete_test_data"
             android:title="@string/delete_test_data" />

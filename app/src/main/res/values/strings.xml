@@ -14,15 +14,16 @@
     <string name="onboarding_finish_button_description">Закончить</string>
     <string name="onboarding_pre_button_description">Назад</string>
     <string name="onboarding_section_1">Войдите в приложение</string>
-    <string name="onboarding_intro_1">Выберите свой профиль в списке пользователей и введите Ваш пин-код</string>
+    <string name="onboarding_intro_1">Выберите свой профиль в списке пользователей и введите Ваш пин-код, или отсканируйте персональную карточку </string>
     <string name="onboarding_section_2">Синхронизируйте данные</string>
     <string name="onboarding_intro_2">Проверьте, что приложение загрузило все справочники и данные</string>
-    <string name="onboarding_section_3">Снимите контрольную точку</string>
-    <string name="onboarding_intro_3">Последовательно делайте фото объектов, квартир и оборудования, которые будут являться отметками вашего присутствия</string>
+    <string name="onboarding_section_3">Отслеживайте активные задачи</string>
+    <string name="onboarding_intro_3">Выполняйте задачи, снимайте показания, последовательно делайте фото объектов и оборудования,
+        которые будут являться отметками вашего присутствия</string>
     <string name="onboarding_section_4">Фиксируйте аварии и неисправности</string>
     <string name="onboarding_intro_4">Вводите в систему все, что обнаружили</string>
     <string name="onboarding_section_5">Заносите в систему показания приборов</string>
-    <string name="onboarding_intro_5">После выбора в списке расходомера - вводите данные</string>
+    <string name="onboarding_intro_5">После выбора в списке измерительного оборудования - вводите данные</string>
     <string name="onboarding_section_6">Выполняйте задачи по обслуживанию</string>
     <string name="onboarding_intro_6">Отмечайте все операции в чек-листе</string>
     <string name="onboarding_finish_button_description_wait">Пожалуйста подождите…</string>
@@ -84,6 +85,9 @@
     <string name="nav_switch_theme">Режим день/ночь</string>
     <string name="nav_settings">Настройки</string>
     <string name="nav_about">О сервисе</string>
+    <string name="nav_objects">Объекты</string>
+    <string name="nav_tasks">Задачи</string>
+    <string name="nav_messages">Сообщения</string>
     <string name="nav_exit">Выход</string>
     <!--navigation drawer end-->
 

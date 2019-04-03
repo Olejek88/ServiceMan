@@ -9,18 +9,18 @@
             android:enabled="true"
             android:title="@string/nav_map" />
 
-        <item android:id="@+id/nav_users"
-            android:icon="@drawable/baseline_group_black_24dp"
+        <item android:id="@+id/nav_objects"
+            android:icon="@drawable/baseline_home_black_24dp"
             android:enabled="true"
             android:title="@string/nav_users" />
 
-        <item android:id="@+id/nav_alarms"
+        <item android:id="@+id/nav_tasks"
             android:icon="@drawable/baseline_notification_important_black_24dp"
             android:enabled="true"
             android:title="@string/nav_alarms" />
 
-        <item android:id="@+id/nav_checkin"
-            android:icon="@drawable/baseline_photo_library_black_24dp"
+        <item android:id="@+id/nav_messages"
+            android:icon="@drawable/baseline_email_black_24dp"
             android:enabled="true"
             android:title="@string/nav_checkin" />
 

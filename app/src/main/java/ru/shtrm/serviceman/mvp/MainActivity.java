@@ -50,7 +50,6 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "Main";
 
     public static Toolbar toolbar;
-    public static boolean isLogged = false;
+    public boolean isLogged = false;
     private static final int LOGIN = 0;
 
     private NavigationView navigationView;
@@ -238,13 +237,13 @@ public class MainActivity extends AppCompatActivity
                 showMapFragment();
                 break;
             case R.id.nav_users:
-                showAbonentsFragment();
+                showMessagesFragment();
                 break;
             case R.id.nav_alarms:
-                showAlarmsFragment();
+                showTasksFragment();
                 break;
             case R.id.nav_checkin:
-                showCheckinFragment();
+                showObjectsFragment();
                 break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -420,11 +419,11 @@ public class MainActivity extends AppCompatActivity
         if (selectedNavItem == 0) {
             showMapFragment();
         } else if (selectedNavItem == 1) {
-            showAbonentsFragment();
+            showMessagesFragment();
         } else if (selectedNavItem == 2) {
-            showAlarmsFragment();
+            showTasksFragment();
         } else if (selectedNavItem == 3) {
-            showCheckinFragment();
+            showObjectsFragment();
         }
 
         toolbar.setTitle(getResources().getString(R.string.nav_map));
@@ -457,17 +456,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.nav_alarms:
-                        showAlarmsFragment();
-                        break;
-                    case R.id.nav_users:
-                        showAbonentsFragment();
-                        break;
-                    case R.id.nav_checkin:
-                        showCheckinFragment();
-                        break;
                     case R.id.nav_map:
                         showMapFragment();
+                        break;
+                    case R.id.nav_objects:
+                        showObjectsFragment();
+                        break;
+                    case R.id.nav_tasks:
+                        showTasksFragment();
+                        break;
+                    case R.id.nav_messages:
+                        showMessagesFragment();
                         break;
                 }
                 return true;
@@ -476,7 +475,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void showAlarmsFragment() {
+    public void showTasksFragment() {
         changeFragment(alarmsFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_alarms));
         toolbar.setSubtitle(null);
@@ -490,14 +489,14 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_profile);
     }
 
-    private void showAbonentsFragment() {
+    private void showMessagesFragment() {
         changeFragment(abonentsFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_users));
         toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_users);
     }
 
-    private void showCheckinFragment() {
+    private void showObjectsFragment() {
         changeFragment(workFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_checkin));
         toolbar.setSubtitle(null);

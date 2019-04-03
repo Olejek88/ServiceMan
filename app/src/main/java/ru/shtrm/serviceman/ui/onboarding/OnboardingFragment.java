@@ -41,7 +41,8 @@ public class OnboardingFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = getArguments().getInt(ARG_SECTION_NUMBER);
+        if (getArguments()!=null)
+            page = getArguments().getInt(ARG_SECTION_NUMBER);
     }
 
     @Override
@@ -63,18 +64,23 @@ public class OnboardingFragment extends Fragment {
                 break;
             case 2:
                 sectionImg.setBackgroundResource(R.drawable.baseline_add_a_photo_black_48dp);
+                sectionLabel.setText(R.string.onboarding_section_3);
+                sectionIntro.setText(R.string.onboarding_intro_3);
+                break;
+            case 3:
+                sectionImg.setBackgroundResource(R.drawable.baseline_create_black_48dp);
                 sectionLabel.setText(R.string.onboarding_section_4);
                 sectionIntro.setText(R.string.onboarding_intro_4);
                 break;
-            case 3:
-                sectionImg.setBackgroundResource(R.drawable.baseline_priority_high_black_48dp);
-                sectionLabel.setText(R.string.onboarding_section_6);
-                sectionIntro.setText(R.string.onboarding_intro_6);
-                break;
             case 4:
-                sectionImg.setBackgroundResource(R.drawable.baseline_create_black_48dp);
+                sectionImg.setBackgroundResource(R.drawable.baseline_bar_chart_black_48dp);
                 sectionLabel.setText(R.string.onboarding_section_5);
                 sectionIntro.setText(R.string.onboarding_intro_5);
+                break;
+            case 5:
+                sectionImg.setBackgroundResource(R.drawable.baseline_check_box_black_48dp);
+                sectionLabel.setText(R.string.onboarding_section_6);
+                sectionIntro.setText(R.string.onboarding_intro_6);
                 break;
             default:
                 break;

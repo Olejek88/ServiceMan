@@ -1,7 +1,6 @@
 package ru.shtrm.serviceman.mvp.abonents;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -27,7 +26,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +60,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     public final static int ACTIVITY_PHOTO = 100;
 
-    private FloatingActionButton fab;
+    private FloatingActionButton make_photo;
+    private FloatingActionButton add_comment;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
@@ -138,7 +137,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         });
 
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        make_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -159,11 +158,9 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             }
         });
 
-
         mAppBarLayout.addOnOffsetChangedListener(this);
         startAlphaAnimation(mTitle, 0, View.INVISIBLE);
         presenter.loadStreets();
-        setHasOptionsMenu(true);
         return contentView;
     }
 
@@ -185,30 +182,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         presenter.unsubscribe();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        //inflater.inflate(R.menu.settings_list, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO добавить реакцию на добавление изображения и изменение статуса
-        return true;
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item == null) {
-            return false;
-        }
-        switch (item.getItemId()) {
-            default:
-                break;
-        }
-        return true;
-    }
-
     /**
      * Init the views by findViewById.
      *
@@ -216,7 +189,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
      */
     @Override
     public void initViews(View view) {
-        fab = view.findViewById(R.id.fab);
+        add_comment = view.findViewById(R.id.fab_comment);
+        make_photo = view.findViewById(R.id.fab_photo);
         back = view.findViewById(R.id.back);
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
@@ -229,6 +203,33 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         mObjectDate = view.findViewById(R.id.object_date);
         mAppBarLayout = view.findViewById(R.id.main_appbar);
         handleToolbarTitleVisibility(0);
+
+        add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //FlatActivity.createAddMessageDialog(mainActivityConnector, flat);
+            }
+        });
+
+        make_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    photoUuid = java.util.UUID.randomUUID().toString();
+                    photoFile = MainUtil.createImageFile(photoUuid, mainActivityConnector);
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(mainActivityConnector,
+                                "ru.shtrm.serviceman.fileprovider",
+                                photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, ACTIVITY_PHOTO);
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
@@ -266,6 +267,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     @Override
     public void showFlats(@NonNull final List<Flat> list) {
         currentLevel = LEVEL_FLAT;
+        setHasOptionsMenu(true);
         if (flatAdapter == null) {
             flatAdapter = new FlatAdapter(mainActivityConnector, list);
             flatAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -309,13 +311,23 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         MainActivity.toolbar.setSubtitle(null);
         mObjectDate.setVisibility(View.VISIBLE);
 
-        fab.setVisibility(View.VISIBLE);
+        make_photo.setVisibility(View.VISIBLE);
+        add_comment.setVisibility(View.VISIBLE);
         back.setVisibility(View.VISIBLE);
         //showEmptyView(list.isEmpty());
+
+        add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FlatActivity.createAddMessageDialog(mainActivityConnector, null, currentHouse);
+            }
+        });
+
     }
 
     public void showStreets(@NonNull final List<Street> list) {
         currentLevel = LEVEL_STREET;
+        setHasOptionsMenu(false);
         if (streetAdapter == null) {
             streetAdapter = new StreetAdapter(mainActivityConnector, list);
             streetAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -343,12 +355,14 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             MainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
             MainActivity.toolbar.setSubtitle(null);
         }
-        fab.setVisibility(View.GONE);
+        make_photo.setVisibility(View.GONE);
+        add_comment.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
     }
 
     public void showHouses(@NonNull final List<House> list) {
         currentLevel = LEVEL_HOUSE;
+        setHasOptionsMenu(false);
         if (houseAdapter == null) {
             houseAdapter = new HouseAdapter(mainActivityConnector, list);
             houseAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -370,7 +384,8 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         mImage.setImageResource(R.drawable.street);
         MainActivity.toolbar.setTitle(currentStreet.getTitle());
         MainActivity.toolbar.setSubtitle(null);
-        fab.setVisibility(View.GONE);
+        make_photo.setVisibility(View.GONE);
+        add_comment.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }
 
@@ -474,6 +489,36 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    private void onActionAddAttribute() {
+
+    }
+
+    private void onActionChangeStatus() {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.actionAddAttribute) {
+            onActionAddAttribute();
+            return true;
+        } else if (id == R.id.actionChangeStatus) {
+            onActionChangeStatus();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
 

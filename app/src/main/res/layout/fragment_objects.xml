@@ -98,6 +98,7 @@
                         android:layout_marginTop="4dp"
                         android:text="@string/service_app_name"
                         android:textColor="@android:color/white" />
+
                 </LinearLayout>
             </FrameLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -167,14 +168,25 @@
         app:fabSize="normal" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="70dp"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:src="@drawable/baseline_camera_enhance_white_24dp"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@drawable/baseline_camera_enhance_white_24dp"
-        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/baseline_create_white_24dp"
+        app:backgroundTint="@color/light_blue_500"
         app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>

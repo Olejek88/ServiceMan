@@ -260,7 +260,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         add_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FlatActivity.createAddMessageDialog(mainActivityConnector, flat);
+                FlatActivity.createAddMessageDialog(mainActivityConnector, flat, flat.getHouse());
             }
         });
 

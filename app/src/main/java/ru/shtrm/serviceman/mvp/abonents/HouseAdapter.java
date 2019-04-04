@@ -8,6 +8,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -110,6 +111,7 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.listener = listener;
     }
+
 
     /**
      * Update the data. Keep the data is the latest.

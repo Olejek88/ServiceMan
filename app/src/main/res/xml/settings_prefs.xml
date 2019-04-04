@@ -30,6 +30,10 @@
             android:icon="@drawable/pref_rfid"
             android:key="@string/rfidDriverListPrefKey"
             android:title="@string/pref_rfid_driver" />
+        <ListPreference
+            android:icon="@drawable/pref_rfid"
+            android:key="@string/rfidDriverListPrefKey"
+            android:title="@string/equipment_rfid_driver" />
 
         <CheckBoxPreference
             android:defaultValue="false"

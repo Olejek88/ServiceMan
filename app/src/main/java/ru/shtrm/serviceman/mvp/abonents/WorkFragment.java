@@ -91,7 +91,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private TextView mObjectTitle;
     private TextView mObjectDate;
     private ImageView mImage;
-    private ImageView objectIcon;
+    //private ImageView objectIcon;
     private AppBarLayout mAppBarLayout;
 
     private AbonentsContract.Presenter presenter;
@@ -195,7 +195,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        objectIcon = view.findViewById(R.id.object_icon);
+        //objectIcon = view.findViewById(R.id.object_icon);
         mTitle = view.findViewById(R.id.main_textview_title);
         mImage = view.findViewById(R.id.main_imageview_placeholder);
         mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
@@ -301,7 +301,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                     photos.get(0).getUuid().concat(".jpg"));
             if (bitmap != null) {
                 mImage.setImageBitmap(bitmap);
-                objectIcon.setImageBitmap(bitmap);
+                //objectIcon.setImageBitmap(bitmap);
             }
         } else {
             mObjectDate.setText("фото не было");
@@ -474,7 +474,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                                         800, uuid.concat(".jpg"));
                                 MainUtil.storePhotoHouse (currentHouse,uuid);
                                 photoFile.delete();
-                                objectIcon.setImageBitmap(bitmap);
+                                //objectIcon.setImageBitmap(bitmap);
                                 mImage.setImageBitmap(bitmap);
                                 String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
                                         format(new Date());

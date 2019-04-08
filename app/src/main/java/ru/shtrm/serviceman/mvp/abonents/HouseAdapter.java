@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import java.text.SimpleDateFormat;
@@ -70,6 +71,7 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             pvh.textViewImage.setText(item.getNumber().substring(0, 2));
         } else pvh.textViewImage.setText(item.getNumber().substring(0, 1));
 
+/*
         Measure measure = MeasureLocalDataSource.getInstance().getLastMeasureByHouse(item);
         long diffInMillies = 1000000000;
         if (measure!=null) {
@@ -91,6 +93,7 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     getColor(R.color.colorPrimary));
             pvh.textViewStatus.setText("Показания сняты");
         }
+*/
 
         // TODO выдергивать последнее фото из фото?
 /*
@@ -134,6 +137,8 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         AppCompatTextView textViewImage;
         CircleImageView circleImageView;
         LinearLayout layoutObjectItem;
+        FrameLayout circleUnCompletedTaskView;
+        FrameLayout circleCompletedTaskView;
 
         private OnRecyclerViewItemClickListener listener;
 
@@ -145,6 +150,12 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
             layoutObjectItem = itemView.findViewById(R.id.layoutObjectItem);
+            circleUnCompletedTaskView = itemView.findViewById(R.id.circleUnCompletedTaskView);
+            circleCompletedTaskView = itemView.findViewById(R.id.circleCompletedTaskView);
+            if (circleUnCompletedTaskView!=null)
+                circleUnCompletedTaskView.setVisibility(View.INVISIBLE);
+            if (circleCompletedTaskView!=null)
+                circleCompletedTaskView.setVisibility(View.INVISIBLE);
 
             this.listener = listener;
             itemView.setOnClickListener(this);

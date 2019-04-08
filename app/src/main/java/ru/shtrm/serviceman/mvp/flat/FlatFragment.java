@@ -140,9 +140,10 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         FloatingActionButton new_equipment = view.findViewById(R.id.add_equipment);
         FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
 
-        TextView textViewInn = view.findViewById(R.id.textViewFlatInn);
+        TextView textViewTaskComplete = view.findViewById(R.id.textViewFlatTaskComplete);
+        TextView textViewTaskUnComplete = view.findViewById(R.id.textViewFlatTaskUnComplete);
+
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
-        //TextView textViewStatus = view.findViewById(R.id.textViewFlatStatus);
         TextView textViewTitle = view.findViewById(R.id.textViewFlatTitle);
         TextView textViewFlat = view.findViewById(R.id.textViewFlat);
         //GridView gridView = view.findViewById(R.id.gridview);
@@ -165,20 +166,26 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         }
 
         if (resident != null) {
-            textViewInn.setText(resident.getInn());
             textViewAbonent.setText(resident.getOwner());
         }
         if (subject != null) {
-            textViewInn.setText(subject.getContractNumber());
             textViewAbonent.setText(subject.getOwner());
         }
+
+        // TODO заменить когда будут реальные значения
+        textViewTaskComplete.setText(view.getContext().getString(
+                R.string.flat_task_completed, "1"));
+        textViewTaskUnComplete.setText(view.getContext().getString(
+                R.string.flat_task_uncompleted, "2"));
         //if (flat.getFlatStatus()!=null)
         //  textViewStatus.setText(flat.getFlatStatus().getTitle());
+/*
 
         if (flat.getFlatType() != null)
             textViewTitle.setText(flat.getFlatType().getTitle());
         else
             textViewTitle.setText(flat.getFullTitle());
+*/
 
         textViewFlat.setText(flat.getNumber().substring(0, 1));
         if (photoFlat != null) {

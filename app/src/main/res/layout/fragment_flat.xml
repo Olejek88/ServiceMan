@@ -84,8 +84,8 @@
                         android:text="@string/equipment_status"
                         android:gravity="start|center_vertical"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        android:textColor="@color/mdtp_white"
-                        android:textSize="18sp" />
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="14sp" />
 
                     <!--
                                         <android.support.v7.widget.AppCompatTextView
@@ -101,7 +101,7 @@
                     -->
                     <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/spinnerFlatStatus"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:background="@drawable/rounded"
@@ -133,18 +133,28 @@
                         android:textSize="16sp" />
 
                     <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/labelFlatInn"
+                        android:id="@+id/labelFlatTasks"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:gravity="start|center_vertical"
-                        android:text="@string/flat_inn"
+                        android:text="@string/flat_tasks"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/colorPrimaryText"
                         android:textSize="14sp" />
 
                     <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/textViewFlatInn"
+                        android:id="@+id/textViewFlatTaskComplete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:gravity="start|center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/mdtp_white"
+                        android:textSize="16sp" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/textViewFlatTaskUnComplete"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"

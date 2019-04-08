@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import java.text.SimpleDateFormat;
@@ -54,27 +55,29 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Flat item = list.get(position);
         FlatsViewHolder pvh = (FlatsViewHolder) holder;
-        if (item.getFlatStatus()!=null)
+        if (item.getFlatStatus() != null)
             pvh.textViewStatus.setText(item.getFlatStatus().getTitle());
-        if (item.getChangedAt()!=null) {
+        if (item.getChangedAt() != null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
             pvh.textViewDate.setText(sDate);
+            /*
             Measure measure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item);
             long diffInMillies = 1000000000;
-            if (measure!=null) {
+            if (measure != null) {
                 if (measure.getDate() != null)
                     diffInMillies = (new Date()).getTime() - measure.getDate().getTime();
             }
             TimeUnit timeUnit = TimeUnit.DAYS;
-            long days = timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+            long days = timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
             if (days>7)
                 pvh.layoutObjectItem.setBackgroundColor(context.getResources().
                         getColor(R.color.colorRowFailed));
             else
-                pvh.layoutObjectItem.setBackgroundColor(context.getResources().
-                        getColor(R.color.colorPrimary));
-        }
-        else {
+            pvh.layoutObjectItem.setBackgroundColor(context.getResources().
+                    getColor(R.color.colorPrimary));
+            */
+
+        } else {
             pvh.textViewDate.setText(R.string.no_last_time);
             pvh.layoutObjectItem.setBackgroundColor(context.getResources().
                     getColor(R.color.colorRowNotVisited));
@@ -83,6 +86,8 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         pvh.textViewTitle.setText(item.getHouse().getStreet().getTitle().concat(", ").
                 concat(item.getHouse().getNumber()).concat(", ").concat(item.getNumber()));
         pvh.textViewImage.setText(item.getNumber().substring(0, 1));
+        pvh.textCompleteTask.setText("1");
+        pvh.textUnCompleteTask.setText("2");
         // TODO выдергивать последнее фото из фото?
 /*
         if (item.getUser()!=null)
@@ -105,6 +110,7 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Update the data. Keep the data is the latest.
+     *
      * @param list The data.
      */
     public void updateData(@NonNull List<Flat> list) {
@@ -126,6 +132,11 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         CircleImageView circleImageView;
         LinearLayout layoutObjectItem;
 
+        AppCompatTextView textCompleteTask;
+        AppCompatTextView textUnCompleteTask;
+        FrameLayout circleUnCompletedTaskView;
+        FrameLayout circleCompletedTaskView;
+
         private OnRecyclerViewItemClickListener listener;
 
         FlatsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
@@ -136,6 +147,15 @@ public class FlatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
             layoutObjectItem = itemView.findViewById(R.id.layoutObjectItem);
+
+            textCompleteTask = itemView.findViewById(R.id.circleCompletedTaskText);
+            textUnCompleteTask = itemView.findViewById(R.id.circleUnCompletedTaskText);
+            circleUnCompletedTaskView = itemView.findViewById(R.id.circleUnCompletedTaskView);
+            circleCompletedTaskView = itemView.findViewById(R.id.circleCompletedTaskView);
+            if (circleUnCompletedTaskView!=null)
+                circleUnCompletedTaskView.setVisibility(View.VISIBLE);
+            if (circleCompletedTaskView!=null)
+                circleCompletedTaskView.setVisibility(View.VISIBLE);
 
             this.listener = listener;
             itemView.setOnClickListener(this);

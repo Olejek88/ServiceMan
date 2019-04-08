@@ -50,7 +50,9 @@
 
     <!--flats-->
     <string name="flat_abonent">Абонент</string>
-    <string name="flat_inn">ИНН/Договор</string>
+    <string name="flat_tasks">Задачи</string>
+    <string name="flat_task_completed">Выполненные: [%1s]</string>
+    <string name="flat_task_uncompleted">Не выполненные: [%1s]</string>
 
     <!--equipments-->
     <string name="equipment_serial">Серийный номер:</string>
@@ -69,6 +71,8 @@
     <string name="action_add_image">Добавить изображение</string>
     <string name="action_set_status">Установить статус</string>
     <string name="action_add_comment">Добавить комментарий</string>
+    <string name="action_add_attribute">Добавить атрибут</string>
+    <string name="action_change_status">Сменить статус</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -251,7 +255,8 @@
     <string name="ok">ОК</string>
     <string name="rfidDriverListPrefKey">rfidDriverListPrefKey</string>
     <string name="rfidDrvSettingKey">rfidDrvSettingKey</string>
-    <string name="pref_rfid_driver">Драйвер считывателя RFID</string>
+    <string name="pref_rfid_driver">Метод аутентификации</string>
+    <string name="equipment_rfid_driver">Метод идентификации оборудования</string>
     <string name="dont_ask_text_tags">Не спрашивать текстовые теги</string>
 
 </resources>

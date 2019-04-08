@@ -59,6 +59,7 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
     }
 
@@ -139,18 +140,6 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
     public void onPause() {
         super.onPause();
         presenter.unsubscribe();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        //inflater.inflate(R.menu.settings_list, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO здесь будет фильтрация и все такое из меню
-        return true;
     }
 
     @Override

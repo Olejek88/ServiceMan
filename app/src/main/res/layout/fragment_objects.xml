@@ -98,6 +98,7 @@
                         android:layout_marginTop="4dp"
                         android:text="@string/service_app_name"
                         android:textColor="@android:color/white" />
+
                 </LinearLayout>
             </FrameLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -108,7 +109,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
-        app:behavior_overlapTop="30dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
@@ -121,7 +121,6 @@
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="50dp"
                 android:clipToPadding="false"
                 android:fadeScrollbars="true"
                 android:scrollbarFadeDuration="1"
@@ -135,25 +134,9 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="invisible">
-            </LinearLayout>
+                android:visibility="invisible"></LinearLayout>
         </FrameLayout>
     </android.support.v4.widget.NestedScrollView>
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/object_icon"
-        android:layout_width="@dimen/image_width"
-        android:layout_height="@dimen/image_width"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/user_random_icon_2"
-        app:civ_border_color="@android:color/white"
-        app:civ_border_width="2dp"
-        app:finalHeight="@dimen/image_final_width"
-        app:finalYPosition="2dp"
-        app:layout_behavior="ru.shtrm.serviceman.util.ObjectImageBehavior"
-        app:startHeight="2dp"
-        app:startToolbarPosition="2dp"
-        app:startXPosition="2dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/back"
@@ -167,14 +150,25 @@
         app:fabSize="normal" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="70dp"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:src="@drawable/baseline_camera_enhance_white_24dp"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@drawable/baseline_camera_enhance_white_24dp"
-        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/baseline_create_white_24dp"
+        app:backgroundTint="@color/light_blue_500"
         app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>

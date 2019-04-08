@@ -29,6 +29,7 @@ import java.util.Date;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
@@ -131,7 +132,7 @@ public class FlatActivity extends AppCompatActivity
         }
     }
 
-    public static void createAddMessageDialog(final Activity activity, final Flat flat) {
+    public static void createAddMessageDialog(final Activity activity, final Flat flat, final House house) {
         final View mView = LayoutInflater.from(activity).inflate(R.layout.message_add_dialog, null);
         add_photo = mView.findViewById(R.id.imageAddMessage);
         final EditText userEditText = mView.findViewById(R.id.userMessage);
@@ -197,6 +198,7 @@ public class FlatActivity extends AppCompatActivity
                     message.setUser(user);
                     message.setMessage(userEditText.getText().toString());
                     message.setFlat(flat);
+                    //message.setHouse(house);
                     message.setDate(new Date());
                     message.setCreatedAt(new Date());
                     message.setChangedAt(new Date());

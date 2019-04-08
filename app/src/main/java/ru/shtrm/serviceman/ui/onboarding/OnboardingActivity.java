@@ -56,7 +56,7 @@ public class OnboardingActivity extends AppCompatActivity {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     int colorUpdate = (Integer) new ArgbEvaluator().
-                            evaluate(positionOffset, bgColors[position], bgColors[position == 4 ? position : position + 1]);
+                            evaluate(positionOffset, bgColors[position], bgColors[position == 5 ? position : position + 1]);
                     viewPager.setBackgroundColor(colorUpdate);
                 }
 
@@ -66,8 +66,8 @@ public class OnboardingActivity extends AppCompatActivity {
                     updateIndicators(position);
                     viewPager.setBackgroundColor(bgColors[position]);
                     buttonPre.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
-                    buttonNext.setVisibility(position == 4 ? View.GONE : View.VISIBLE);
-                    buttonFinish.setVisibility(position == 4 ? View.VISIBLE : View.GONE);
+                    buttonNext.setVisibility(position == 5 ? View.GONE : View.VISIBLE);
+                    buttonFinish.setVisibility(position == 5 ? View.VISIBLE : View.GONE);
                 }
 
                 @Override
@@ -125,7 +125,8 @@ public class OnboardingActivity extends AppCompatActivity {
                 findViewById(R.id.imageViewIndicator1),
                 findViewById(R.id.imageViewIndicator2),
                 findViewById(R.id.imageViewIndicator3),
-                findViewById(R.id.imageViewIndicator4) };
+                findViewById(R.id.imageViewIndicator4),
+                findViewById(R.id.imageViewIndicator5)};
     }
 
     private void initData() {
@@ -133,7 +134,8 @@ public class OnboardingActivity extends AppCompatActivity {
                 ContextCompat.getColor(this, R.color.cyan_500),
                 ContextCompat.getColor(this, R.color.amber_500),
                 ContextCompat.getColor(this, R.color.green_500),
-                ContextCompat.getColor(this, R.color.light_blue_500)};
+                ContextCompat.getColor(this, R.color.light_blue_500),
+                ContextCompat.getColor(this, R.color.lime_500)};
     }
 
     private void updateIndicators(int position) {

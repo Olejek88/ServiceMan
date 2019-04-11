@@ -54,6 +54,7 @@ import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
 import ru.shtrm.serviceman.rfid.RfidDialog;
 import ru.shtrm.serviceman.rfid.RfidDriverBase;
+import ru.shtrm.serviceman.rfid.Tag;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -62,9 +63,8 @@ import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
 import static ru.shtrm.serviceman.rfid.RfidDialog.TAG;
 
 public class FlatFragment extends Fragment implements FlatContract.View {
-    private Activity mainActivityConnector = null;
     private final static int ACTIVITY_PHOTO = 100;
-
+    private Activity mainActivityConnector = null;
     private FlatContract.Presenter presenter;
     private Flat flat;
     private Resident resident;
@@ -79,6 +79,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
     private TextView textViewPhotoDate;
 
     private SharedPreferences sp;
+    private RfidDialog rfidDialog;
 
     public FlatFragment() {
     }
@@ -355,7 +356,6 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         }
     }
 
-    private RfidDialog rfidDialog;
     private void runRfidDialog(String expectedTagId, final String uuid) {
         final String expectedTagUuid = expectedTagId;
         final Activity activity = getActivity();
@@ -363,6 +363,7 @@ public class FlatFragment extends Fragment implements FlatContract.View {
         if (activity == null) {
             return;
         }
+
         Log.d(TAG, "Ожидаемая метка: " + expectedTagId);
         Handler handler = new Handler(new Handler.Callback() {
 
@@ -394,9 +395,17 @@ public class FlatFragment extends Fragment implements FlatContract.View {
             }
         });
 
-        rfidDialog = new RfidDialog();
-        rfidDialog.setHandler(handler);
-        rfidDialog.readMultiTagId(expectedTagId);
-        rfidDialog.show(activity.getFragmentManager(), TAG);
+        Tag tag = new Tag();
+        if (tag.loadData(expectedTagId)) {
+            String driverClassName = tag.getTagDriver(getContext());
+            rfidDialog = new RfidDialog();
+            rfidDialog.setHandler(handler);
+            rfidDialog.readMultiTagId(driverClassName, tag.getTagId());
+            rfidDialog.show(activity.getFragmentManager(), TAG);
+        } else {
+            Log.d(TAG, "Не верный формат метки!");
+            Toast.makeText(getContext(), "Не верный формат метки.", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

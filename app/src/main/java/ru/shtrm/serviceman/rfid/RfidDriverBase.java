@@ -9,14 +9,11 @@ import android.preference.PreferenceScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.shtrm.serviceman.rfid.driver.RfidDriverBarcode;
-import ru.shtrm.serviceman.rfid.driver.RfidDriverBarcode2D;
 import ru.shtrm.serviceman.rfid.driver.RfidDriverC5;
 import ru.shtrm.serviceman.rfid.driver.RfidDriverNfc;
 import ru.shtrm.serviceman.rfid.driver.RfidDriverNull;
 import ru.shtrm.serviceman.rfid.driver.RfidDriverP6300;
 import ru.shtrm.serviceman.rfid.driver.RfidDriverQRcode;
-import ru.shtrm.serviceman.rfid.driver.RfidDriverText;
 
 /**
  * @author Dmitriy Logachev
@@ -39,21 +36,25 @@ public abstract class RfidDriverBase implements IRfidDriver {
 	public static final String RESULT_RFID_TAG_ID = "tagId";
     protected static final String TAG = "RfidDriverBase";
     // вместо ручного разбора dex файла создаём статический массив с именами классов драйверов
-    private static final String[] driversClass;
-    // Handler который будет обрабатывать сообщение от драйвера
+	private static final String[] uhfDriversClass;
+	private static final String[] rfidDriversClass;
+	// Handler который будет обрабатывать сообщение от драйвера
 	protected static Handler sHandler;
 
     static {
         List<String> tmpList = new ArrayList<>();
-        tmpList.add(RfidDriverBarcode.class.getCanonicalName());
-        tmpList.add(RfidDriverBarcode2D.class.getCanonicalName());
-        tmpList.add(RfidDriverC5.class.getCanonicalName());
-        tmpList.add(RfidDriverNfc.class.getCanonicalName());
-        tmpList.add(RfidDriverNull.class.getCanonicalName());
-        tmpList.add(RfidDriverP6300.class.getCanonicalName());
-        tmpList.add(RfidDriverQRcode.class.getCanonicalName());
-        tmpList.add(RfidDriverText.class.getCanonicalName());
-        driversClass = tmpList.toArray(new String[0]);
+		tmpList.add(RfidDriverNull.class.getCanonicalName());
+		tmpList.add(RfidDriverP6300.class.getCanonicalName());
+		tmpList.add(RfidDriverC5.class.getCanonicalName());
+		uhfDriversClass = tmpList.toArray(new String[0]);
+
+		tmpList.clear();
+		tmpList.add(RfidDriverQRcode.class.getCanonicalName());
+		tmpList.add(RfidDriverNfc.class.getCanonicalName());
+		tmpList.add(RfidDriverP6300.class.getCanonicalName());
+		tmpList.add(RfidDriverC5.class.getCanonicalName());
+		rfidDriversClass = tmpList.toArray(new String[0]);
+
         tmpList = null;
     }
 
@@ -80,9 +81,13 @@ public abstract class RfidDriverBase implements IRfidDriver {
         return driverName;
     }
 
-    public static String[] getDriverClassList() {
-        return driversClass;
-    }
+	public static String[] getUhfDriversClass() {
+		return uhfDriversClass;
+	}
+
+	public static String[] getRfidDriversClass() {
+		return rfidDriversClass;
+	}
 
 	public void setHandler(Handler handler) {
 		sHandler = handler;

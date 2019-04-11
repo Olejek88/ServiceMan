@@ -242,9 +242,9 @@
 
     <string name="api_url">api_url</string>
     <string name="api_pref_title">Сервер</string>
-    <string name="api_pref_url">URL</string>
+    <string name="api_url_default">http://api.serviceman.tehnosber.ru</string>
 
-    <!--drivers-->    
+    <!--drivers-->
     <string name="pleasePutTag">Поднесите метку</string>
     <string name="readTag">Считать</string>
     <string name="cancel">Отмена</string>
@@ -253,10 +253,10 @@
     <string name="scan_process">Процесс сканирования</string>
     <string name="choose_tag">Выберите метку из меню</string>
     <string name="ok">ОК</string>
-    <string name="rfidDriverListPrefKey">rfidDriverListPrefKey</string>
-    <string name="rfidDrvSettingKey">rfidDrvSettingKey</string>
-    <string name="pref_rfid_driver">Метод аутентификации</string>
-    <string name="equipment_rfid_driver">Метод идентификации оборудования</string>
+    <string name="default_rfid_driver_key">defaultRfidDriverKey</string>
+    <string name="default_uhf_driver_key">defaultUHFDriverKey</string>
+    <string name="default_ufc_driver">Драйвер UHF</string>
+    <string name="default_rfid_driver">Драйвер считывателя</string>
     <string name="dont_ask_text_tags">Не спрашивать текстовые теги</string>
 
 </resources>

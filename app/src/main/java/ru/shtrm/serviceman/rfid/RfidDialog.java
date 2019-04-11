@@ -73,8 +73,10 @@ public class RfidDialog extends DialogFragment {
         // получаем текущий драйвер считывателя
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity()
                         .getApplicationContext());
+        // TODO: нужно исправить алгоритм так чтобы нужный драйвер к этому моменту был получен
+        // из "свойств" метки, либо если считывается произвольная метка, был выбран руками
         driverClassName = sp.getString(getActivity().getApplicationContext()
-                .getString(R.string.rfidDriverListPrefKey), null);
+                .getString(R.string.default_rfid_driver_key), null);
 
         if (driverClassName == null) {
             Toast.makeText(getActivity(), "Пожалуйста выберите драйвер в меню и укажите сервер!",

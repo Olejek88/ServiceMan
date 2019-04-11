@@ -1,8 +1,6 @@
 package ru.shtrm.serviceman.rfid.driver;
 
 import ru.shtrm.serviceman.rfid.RfidDriverBase;
-import android.preference.CheckBoxPreference;
-import android.preference.PreferenceScreen;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,11 @@ import android.view.ViewGroup;
  *         </p>
  */
 public class RfidDriverNull extends RfidDriverBase {
-	public static final String DRIVER_NAME = "Null драйвер";
+    public static final String DRIVER_NAME;
+
+    static {
+        DRIVER_NAME = "Не установлен";
+    }
 
 	@Override
 	public boolean init() {
@@ -62,22 +64,5 @@ public class RfidDriverNull extends RfidDriverBase {
 	public void writeTagData(String password, String tagId, int memoryBank,
 			int address, String data) {
 		sHandler.obtainMessage(RESULT_RFID_WRITE_ERROR).sendToTarget();
-	}
-
-	/**
-	 * <p>
-	 * Интерфейс настроек драйвера
-	 * </p>
-	 * 
-	 * @return PreferenceScreen Если настроек нет должен вернуть null
-	 */
-	@Override
-	public PreferenceScreen getSettingsScreen(PreferenceScreen screen) {
-		CheckBoxPreference checkBoxPreference = new CheckBoxPreference(
-				screen.getContext());
-		checkBoxPreference.setTitle("Тестовый чек бокс");
-		checkBoxPreference.setKey("rfidDrvNullTestCheckBox");
-		screen.addPreference(checkBoxPreference);
-		return screen;
 	}
 }

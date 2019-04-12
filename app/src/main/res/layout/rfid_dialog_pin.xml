@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:background="#FAFAFA">
+
+    <TextView
+        android:id="@+id/rfid_dialog_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/choose_tag"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#457445"
+        android:textSize="16sp" />
+
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/rfid_dialog_input_pin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rfid_dialog_text" />
+
+    <LinearLayout
+        android:id="@+id/rfid_dialog_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rfid_dialog_input_pin"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="5dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/rfid_dialog_text_button_CANCEL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:height="35dp"
+            android:background="@color/colorPrimaryDark"
+            android:minHeight="0dp"
+            android:text="@string/cancel"
+            android:textColor="#FAFAFA" />
+
+        <TextView
+            android:id="@+id/rfid_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text=""
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/rfid_dialog_text_button_OK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:height="35dp"
+            android:background="@color/colorPrimaryDark"
+            android:minHeight="0dp"
+            android:text="@string/ok"
+            android:textColor="#FAFAFA" />
+
+    </LinearLayout>
+
+</RelativeLayout>

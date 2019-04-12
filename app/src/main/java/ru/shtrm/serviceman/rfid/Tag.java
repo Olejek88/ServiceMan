@@ -11,10 +11,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.rfid.driver.RfidDriverDummy;
 import ru.shtrm.serviceman.rfid.driver.RfidDriverNfc;
-import ru.shtrm.serviceman.rfid.driver.RfidDriverNull;
+import ru.shtrm.serviceman.rfid.driver.RfidDriverPin;
 import ru.shtrm.serviceman.rfid.driver.RfidDriverQRcode;
-import ru.shtrm.serviceman.rfid.driver.RfidDriverText;
 
 public class Tag {
     private String type;
@@ -79,11 +79,11 @@ public class Tag {
     public String getTagDriver(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         HashMap<String, String> type2drv = new HashMap<>();
-        type2drv.put(Type.TAG_TYPE_PIN, RfidDriverText.class.getCanonicalName());
+        type2drv.put(Type.TAG_TYPE_PIN, RfidDriverPin.class.getCanonicalName());
         type2drv.put(Type.TAG_TYPE_GRAPHIC_CODE, RfidDriverQRcode.class.getCanonicalName());
         type2drv.put(Type.TAG_TYPE_NFC, RfidDriverNfc.class.getCanonicalName());
         type2drv.put(Type.TAG_TYPE_UHF, preferences.getString(context.getString(R.string.default_uhf_driver_key), null));
-        type2drv.put(Type.TAG_TYPE_DUMMY, RfidDriverNull.class.getCanonicalName());
+        type2drv.put(Type.TAG_TYPE_DUMMY, RfidDriverDummy.class.getCanonicalName());
 
         return type2drv.get(type);
     }

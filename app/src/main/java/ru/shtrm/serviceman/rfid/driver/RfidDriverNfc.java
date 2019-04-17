@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
+import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.rfid.RfidDialog;
 import ru.shtrm.serviceman.rfid.RfidDriverBase;
 import ru.shtrm.serviceman.rfid.IRfidDriver;
@@ -183,6 +184,6 @@ public class RfidDriverNfc extends RfidDriverBase implements IRfidDriver {
 
     @Override
     public View getView(LayoutInflater inflater, ViewGroup viewGroup) {
-        return null;
+        return inflater.inflate(R.layout.nfc_read_layout, viewGroup);
     }
 }

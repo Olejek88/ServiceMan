@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,42 +51,39 @@ import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener {
-    private Activity mainActivityConnector = null;
-
+    public final static int ACTIVITY_PHOTO = 100;
+    private static final String TAG;
     private static final int LEVEL_CITY = 0;
     private static final int LEVEL_STREET = 1;
     private static final int LEVEL_HOUSE = 2;
     private static final int LEVEL_FLAT = 3;
     private static final int LEVEL_INFO = 4;
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
+    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
+    private static final int ALPHA_ANIMATIONS_DURATION = 200;
 
-    public final static int ACTIVITY_PHOTO = 100;
+    static {
+        TAG = "WorkFragment";
+    }
 
+    private Activity mainActivityConnector = null;
     private FloatingActionButton make_photo;
     private FloatingActionButton add_comment;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
-
     private FlatAdapter flatAdapter;
     private StreetAdapter streetAdapter;
     private HouseAdapter houseAdapter;
     private File photoFile;
     private String photoUuid;
-
     private PhotoHouseRepository photoHouseRepository;
     private GpsTrackRepository gpsTrackRepository;
-
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
     private Street currentStreet;
-
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
-    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
-    private static final int ALPHA_ANIMATIONS_DURATION = 200;
-
     private boolean mIsTheTitleVisible = false;
     private boolean mIsTheTitleContainerVisible = true;
-
     private LinearLayout mTitleContainer;
     private TextView mTitle;
     private TextView mObjectTitle;
@@ -93,7 +91,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private ImageView mImage;
     //private ImageView objectIcon;
     private AppBarLayout mAppBarLayout;
-
     private AbonentsContract.Presenter presenter;
 
     // As a fragment, default constructor is needed.
@@ -102,6 +99,16 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     public static WorkFragment newInstance() {
         return new WorkFragment();
+    }
+
+    public static void startAlphaAnimation(View v, long duration, int visibility) {
+        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
+                ? new AlphaAnimation(0f, 1f)
+                : new AlphaAnimation(1f, 0f);
+
+        alphaAnimation.setDuration(duration);
+        alphaAnimation.setFillAfter(true);
+        v.startAnimation(alphaAnimation);
     }
 
     @Override
@@ -151,8 +158,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(intent, ACTIVITY_PHOTO);
                     }
-                }
-                catch (IOException e1) {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -284,11 +290,16 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
         }
+
+        MainActivity mainActivity = ((MainActivity) getActivity());
         if (currentHouse.getHouseType() != null) {
-            if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
-                MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
-            else
-                MainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
+            if (mainActivity != null) {
+                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280) {
+                    mainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
+                } else {
+                    mainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
+                }
+            }
         }
 
         List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
@@ -308,7 +319,9 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         }
         mTitle.setText(currentHouse.getFullTitle());
         mObjectTitle.setText(currentHouse.getFullTitle());
-        MainActivity.toolbar.setSubtitle(null);
+        if (mainActivity != null) {
+            mainActivity.toolbar.setSubtitle(null);
+        }
         mObjectDate.setVisibility(View.VISIBLE);
 
         make_photo.setVisibility(View.VISIBLE);
@@ -326,8 +339,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     }
 
     public void showStreets(@NonNull final List<Street> list) {
+        MainActivity mainActivity = ((MainActivity) getActivity());
         currentLevel = LEVEL_STREET;
         setHasOptionsMenu(false);
+
         if (streetAdapter == null) {
             streetAdapter = new StreetAdapter(mainActivityConnector, list);
             streetAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -343,17 +358,19 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             streetAdapter.updateData(list);
             recyclerView.setAdapter(streetAdapter);
         }
+
         if (streetAdapter.getItemCount() > 0) {
-            if (list.get(0)!=null && list.get(0).getCity()!=null) {
+            if (list.get(0) != null && list.get(0).getCity() != null) {
                 mTitle.setText(list.get(0).getCity().getTitle());
                 mObjectTitle.setText(list.get(0).getCity().getTitle());
                 mObjectDate.setVisibility(View.GONE);
             }
         }
+
         mImage.setImageResource(R.drawable.city);
-        if (currentStreet != null) {
-            MainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
-            MainActivity.toolbar.setSubtitle(null);
+        if (currentStreet != null && mainActivity != null) {
+            mainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
+            mainActivity.toolbar.setSubtitle(null);
         }
         make_photo.setVisibility(View.GONE);
         add_comment.setVisibility(View.GONE);
@@ -361,6 +378,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     }
 
     public void showHouses(@NonNull final List<House> list) {
+        MainActivity mainActivity = ((MainActivity) getActivity());
         currentLevel = LEVEL_HOUSE;
         setHasOptionsMenu(false);
         if (houseAdapter == null) {
@@ -382,8 +400,11 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         mTitle.setText(currentStreet.getFullTitle());
         mObjectTitle.setText(currentStreet.getFullTitle());
         mImage.setImageResource(R.drawable.street);
-        MainActivity.toolbar.setTitle(currentStreet.getTitle());
-        MainActivity.toolbar.setSubtitle(null);
+        if (mainActivity != null) {
+            mainActivity.toolbar.setTitle(currentStreet.getTitle());
+            mainActivity.toolbar.setSubtitle(null);
+        }
+
         make_photo.setVisibility(View.GONE);
         add_comment.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
@@ -440,16 +461,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         }
     }
 
-    public static void startAlphaAnimation(View v, long duration, int visibility) {
-        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
-                ? new AlphaAnimation(0f, 1f)
-                : new AlphaAnimation(1f, 0f);
-
-        alphaAnimation.setDuration(duration);
-        alphaAnimation.setFillAfter(true);
-        v.startAnimation(alphaAnimation);
-    }
-
     /**
      * Сохраняем фото
      *
@@ -472,8 +483,11 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                                 String uuid = java.util.UUID.randomUUID().toString();
                                 MainUtil.storeNewImage(bitmap, getContext(),
                                         800, uuid.concat(".jpg"));
-                                MainUtil.storePhotoHouse (currentHouse,uuid);
-                                photoFile.delete();
+                                MainUtil.storePhotoHouse(currentHouse, uuid);
+                                if (!photoFile.delete()) {
+                                    Log.e(TAG, "Файл не удалён! path: " + photoFile.getAbsolutePath());
+                                }
+
                                 //objectIcon.setImageBitmap(bitmap);
                                 mImage.setImageBitmap(bitmap);
                                 String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
@@ -494,7 +508,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void onActionAddAttribute() {

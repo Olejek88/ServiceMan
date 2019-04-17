@@ -72,11 +72,10 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_FINE_LOCATION = 3;
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 4;
     private static final String TAG = "Main";
-
-    public static Toolbar toolbar;
-    public boolean isLogged = false;
     private static final int LOGIN = 0;
-
+    private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
+    public Toolbar toolbar;
+    public boolean isLogged = false;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
@@ -85,8 +84,6 @@ public class MainActivity extends AppCompatActivity
     private AlarmFragment alarmsFragment;
     private WorkFragment workFragment;
     private Bundle currentSavedInstanceState;
-    private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
-
     private int selectedNavItem = 0;
 
     private LocationManager _locationManager;
@@ -99,11 +96,7 @@ public class MainActivity extends AppCompatActivity
             boolean isOff = true;
             if (extras != null) {
                 Object result = extras.get(ConnectivityManager.EXTRA_NO_CONNECTIVITY);
-                if (result == null) {
-                    isOff = false;
-                } else {
-                    isOff = true;
-                }
+                isOff = result != null;
             }
 
             AuthorizedUser aUser = AuthorizedUser.getInstance();
@@ -113,6 +106,17 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,7 +219,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
 
     /**
      * Handle different items of the navigation drawer
@@ -543,17 +546,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
@@ -701,5 +693,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
         realm.close();
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 }

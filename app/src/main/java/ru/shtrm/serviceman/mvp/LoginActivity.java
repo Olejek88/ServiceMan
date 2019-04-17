@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -60,9 +59,12 @@ public class LoginActivity extends AppCompatActivity {
         Button loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                final RfidDialog rfidDialog;
-                rfidDialog = new RfidDialog();
                 final User user = (User) userSelect.getSelectedItem();
+                if (user == null) {
+                    return;
+                }
+
+                final RfidDialog rfidDialog = new RfidDialog();
                 final Tag tag = new Tag();
                 tag.loadData(user.getPin());
 
@@ -95,8 +97,13 @@ public class LoginActivity extends AppCompatActivity {
                             setResult(RESULT_OK);
                             finish();
                         } else {
-                            Toast.makeText(getApplicationContext(), "Не верный код!", Toast.LENGTH_SHORT).show();
                             loginError.setVisibility(View.VISIBLE);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loginError.setVisibility(View.GONE);
+                                }
+                            }, 5000);
                         }
 
                         rfidDialog.dismiss();

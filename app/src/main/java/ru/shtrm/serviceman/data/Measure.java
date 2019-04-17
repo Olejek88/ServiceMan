@@ -31,6 +31,18 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
         user = AuthorizedUser.getInstance().getUser();
     }
 
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Measure.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
+
     public double getValue() {
         return value;
     }
@@ -93,18 +105,6 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
-    }
-
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Alarm.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
-        }
-
-        realm.close();
-        return lastId.longValue();
     }
 
     public boolean isSent() {

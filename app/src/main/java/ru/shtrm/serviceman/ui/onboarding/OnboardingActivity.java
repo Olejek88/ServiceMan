@@ -22,18 +22,14 @@ import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class OnboardingActivity extends AppCompatActivity {
 
+    private static final int MSG_DATA_INSERT_FINISH = 1;
     private ViewPager viewPager;
     private AppCompatButton buttonFinish;
     private ImageButton buttonPre;
     private ImageButton buttonNext;
     private ImageView[] indicators;
-
     private int bgColors[];
-
     private int currentPosition;
-
-    private static final int MSG_DATA_INSERT_FINISH = 1;
-
     private Handler handler = new Handler(new HandlerCallback());
 
     @Override
@@ -45,7 +41,9 @@ public class OnboardingActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_onboarding);
 
-            new InitUsersDataTask().execute();
+            InitUsersDataTask task = new InitUsersDataTask();
+            task.setHandler(handler);
+            task.execute();
 
             initViews();
 
@@ -146,22 +144,19 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
-    private class HandlerCallback implements Handler.Callback {
-
-        @Override
-        public boolean handleMessage(Message message) {
-            switch (message.what) {
-                case MSG_DATA_INSERT_FINISH:
-
-                    buttonFinish.setText(R.string.onboarding_finish_button_description);
-                    buttonFinish.setEnabled(true);
-                    break;
-            }
-            return true;
-        }
+    private void navigateToMainActivity() {
+        Intent i = new Intent(this, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 
-    private class InitUsersDataTask extends AsyncTask<Void, Void, Void> {
+    private static class InitUsersDataTask extends AsyncTask<Void, Void, Void> {
+
+        private Handler handler;
+
+        private void setHandler(Handler handler) {
+            this.handler = handler;
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -182,10 +177,19 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToMainActivity() {
-        Intent i = new Intent(this, MainActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+    private class HandlerCallback implements Handler.Callback {
+
+        @Override
+        public boolean handleMessage(Message message) {
+            switch (message.what) {
+                case MSG_DATA_INSERT_FINISH:
+
+                    buttonFinish.setText(R.string.onboarding_finish_button_description);
+                    buttonFinish.setEnabled(true);
+                    break;
+            }
+            return true;
+        }
     }
 
 }

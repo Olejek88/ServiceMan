@@ -30,6 +30,18 @@ public class PhotoHouse extends RealmObject implements ISend, IBaseRecord {
         changedAt = createDate;
     }
 
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(PhotoHouse.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
+
     public long get_id() {
         return _id;
     }
@@ -92,18 +104,6 @@ public class PhotoHouse extends RealmObject implements ISend, IBaseRecord {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
-    }
-
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Alarm.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
-        }
-
-        realm.close();
-        return lastId.longValue();
     }
 
     public boolean isSent() {

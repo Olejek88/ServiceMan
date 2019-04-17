@@ -2,6 +2,7 @@ package ru.shtrm.serviceman.mvp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -30,7 +32,9 @@ import ru.shtrm.serviceman.mvp.user.UserListAdapter;
 import ru.shtrm.serviceman.mvp.user.UserPresenter;
 import ru.shtrm.serviceman.retrofit.TokenTask;
 import ru.shtrm.serviceman.rfid.RfidDialog;
+import ru.shtrm.serviceman.rfid.RfidDriverBase;
 import ru.shtrm.serviceman.rfid.Tag;
+import ru.shtrm.serviceman.rfid.driver.RfidDriverNfc;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -72,6 +76,13 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public boolean handleMessage(Message msg) {
                         String tagId = (String) msg.obj;
+                        if (msg.what != RfidDriverBase.RESULT_RFID_SUCCESS) {
+                            // по кодам из RFID можно показать более подробные сообщения
+                            Toast.makeText(getApplicationContext(),
+                                    "Операция прервана", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+
                         tagId = tagId.substring(4);
                         Log.d(TAG, "tagId: " + tagId);
                         if (tag.getTagId().equals(tagId)) {
@@ -210,5 +221,22 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d("xxxx", "LoginActivity:onResume()");
         super.onResume();
+    }
+
+    protected void onNewIntent(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+            StringBuilder hexId = new StringBuilder();
+            for (byte b : id) {
+                hexId.append(String.format("%02X", b));
+            }
+
+            Intent result = new Intent(RfidDriverNfc.ACTION_NFC);
+            result.putExtra("tagId", hexId.toString());
+            sendBroadcast(result);
+        }
     }
 }

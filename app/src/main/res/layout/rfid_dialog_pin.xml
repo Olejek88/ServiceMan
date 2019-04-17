@@ -13,16 +13,27 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:paddingTop="10dp"
-        android:text="@string/choose_tag"
+        android:text="@string/enter_pin"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#457445"
         android:textSize="16sp" />
 
-    <android.support.design.widget.TextInputEditText
+    <EditText
         android:id="@+id/rfid_dialog_input_pin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/rfid_dialog_text" />
+        android:layout_below="@+id/rfid_dialog_text"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="start"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:hint="@string/user_pin_default"
+        android:inputType="numberPassword"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/rfid_dialog_buttons_layout"

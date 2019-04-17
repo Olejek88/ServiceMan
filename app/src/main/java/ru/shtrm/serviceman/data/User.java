@@ -5,7 +5,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
-    public static final String SERVICE_USER_UUID = "00000000-9bf0-4542-b127-f4ecefce49da";
+    public static final String SERVICE_USER_UUID = "00000000-9BF0-4542-B127-F4ECEFCE49DA";
 
     @PrimaryKey
     private long _id;
@@ -14,6 +14,18 @@ public class User extends RealmObject {
     private String pin;
     private String image;
     private String contact;
+
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(User.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
 
     public long get_id() {
         return _id;
@@ -61,17 +73,5 @@ public class User extends RealmObject {
 
     public void setContact(String contact) {
         this.contact = contact;
-    }
-
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Alarm.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
-        }
-
-        realm.close();
-        return lastId.longValue();
     }
 }

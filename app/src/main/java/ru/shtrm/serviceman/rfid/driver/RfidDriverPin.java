@@ -1,11 +1,11 @@
 package ru.shtrm.serviceman.rfid.driver;
 
-import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.rfid.IRfidDriver;
@@ -86,7 +86,7 @@ public class RfidDriverPin extends RfidDriverBase implements IRfidDriver {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "pressed OK");
-                TextInputEditText pinText = v.getRootView().findViewById(R.id.rfid_dialog_input_pin);
+                EditText pinText = v.getRootView().findViewById(R.id.rfid_dialog_input_pin);
                 String tagId = "0000" + pinText.getText().toString();
                 switch (command) {
                     case RfidDialog.READER_COMMAND_READ_ID:

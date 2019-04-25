@@ -27,6 +27,18 @@
             android:key="@string/api_url"
             android:title="@string/server_address" />
 
+        <EditTextPreference
+            android:defaultValue="@string/api_oid_default"
+            android:dialogTitle="@string/organization_id"
+            android:key="@string/api_oid_key"
+            android:title="@string/organization_id" />
+
+        <EditTextPreference
+            android:defaultValue="@string/api_organization_secret_default"
+            android:dialogTitle="@string/organization_secret"
+            android:key="@string/api_organization_secret_key"
+            android:title="@string/organization_secret" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/data">

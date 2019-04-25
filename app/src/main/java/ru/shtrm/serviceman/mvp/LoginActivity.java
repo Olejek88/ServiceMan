@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -127,6 +128,20 @@ public class LoginActivity extends AppCompatActivity {
                 rfidDialog.show(getFragmentManager(), RfidDialog.TAG);
             }
         });
+
+        if (!ViewConfiguration.get(getApplicationContext()).hasPermanentMenuKey()) {
+            Button settingButton = findViewById(R.id.setting_button);
+            settingButton.setVisibility(View.VISIBLE);
+            settingButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(LoginActivity.this, PrefsActivity.class);
+                    intent.putExtra(PrefsActivity.EXTRA_FLAG, PrefsActivity.FLAG_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+        }
+
     }
 
     public void initViews() {
@@ -213,13 +228,13 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        Log.d("xxxx", "LoginActivity:onPause()");
+        Log.d(TAG, "LoginActivity:onPause()");
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        Log.d("xxxx", "LoginActivity:onResume()");
+        Log.d(TAG, "LoginActivity:onResume()");
         super.onResume();
     }
 

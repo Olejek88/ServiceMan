@@ -1,13 +1,18 @@
 package ru.shtrm.serviceman.retrofit;
 
 import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
+
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -17,7 +22,6 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
-import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.retrofit.deserial.DateTypeDeserializer;
 import ru.shtrm.serviceman.retrofit.iface.IPingService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
@@ -27,6 +31,8 @@ public class ServiceApiFactory {
     private static final int WRITE_TIMEOUT = 60;
     private static final int TIMEOUT = 60;
     private static String token;
+    private static String oid;
+    private static String secret;
 
     private static final OkHttpClient CLIENT = new OkHttpClient()
             .newBuilder()
@@ -38,9 +44,37 @@ public class ServiceApiFactory {
                 public Response intercept(Chain chain) throws IOException {
                     Request origRequest = chain.request();
                     Headers origHeaders = origRequest.headers();
-                    AuthorizedUser user = AuthorizedUser.getInstance();
+
+                    String message = new Date().toString();
+                    String toHash = message + ":" + oid + ":" + secret;
+                    String hash;
+                    try {
+                        MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+                        digest.update(toHash.getBytes());
+                        byte messageDigest[] = digest.digest();
+
+                        // Create Hex String
+                        StringBuilder hexString = new StringBuilder();
+                        for (byte b : messageDigest) {
+                            String h = Integer.toHexString(0xFF & b);
+                            if (h.length() < 2) {
+                                h = "0" + h;
+                            }
+
+                            hexString.append(h);
+                        }
+
+                        hash = hexString.toString();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                        hash = "";
+                    }
+
                     Headers newHeaders = origHeaders.newBuilder()
-                            .add("Authorization", "Bearer " + token).build();
+                            .add("Authorization", "Bearer " + token)
+                            .add("X-Data", message)
+                            .add("X-Hash", hash)
+                            .build();
 
                     Request.Builder requestBuilder = origRequest.newBuilder().headers(newHeaders);
                     Request newRequest = requestBuilder.build();
@@ -54,7 +88,7 @@ public class ServiceApiFactory {
                         Request request = chain.request();
                         HttpUrl url = request.url()
                                 .newBuilder()
-                                .addQueryParameter("XDEBUG_SESSION_START", "PHPSTORM1")
+                                .addQueryParameter("XDEBUG_SESSION_START", "xdebug")
                                 .build();
                         Request.Builder requestBuilder = request.newBuilder().url(url);
                         Request newRequest = requestBuilder.build();
@@ -112,6 +146,18 @@ public class ServiceApiFactory {
                 .build();
     }
 
+    public static void setToken(String t) {
+        token = t;
+    }
+
+    public static void setOid(String o) {
+        oid = o;
+    }
+
+    public static void setSecret(String s) {
+        secret = s;
+    }
+
     /**
      * Класс для хранения типа и десереализатора к этому типу.
      */
@@ -139,9 +185,5 @@ public class ServiceApiFactory {
         public void setDeserializer(JsonDeserializer<?> deserializer) {
             this.deserializer = deserializer;
         }
-    }
-
-    public static void setToken(String t) {
-        token = t;
     }
 }

@@ -74,6 +74,7 @@ public class ServiceApiFactory {
                             .add("Authorization", "Bearer " + token)
                             .add("X-Data", message)
                             .add("X-Hash", hash)
+                            .add("X-Org", oid)
                             .build();
 
                     Request.Builder requestBuilder = origRequest.newBuilder().headers(newHeaders);

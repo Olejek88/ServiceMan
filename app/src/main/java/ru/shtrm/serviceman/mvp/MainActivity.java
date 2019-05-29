@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_WRITE_STORAGE = 2;
     private static final int REQUEST_FINE_LOCATION = 3;
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 4;
-    private static final String TAG = "Main";
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOGIN = 0;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
     public Toolbar toolbar;
@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity
     private AbonentsFragment abonentsFragment;
     private AlarmFragment alarmsFragment;
     private WorkFragment workFragment;
-    private Bundle currentSavedInstanceState;
     private int selectedNavItem = 0;
 
     private LocationManager _locationManager;
@@ -121,7 +120,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentSavedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_main);
 
         // запускаем сервис который будет в фоне заниматься получением/отправкой данных
@@ -160,7 +158,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         initViews();
-        initFragments(currentSavedInstanceState);
+        initFragments(savedInstanceState);
         MainUtil.setBadges(getApplicationContext());
     }
 
@@ -176,7 +174,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
-        Log.d("xxxx", "MainActivity:onPause()");
+        Log.d(TAG, "MainActivity:onPause()");
         super.onPause();
         if (checkGPSThread != null) {
             checkGPSThread.interrupt();
@@ -190,7 +188,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        Log.d("xxxx", "MainActivity:onResume()");
+        Log.d(TAG, "MainActivity:onResume()");
         super.onResume();
         if (AuthorizedUser.getInstance().getUser() != null) {
             User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
@@ -308,7 +306,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.d("xxxx", "MainActivity.onSaveInstanceState()");
+        Log.d(TAG, "MainActivity.onSaveInstanceState()");
         //outState.putSerializable(CURRENT_FILTERING_KEY, questionsPresenter.getFiltering());
         super.onSaveInstanceState(outState);
         Menu menu = navigationView.getMenu();
@@ -317,19 +315,24 @@ public class MainActivity extends AppCompatActivity
         } else if (menu.findItem(R.id.nav_users).isChecked()) {
             outState.putInt(KEY_NAV_ITEM, 1);
         }
+
         // Store the fragments' states.
         if (mapFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "MapFragment", mapFragment);
         }
+
         if (alarmsFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "AlarmFragment", alarmsFragment);
         }
+
         if (profileFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "UserFragment", profileFragment);
         }
+
         if (abonentsFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "AbonentFragment", abonentsFragment);
         }
+
         if (workFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "WorkFragment", workFragment);
         }
@@ -360,16 +363,25 @@ public class MainActivity extends AppCompatActivity
             workFragment = (WorkFragment) getSupportFragmentManager().
                     findFragmentById(R.id.content_main);
 
-            if (profileFragment == null)
+            if (profileFragment == null) {
                 profileFragment = UserDetailFragment.newInstance();
-            if (abonentsFragment == null)
+            }
+
+            if (abonentsFragment == null) {
                 abonentsFragment = AbonentsFragment.newInstance();
-            if (mapFragment == null)
+            }
+
+            if (mapFragment == null) {
                 mapFragment = MapFragment.newInstance();
-            if (alarmsFragment == null)
+            }
+
+            if (alarmsFragment == null) {
                 alarmsFragment = AlarmFragment.newInstance();
-            if (workFragment == null)
+            }
+
+            if (workFragment == null) {
                 workFragment = WorkFragment.newInstance();
+            }
         }
 
         if (profileFragment != null && !profileFragment.isAdded()) {
@@ -377,21 +389,25 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.content_main, profileFragment, "UserFragment")
                     .commit();
         }
+
         if (mapFragment != null && !mapFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, mapFragment, "MapFragment")
                     .commit();
         }
+
         if (alarmsFragment != null && !alarmsFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, alarmsFragment, "AlarmFragment")
                     .commit();
         }
+
         if (abonentsFragment != null && !abonentsFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, abonentsFragment, "AbonentFragment")
                     .commit();
         }
+
         if (workFragment != null && !workFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, workFragment, "WorkFragment")
@@ -521,16 +537,26 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.hide(profileFragment);
         fragmentTransaction.hide(workFragment);
 
-        if (selectedFragment == mapFragment)
+        if (selectedFragment == mapFragment) {
             fragmentTransaction.show(mapFragment);
-        if (selectedFragment == abonentsFragment)
+        }
+
+        if (selectedFragment == abonentsFragment) {
             fragmentTransaction.show(abonentsFragment);
-        if (selectedFragment == alarmsFragment)
+        }
+
+        if (selectedFragment == alarmsFragment) {
             fragmentTransaction.show(alarmsFragment);
-        if (selectedFragment == profileFragment)
+        }
+
+        if (selectedFragment == profileFragment) {
             fragmentTransaction.show(profileFragment);
-        if (selectedFragment == workFragment)
+        }
+
+        if (selectedFragment == workFragment) {
             fragmentTransaction.show(workFragment);
+        }
+
         fragmentTransaction.commit();
     }
 
@@ -685,8 +711,8 @@ public class MainActivity extends AppCompatActivity
                     sUser = new User();
                     sUser.set_id(User.getLastId() + 1);
                     sUser.setUuid(User.SERVICE_USER_UUID);
-                    sUser.setName("sUser");
-                    sUser.setPin(MainUtil.MD5("qwerfvgtbsasljflasjflajsljdsa"));
+                    sUser.setName(User.SERVICE_USER_NAME);
+                    sUser.setPin(User.SERVICE_USER_PIN);
                     sUser.setContact("");
                     realm.copyToRealmOrUpdate(sUser);
                 }

@@ -6,6 +6,8 @@ import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
     public static final String SERVICE_USER_UUID = "00000000-9BF0-4542-B127-F4ECEFCE49DA";
+    public static final String SERVICE_USER_PIN = "PIN:qwerfvgtbsasljflasjflajsljdsa";
+    public static final String SERVICE_USER_NAME = "sUser";
 
     @PrimaryKey
     private long _id;

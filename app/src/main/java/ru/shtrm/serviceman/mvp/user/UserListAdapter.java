@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import io.realm.RealmBaseAdapter;
 import io.realm.RealmResults;
 import ru.shtrm.serviceman.R;
@@ -20,7 +18,6 @@ import ru.shtrm.serviceman.data.User;
 
 public class UserListAdapter extends RealmBaseAdapter<User> {
 
-    private List<User> users;
     private final LayoutInflater flater;
     private final int mResource;
 
@@ -28,17 +25,6 @@ public class UserListAdapter extends RealmBaseAdapter<User> {
         super(users);
         mResource = resource;
         flater = LayoutInflater.from(context);
-        this.users = users;
-    }
-
-    @Override
-    public int getCount() {
-        return users.size();
-    }
-
-    @Override
-    public User getItem(int position) {
-        return users.get(position);
     }
 
     @Override

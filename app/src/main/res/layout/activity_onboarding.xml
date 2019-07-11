@@ -100,6 +100,17 @@
                 android:layout_height="8dp"
                 android:background="@drawable/onboarding_indicator_unselected" />
 
+            <ImageView
+                android:id="@+id/imageViewIndicator5"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_marginEnd="@dimen/activity_margin_half"
+                android:layout_marginRight="@dimen/activity_margin_half"
+                android:layout_marginLeft="@dimen/activity_margin_half"
+                android:layout_marginStart="@dimen/activity_margin_half"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/onboarding_indicator_unselected" />
+
         </LinearLayout>
 
         <android.support.v7.widget.AppCompatButton

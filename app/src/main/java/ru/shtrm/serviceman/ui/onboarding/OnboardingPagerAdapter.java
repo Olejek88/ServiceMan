@@ -23,7 +23,7 @@ public class OnboardingPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 5;
+        return 6;
     }
 
 }

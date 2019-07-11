@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -48,10 +49,10 @@ import ru.shtrm.serviceman.retrofit.ServiceApiFactory;
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
     private static final long START_INTERVAL = 60000;
+    private static final int LIMIT_SIZE = 100;
     private Handler getReference;
     private Handler sendData;
     private Handler serviceUserToken;
-    private static final int LIMIT_SIZE = 100;
 
     @Override
     public void onCreate() {
@@ -364,6 +365,15 @@ public class ForegroundService extends Service {
                     public void run() {
                         SharedPreferences sp = getSharedPreferences(User.SERVICE_USER_UUID, Context.MODE_PRIVATE);
                         String token = sp.getString("token", null);
+                        SharedPreferences spd = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        String name;
+                        name = getString(R.string.api_oid_key);
+                        String oid = spd.getString(name, null);
+                        name = getString(R.string.api_organization_secret_key);
+                        String secret = spd.getString(name, null);
+                        ServiceApiFactory.setOid(oid);
+                        ServiceApiFactory.setSecret(secret);
+
                         String pinHash;
                         Realm realm = Realm.getDefaultInstance();
                         User sUser = realm.where(User.class)
@@ -412,7 +422,7 @@ public class ForegroundService extends Service {
                 serviceUserToken.postDelayed(this, START_INTERVAL);
             }
         };
-        Log.d("xxxx", "Взвели получение токена и пользоваетлей для сервисного пользователя.");
+        Log.d(TAG, "Взвели получение токена и пользоваетлей для сервисного пользователя.");
         serviceUserToken = new Handler();
         serviceUserToken.postDelayed(runnable, 0);
     }

@@ -22,18 +22,14 @@ import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class OnboardingActivity extends AppCompatActivity {
 
+    private static final int MSG_DATA_INSERT_FINISH = 1;
     private ViewPager viewPager;
     private AppCompatButton buttonFinish;
     private ImageButton buttonPre;
     private ImageButton buttonNext;
     private ImageView[] indicators;
-
     private int bgColors[];
-
     private int currentPosition;
-
-    private static final int MSG_DATA_INSERT_FINISH = 1;
-
     private Handler handler = new Handler(new HandlerCallback());
 
     @Override
@@ -45,7 +41,9 @@ public class OnboardingActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_onboarding);
 
-            new InitUsersDataTask().execute();
+            InitUsersDataTask task = new InitUsersDataTask();
+            task.setHandler(handler);
+            task.execute();
 
             initViews();
 
@@ -56,7 +54,7 @@ public class OnboardingActivity extends AppCompatActivity {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     int colorUpdate = (Integer) new ArgbEvaluator().
-                            evaluate(positionOffset, bgColors[position], bgColors[position == 4 ? position : position + 1]);
+                            evaluate(positionOffset, bgColors[position], bgColors[position == 5 ? position : position + 1]);
                     viewPager.setBackgroundColor(colorUpdate);
                 }
 
@@ -66,8 +64,8 @@ public class OnboardingActivity extends AppCompatActivity {
                     updateIndicators(position);
                     viewPager.setBackgroundColor(bgColors[position]);
                     buttonPre.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
-                    buttonNext.setVisibility(position == 4 ? View.GONE : View.VISIBLE);
-                    buttonFinish.setVisibility(position == 4 ? View.VISIBLE : View.GONE);
+                    buttonNext.setVisibility(position == 5 ? View.GONE : View.VISIBLE);
+                    buttonFinish.setVisibility(position == 5 ? View.VISIBLE : View.GONE);
                 }
 
                 @Override
@@ -125,7 +123,8 @@ public class OnboardingActivity extends AppCompatActivity {
                 findViewById(R.id.imageViewIndicator1),
                 findViewById(R.id.imageViewIndicator2),
                 findViewById(R.id.imageViewIndicator3),
-                findViewById(R.id.imageViewIndicator4) };
+                findViewById(R.id.imageViewIndicator4),
+                findViewById(R.id.imageViewIndicator5)};
     }
 
     private void initData() {
@@ -133,7 +132,8 @@ public class OnboardingActivity extends AppCompatActivity {
                 ContextCompat.getColor(this, R.color.cyan_500),
                 ContextCompat.getColor(this, R.color.amber_500),
                 ContextCompat.getColor(this, R.color.green_500),
-                ContextCompat.getColor(this, R.color.light_blue_500)};
+                ContextCompat.getColor(this, R.color.light_blue_500),
+                ContextCompat.getColor(this, R.color.lime_500)};
     }
 
     private void updateIndicators(int position) {
@@ -144,22 +144,19 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
-    private class HandlerCallback implements Handler.Callback {
-
-        @Override
-        public boolean handleMessage(Message message) {
-            switch (message.what) {
-                case MSG_DATA_INSERT_FINISH:
-
-                    buttonFinish.setText(R.string.onboarding_finish_button_description);
-                    buttonFinish.setEnabled(true);
-                    break;
-            }
-            return true;
-        }
+    private void navigateToMainActivity() {
+        Intent i = new Intent(this, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 
-    private class InitUsersDataTask extends AsyncTask<Void, Void, Void> {
+    private static class InitUsersDataTask extends AsyncTask<Void, Void, Void> {
+
+        private Handler handler;
+
+        private void setHandler(Handler handler) {
+            this.handler = handler;
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -180,10 +177,19 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToMainActivity() {
-        Intent i = new Intent(this, MainActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+    private class HandlerCallback implements Handler.Callback {
+
+        @Override
+        public boolean handleMessage(Message message) {
+            switch (message.what) {
+                case MSG_DATA_INSERT_FINISH:
+
+                    buttonFinish.setText(R.string.onboarding_finish_button_description);
+                    buttonFinish.setEnabled(true);
+                    break;
+            }
+            return true;
+        }
     }
 
 }

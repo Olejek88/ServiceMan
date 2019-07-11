@@ -50,7 +50,6 @@ import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
@@ -72,12 +71,11 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_WRITE_STORAGE = 2;
     private static final int REQUEST_FINE_LOCATION = 3;
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 4;
-    private static final String TAG = "Main";
-
-    public static Toolbar toolbar;
-    public static boolean isLogged = false;
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOGIN = 0;
-
+    private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
+    public Toolbar toolbar;
+    public boolean isLogged = false;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
@@ -85,9 +83,6 @@ public class MainActivity extends AppCompatActivity
     private AbonentsFragment abonentsFragment;
     private AlarmFragment alarmsFragment;
     private WorkFragment workFragment;
-    private Bundle currentSavedInstanceState;
-    private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
-
     private int selectedNavItem = 0;
 
     private LocationManager _locationManager;
@@ -100,11 +95,7 @@ public class MainActivity extends AppCompatActivity
             boolean isOff = true;
             if (extras != null) {
                 Object result = extras.get(ConnectivityManager.EXTRA_NO_CONNECTIVITY);
-                if (result == null) {
-                    isOff = false;
-                } else {
-                    isOff = true;
-                }
+                isOff = result != null;
             }
 
             AuthorizedUser aUser = AuthorizedUser.getInstance();
@@ -115,10 +106,20 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentSavedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_main);
 
         // запускаем сервис который будет в фоне заниматься получением/отправкой данных
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         initViews();
-        initFragments(currentSavedInstanceState);
+        initFragments(savedInstanceState);
         MainUtil.setBadges(getApplicationContext());
     }
 
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
-        Log.d("xxxx", "MainActivity:onPause()");
+        Log.d(TAG, "MainActivity:onPause()");
         super.onPause();
         if (checkGPSThread != null) {
             checkGPSThread.interrupt();
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        Log.d("xxxx", "MainActivity:onResume()");
+        Log.d(TAG, "MainActivity:onResume()");
         super.onResume();
         if (AuthorizedUser.getInstance().getUser() != null) {
             User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
@@ -217,7 +218,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     /**
      * Handle different items of the navigation drawer
      *
@@ -238,13 +238,13 @@ public class MainActivity extends AppCompatActivity
                 showMapFragment();
                 break;
             case R.id.nav_users:
-                showAbonentsFragment();
+                showMessagesFragment();
                 break;
             case R.id.nav_alarms:
-                showAlarmsFragment();
+                showTasksFragment();
                 break;
             case R.id.nav_checkin:
-                showCheckinFragment();
+                showObjectsFragment();
                 break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.d("xxxx", "MainActivity.onSaveInstanceState()");
+        Log.d(TAG, "MainActivity.onSaveInstanceState()");
         //outState.putSerializable(CURRENT_FILTERING_KEY, questionsPresenter.getFiltering());
         super.onSaveInstanceState(outState);
         Menu menu = navigationView.getMenu();
@@ -315,19 +315,24 @@ public class MainActivity extends AppCompatActivity
         } else if (menu.findItem(R.id.nav_users).isChecked()) {
             outState.putInt(KEY_NAV_ITEM, 1);
         }
+
         // Store the fragments' states.
         if (mapFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "MapFragment", mapFragment);
         }
+
         if (alarmsFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "AlarmFragment", alarmsFragment);
         }
+
         if (profileFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "UserFragment", profileFragment);
         }
+
         if (abonentsFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "AbonentFragment", abonentsFragment);
         }
+
         if (workFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "WorkFragment", workFragment);
         }
@@ -358,16 +363,25 @@ public class MainActivity extends AppCompatActivity
             workFragment = (WorkFragment) getSupportFragmentManager().
                     findFragmentById(R.id.content_main);
 
-            if (profileFragment == null)
+            if (profileFragment == null) {
                 profileFragment = UserDetailFragment.newInstance();
-            if (abonentsFragment == null)
+            }
+
+            if (abonentsFragment == null) {
                 abonentsFragment = AbonentsFragment.newInstance();
-            if (mapFragment == null)
+            }
+
+            if (mapFragment == null) {
                 mapFragment = MapFragment.newInstance();
-            if (alarmsFragment == null)
+            }
+
+            if (alarmsFragment == null) {
                 alarmsFragment = AlarmFragment.newInstance();
-            if (workFragment == null)
+            }
+
+            if (workFragment == null) {
                 workFragment = WorkFragment.newInstance();
+            }
         }
 
         if (profileFragment != null && !profileFragment.isAdded()) {
@@ -375,21 +389,25 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.content_main, profileFragment, "UserFragment")
                     .commit();
         }
+
         if (mapFragment != null && !mapFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, mapFragment, "MapFragment")
                     .commit();
         }
+
         if (alarmsFragment != null && !alarmsFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, alarmsFragment, "AlarmFragment")
                     .commit();
         }
+
         if (abonentsFragment != null && !abonentsFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, abonentsFragment, "AbonentFragment")
                     .commit();
         }
+
         if (workFragment != null && !workFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, workFragment, "WorkFragment")
@@ -420,11 +438,11 @@ public class MainActivity extends AppCompatActivity
         if (selectedNavItem == 0) {
             showMapFragment();
         } else if (selectedNavItem == 1) {
-            showAbonentsFragment();
+            showMessagesFragment();
         } else if (selectedNavItem == 2) {
-            showAlarmsFragment();
+            showTasksFragment();
         } else if (selectedNavItem == 3) {
-            showCheckinFragment();
+            showObjectsFragment();
         }
 
         toolbar.setTitle(getResources().getString(R.string.nav_map));
@@ -457,17 +475,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.nav_alarms:
-                        showAlarmsFragment();
-                        break;
-                    case R.id.nav_users:
-                        showAbonentsFragment();
-                        break;
-                    case R.id.nav_checkin:
-                        showCheckinFragment();
-                        break;
                     case R.id.nav_map:
                         showMapFragment();
+                        break;
+                    case R.id.nav_objects:
+                        showObjectsFragment();
+                        break;
+                    case R.id.nav_tasks:
+                        showTasksFragment();
+                        break;
+                    case R.id.nav_messages:
+                        showMessagesFragment();
                         break;
                 }
                 return true;
@@ -476,7 +494,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void showAlarmsFragment() {
+    public void showTasksFragment() {
         changeFragment(alarmsFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_alarms));
         toolbar.setSubtitle(null);
@@ -490,14 +508,14 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_profile);
     }
 
-    private void showAbonentsFragment() {
+    private void showMessagesFragment() {
         changeFragment(abonentsFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_users));
         toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_users);
     }
 
-    private void showCheckinFragment() {
+    private void showObjectsFragment() {
         changeFragment(workFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_checkin));
         toolbar.setSubtitle(null);
@@ -519,16 +537,26 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.hide(profileFragment);
         fragmentTransaction.hide(workFragment);
 
-        if (selectedFragment == mapFragment)
+        if (selectedFragment == mapFragment) {
             fragmentTransaction.show(mapFragment);
-        if (selectedFragment == abonentsFragment)
+        }
+
+        if (selectedFragment == abonentsFragment) {
             fragmentTransaction.show(abonentsFragment);
-        if (selectedFragment == alarmsFragment)
+        }
+
+        if (selectedFragment == alarmsFragment) {
             fragmentTransaction.show(alarmsFragment);
-        if (selectedFragment == profileFragment)
+        }
+
+        if (selectedFragment == profileFragment) {
             fragmentTransaction.show(profileFragment);
-        if (selectedFragment == workFragment)
+        }
+
+        if (selectedFragment == workFragment) {
             fragmentTransaction.show(workFragment);
+        }
+
         fragmentTransaction.commit();
     }
 
@@ -542,17 +570,6 @@ public class MainActivity extends AppCompatActivity
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
-    }
-
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override
@@ -616,8 +633,7 @@ public class MainActivity extends AppCompatActivity
         // добавляем сервисного пользователя
         addServiceUser();
 
-//        LoadTestData.LoadAllTestData6();
-
+        //LoadTestData.LoadAllTestData7();
         return success;
     }
 
@@ -695,13 +711,17 @@ public class MainActivity extends AppCompatActivity
                     sUser = new User();
                     sUser.set_id(User.getLastId() + 1);
                     sUser.setUuid(User.SERVICE_USER_UUID);
-                    sUser.setName("sUser");
-                    sUser.setPin(MainUtil.MD5("qwerfvgtbsasljflasjflajsljdsa"));
+                    sUser.setName(User.SERVICE_USER_NAME);
+                    sUser.setPin(User.SERVICE_USER_PIN);
                     sUser.setContact("");
                     realm.copyToRealmOrUpdate(sUser);
                 }
             }
         });
         realm.close();
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 }

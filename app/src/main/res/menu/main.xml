@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#FAFAFA"
+    tools:context="ru.shtrm.serviceman.mvp.MainActivity" >
+
+    <item
+        android:id="@+id/actionAddAttribute"
+        android:orderInCategory="100"
+        android:title="@string/action_add_attribute"/>
+    <item
+        android:id="@+id/actionChangeStatus"
+        android:orderInCategory="101"
+        android:title="@string/action_set_status"/>
+
+</menu>
+

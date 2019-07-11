@@ -106,7 +106,7 @@ public class SManApiFactory {
                         Request request = chain.request();
                         HttpUrl url = request.url()
                                 .newBuilder()
-                                .addQueryParameter("XDEBUG_SESSION_START", "PHPSTORM1")
+                                .addQueryParameter("XDEBUG_SESSION_START", "xdebug")
                                 .build();
                         Request.Builder requestBuilder = request.newBuilder().url(url);
                         Request newRequest = requestBuilder.build();
@@ -315,6 +315,15 @@ public class SManApiFactory {
                 .build();
     }
 
+    public static boolean pingService() {
+        Call<Void> call = getPingService().ping();
+        try {
+            return call.execute().isSuccessful();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /**
      * Класс для хранения типа и десереализатора к этому типу.
      */
@@ -341,15 +350,6 @@ public class SManApiFactory {
 
         public void setDeserializer(JsonDeserializer<?> deserializer) {
             this.deserializer = deserializer;
-        }
-    }
-
-    public static boolean pingService() {
-        Call<Void> call = getPingService().ping();
-        try {
-            return call.execute().isSuccessful();
-        } catch (Exception e) {
-            return false;
         }
     }
 }

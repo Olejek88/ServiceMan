@@ -19,18 +19,49 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/data">
+    <PreferenceCategory android:title="@string/api_pref_title">
 
         <EditTextPreference
-            android:key="@string/server_key"
-            android:title="@string/server_address"
-            android:defaultValue="api.serviceman.tehnosber.ru"
-            android:dialogTitle="@string/server_address" />
-        <Preference
+            android:defaultValue="@string/api_url_default"
+            android:dialogTitle="@string/server_address"
+            android:key="@string/api_url"
+            android:title="@string/server_address" />
 
+        <EditTextPreference
+            android:defaultValue="@string/api_oid_default"
+            android:dialogTitle="@string/organization_id"
+            android:key="@string/api_oid_key"
+            android:title="@string/organization_id" />
+
+        <EditTextPreference
+            android:defaultValue="@string/api_organization_secret_default"
+            android:dialogTitle="@string/organization_secret"
+            android:key="@string/api_organization_secret_key"
+            android:title="@string/organization_secret" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/data">
+
+        <ListPreference
+            android:defaultValue="ru.shtrm.serviceman.rfid.driver.RfidDriverQRcode"
+            android:icon="@drawable/pref_rfid"
+            android:key="@string/default_rfid_driver_key"
+            android:title="@string/default_rfid_driver" />
+        <ListPreference
+            android:defaultValue="ru.shtrm.serviceman.rfid.driver.RfidDriverNull"
+            android:icon="@drawable/pref_rfid"
+            android:key="@string/default_uhf_driver_key"
+            android:title="@string/default_ufc_driver" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="without_tags_mode"
+            android:title="@string/dont_ask_text_tags" />
+
+        <Preference
             android:key="@string/load_test_data"
             android:title="@string/load_test_data" />
-
         <Preference
             android:key="@string/delete_test_data"
             android:title="@string/delete_test_data" />
@@ -46,15 +77,6 @@
             android:key="notification_interval"
             android:summary="%s"
             android:title="@string/notification_interval" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/api_pref_title">
-
-        <EditTextPreference
-            android:defaultValue="http://api.serviceman.tehnosber.ru"
-            android:key="@string/api_url"
-            android:title="@string/api_pref_url" />
 
     </PreferenceCategory>
 

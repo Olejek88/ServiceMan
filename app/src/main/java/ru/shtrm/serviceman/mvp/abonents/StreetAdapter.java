@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import java.util.List;
 
@@ -77,6 +78,10 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         AppCompatTextView textViewTitle;
         AppCompatTextView textViewImage;
         CircleImageView circleImageView;
+        AppCompatTextView textCompleteTask;
+        AppCompatTextView textUnCompleteTask;
+        FrameLayout circleUnCompletedTaskView;
+        FrameLayout circleCompletedTaskView;
 
         private OnRecyclerViewItemClickListener listener;
 
@@ -85,6 +90,12 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
+            circleUnCompletedTaskView = itemView.findViewById(R.id.circleUnCompletedTaskView);
+            circleCompletedTaskView = itemView.findViewById(R.id.circleCompletedTaskView);
+            if (circleUnCompletedTaskView!=null)
+                circleUnCompletedTaskView.setVisibility(View.INVISIBLE);
+            if (circleCompletedTaskView!=null)
+                circleCompletedTaskView.setVisibility(View.INVISIBLE);
 
             this.listener = listener;
             itemView.setOnClickListener(this);

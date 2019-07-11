@@ -14,15 +14,16 @@
     <string name="onboarding_finish_button_description">Закончить</string>
     <string name="onboarding_pre_button_description">Назад</string>
     <string name="onboarding_section_1">Войдите в приложение</string>
-    <string name="onboarding_intro_1">Выберите свой профиль в списке пользователей и введите Ваш пин-код</string>
+    <string name="onboarding_intro_1">Выберите свой профиль в списке пользователей и введите Ваш пин-код, или отсканируйте персональную карточку </string>
     <string name="onboarding_section_2">Синхронизируйте данные</string>
     <string name="onboarding_intro_2">Проверьте, что приложение загрузило все справочники и данные</string>
-    <string name="onboarding_section_3">Снимите контрольную точку</string>
-    <string name="onboarding_intro_3">Последовательно делайте фото объектов, квартир и оборудования, которые будут являться отметками вашего присутствия</string>
+    <string name="onboarding_section_3">Отслеживайте активные задачи</string>
+    <string name="onboarding_intro_3">Выполняйте задачи, снимайте показания, последовательно делайте фото объектов и оборудования,
+        которые будут являться отметками вашего присутствия</string>
     <string name="onboarding_section_4">Фиксируйте аварии и неисправности</string>
     <string name="onboarding_intro_4">Вводите в систему все, что обнаружили</string>
     <string name="onboarding_section_5">Заносите в систему показания приборов</string>
-    <string name="onboarding_intro_5">После выбора в списке расходомера - вводите данные</string>
+    <string name="onboarding_intro_5">После выбора в списке измерительного оборудования - вводите данные</string>
     <string name="onboarding_section_6">Выполняйте задачи по обслуживанию</string>
     <string name="onboarding_intro_6">Отмечайте все операции в чек-листе</string>
     <string name="onboarding_finish_button_description_wait">Пожалуйста подождите…</string>
@@ -37,7 +38,7 @@
     <string name="user_login">Войти</string>
     <string name="user_pin">Пин-код</string>
     <string name="user_pin_default">****</string>
-    <string name="login_error">! Ошибка ввода пин-кода для данного пользователя</string>
+    <string name="login_error">Не верная RFID метка или пин-код!</string>
 
     <!--abonents-->
     <string name="no_last_time">Нет обслуживания</string>
@@ -49,7 +50,9 @@
 
     <!--flats-->
     <string name="flat_abonent">Абонент</string>
-    <string name="flat_inn">ИНН/Договор</string>
+    <string name="flat_tasks">Задачи</string>
+    <string name="flat_task_completed">Выполненные: [%1s]</string>
+    <string name="flat_task_uncompleted">Не выполненные: [%1s]</string>
 
     <!--equipments-->
     <string name="equipment_serial">Серийный номер:</string>
@@ -58,12 +61,18 @@
     <string name="equipment_status">Статус</string>
     <string name="activity_add_equipment">Добавить оборудование</string>
     <string name="equipment_test_date">Дата поверки</string>
+    <string name="equipment_task_date">Дата проверки</string>
     <string name="equipment_unknown">Неизвестный тип</string>
+    <string name="task_archive">Выполненные задачи</string>
+    <string name="task">Задачи</string>
+    <string name="operation_title">%1s [%2s]</string>
 
     <!--menu-->
     <string name="action_add_image">Добавить изображение</string>
     <string name="action_set_status">Установить статус</string>
     <string name="action_add_comment">Добавить комментарий</string>
+    <string name="action_add_attribute">Добавить атрибут</string>
+    <string name="action_change_status">Сменить статус</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -80,6 +89,9 @@
     <string name="nav_switch_theme">Режим день/ночь</string>
     <string name="nav_settings">Настройки</string>
     <string name="nav_about">О сервисе</string>
+    <string name="nav_objects">Объекты</string>
+    <string name="nav_tasks">Задачи</string>
+    <string name="nav_messages">Сообщения</string>
     <string name="nav_exit">Выход</string>
     <!--navigation drawer end-->
 
@@ -160,6 +172,8 @@
     <string name="delete_test_data">Удалить справочники</string>
     <string name="data">Данные</string>
     <string name="server_address">Адрес сервера</string>
+    <string name="organization_id">Идентификатор организации</string>
+    <string name="organization_secret">Секрет организации</string>
     <string name="server_key">server_ip</string>
 
     <string name="do_not_disturb_mode">Режим не беспокоить</string>
@@ -230,6 +244,26 @@
 
     <string name="api_url">api_url</string>
     <string name="api_pref_title">Сервер</string>
-    <string name="api_pref_url">URL</string>
+    <string name="api_url_default">http://api.serviceman.tehnosber.ru</string>
+    <string name="api_oid_default">0</string>
+    <string name="api_oid_key">oid</string>
+    <string name="api_organization_secret_default" />
+    <string name="api_organization_secret_key">organization_secret</string>
+
+    <!--drivers-->
+    <string name="pleasePutTag">Поднесите метку</string>
+    <string name="readTag">Считать</string>
+    <string name="cancel">Отмена</string>
+    <string name="image_description">изображение</string>
+    <string name="pleaseScanImg">Наведите камеру на код</string>
+    <string name="scan_process">Процесс сканирования</string>
+    <string name="choose_tag">Выберите метку из меню</string>
+    <string name="ok">ОК</string>
+    <string name="default_rfid_driver_key">defaultRfidDriverKey</string>
+    <string name="default_uhf_driver_key">defaultUHFDriverKey</string>
+    <string name="default_ufc_driver">Драйвер UHF</string>
+    <string name="default_rfid_driver">Драйвер считывателя</string>
+    <string name="dont_ask_text_tags">Не спрашивать текстовые теги</string>
+    <string name="enter_pin">Введите пин-код</string>
 
 </resources>

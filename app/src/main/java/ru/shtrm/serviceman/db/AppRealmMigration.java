@@ -27,6 +27,7 @@ import ru.shtrm.serviceman.db.migration.Migration14;
 import ru.shtrm.serviceman.db.migration.Migration15;
 import ru.shtrm.serviceman.db.migration.Migration16;
 import ru.shtrm.serviceman.db.migration.Migration17;
+import ru.shtrm.serviceman.db.migration.Migration18;
 import ru.shtrm.serviceman.db.migration.Migration2;
 import ru.shtrm.serviceman.db.migration.Migration3;
 import ru.shtrm.serviceman.db.migration.Migration4;
@@ -47,7 +48,6 @@ class AppRealmMigration implements RealmMigration {
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
-        RealmSchema schema = realm.getSchema();
         Log.d(TAG, "oldVersion = " + oldVersion);
         Log.d(TAG, "newVersion = " + newVersion);
 
@@ -143,6 +143,12 @@ class AppRealmMigration implements RealmMigration {
             new Migration17().migration(realm);
             oldVersion++;
         }
+
+        if (oldVersion == 17) {
+            new Migration18().migration(realm);
+            oldVersion++;
+        }
+
         //testPropsFields(realm);
     }
 

@@ -14,16 +14,39 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        multiDexEnabled true
+        signingConfig signingConfigs.debug
+    }
+
+    signingConfigs {
+        def rootDir = property('rootDir')
+        Properties properties = new Properties()
+        properties.load(new FileInputStream("${rootDir}/local.properties"))
+        debug {
+            // это сделано для того, чтоб не прибивать приложение вместе с базой
+            // при установке release версии приложения
+            storeFile file(properties.getProperty('STORE_FILE'))
+            storePassword properties.getProperty('STORE_PASSWORD')
+            keyAlias properties.getProperty('KEY_ALIAS')
+            keyPassword properties.getProperty('KEY_PASSWORD')
+        }
+        release {
+            storeFile file(properties.getProperty('STORE_FILE'))
+            storePassword properties.getProperty('STORE_PASSWORD')
+            keyAlias properties.getProperty('KEY_ALIAS')
+            keyPassword properties.getProperty('KEY_PASSWORD')
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false
             versionNameSuffix "debug"
+            signingConfig signingConfigs.debug
         }
     }
 
@@ -38,6 +61,19 @@ android {
 //            ndk.abiFilters "armeabi-v7a"
 //        }
 //    }
+}
+
+def rd = property('rootDir')
+Properties prop = new Properties()
+prop.load(new FileInputStream("${rd}/local.properties"))
+def localRepo = prop.getProperty('localRepo')
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+        url "file://${localRepo}"
+    }
 }
 
 ext {
@@ -116,4 +152,12 @@ dependencies {
     // Runner and rules
     androidTestImplementation "com.android.support.test:runner:$runnerRulesVersion"
     androidTestImplementation "com.android.support.test:rules:$runnerRulesVersion"
+    
+    // Drivers
+    implementation 'me.dm7.barcodescanner:zbar:1.8.3'
+    implementation 'android.hardware:uhf-tools:1.0@aar'
+    implementation 'android.hardware.p6300:p6300uart:1.0@aar'
+    implementation 'com.google.zxing:core:3.2.0'
+    implementation 'com.google.zxing:android-integration:3.2.0'
+//    implementation 'com.google.code.gson:gson:2.8.0'
 }

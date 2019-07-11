@@ -1,7 +1,6 @@
 package ru.shtrm.serviceman.mvp.abonents;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +27,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,49 +51,46 @@ import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener {
-    private Activity mainActivityConnector = null;
-
+    public final static int ACTIVITY_PHOTO = 100;
+    private static final String TAG;
     private static final int LEVEL_CITY = 0;
     private static final int LEVEL_STREET = 1;
     private static final int LEVEL_HOUSE = 2;
     private static final int LEVEL_FLAT = 3;
     private static final int LEVEL_INFO = 4;
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
+    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
+    private static final int ALPHA_ANIMATIONS_DURATION = 200;
 
-    public final static int ACTIVITY_PHOTO = 100;
+    static {
+        TAG = "WorkFragment";
+    }
 
-    private FloatingActionButton fab;
+    private Activity mainActivityConnector = null;
+    private FloatingActionButton make_photo;
+    private FloatingActionButton add_comment;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
-
     private FlatAdapter flatAdapter;
     private StreetAdapter streetAdapter;
     private HouseAdapter houseAdapter;
     private File photoFile;
     private String photoUuid;
-
     private PhotoHouseRepository photoHouseRepository;
     private GpsTrackRepository gpsTrackRepository;
-
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
     private Street currentStreet;
-
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
-    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
-    private static final int ALPHA_ANIMATIONS_DURATION = 200;
-
     private boolean mIsTheTitleVisible = false;
     private boolean mIsTheTitleContainerVisible = true;
-
     private LinearLayout mTitleContainer;
     private TextView mTitle;
     private TextView mObjectTitle;
     private TextView mObjectDate;
     private ImageView mImage;
-    private ImageView objectIcon;
+    //private ImageView objectIcon;
     private AppBarLayout mAppBarLayout;
-
     private AbonentsContract.Presenter presenter;
 
     // As a fragment, default constructor is needed.
@@ -103,6 +99,16 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
     public static WorkFragment newInstance() {
         return new WorkFragment();
+    }
+
+    public static void startAlphaAnimation(View v, long duration, int visibility) {
+        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
+                ? new AlphaAnimation(0f, 1f)
+                : new AlphaAnimation(1f, 0f);
+
+        alphaAnimation.setDuration(duration);
+        alphaAnimation.setFillAfter(true);
+        v.startAnimation(alphaAnimation);
     }
 
     @Override
@@ -138,7 +144,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         });
 
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        make_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -152,18 +158,15 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(intent, ACTIVITY_PHOTO);
                     }
-                }
-                catch (IOException e1) {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
         });
 
-
         mAppBarLayout.addOnOffsetChangedListener(this);
         startAlphaAnimation(mTitle, 0, View.INVISIBLE);
         presenter.loadStreets();
-        setHasOptionsMenu(true);
         return contentView;
     }
 
@@ -185,30 +188,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         presenter.unsubscribe();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        //inflater.inflate(R.menu.settings_list, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO добавить реакцию на добавление изображения и изменение статуса
-        return true;
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item == null) {
-            return false;
-        }
-        switch (item.getItemId()) {
-            default:
-                break;
-        }
-        return true;
-    }
-
     /**
      * Init the views by findViewById.
      *
@@ -216,12 +195,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
      */
     @Override
     public void initViews(View view) {
-        fab = view.findViewById(R.id.fab);
+        add_comment = view.findViewById(R.id.fab_comment);
+        make_photo = view.findViewById(R.id.fab_photo);
         back = view.findViewById(R.id.back);
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        objectIcon = view.findViewById(R.id.object_icon);
+        //objectIcon = view.findViewById(R.id.object_icon);
         mTitle = view.findViewById(R.id.main_textview_title);
         mImage = view.findViewById(R.id.main_imageview_placeholder);
         mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
@@ -229,6 +209,33 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         mObjectDate = view.findViewById(R.id.object_date);
         mAppBarLayout = view.findViewById(R.id.main_appbar);
         handleToolbarTitleVisibility(0);
+
+        add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //FlatActivity.createAddMessageDialog(mainActivityConnector, flat);
+            }
+        });
+
+        make_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    photoUuid = java.util.UUID.randomUUID().toString();
+                    photoFile = MainUtil.createImageFile(photoUuid, mainActivityConnector);
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(mainActivityConnector,
+                                "ru.shtrm.serviceman.fileprovider",
+                                photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, ACTIVITY_PHOTO);
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
@@ -266,6 +273,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     @Override
     public void showFlats(@NonNull final List<Flat> list) {
         currentLevel = LEVEL_FLAT;
+        setHasOptionsMenu(true);
         if (flatAdapter == null) {
             flatAdapter = new FlatAdapter(mainActivityConnector, list);
             flatAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -282,11 +290,16 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
         }
+
+        MainActivity mainActivity = ((MainActivity) getActivity());
         if (currentHouse.getHouseType() != null) {
-            if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
-                MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
-            else
-                MainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
+            if (mainActivity != null) {
+                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280) {
+                    mainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
+                } else {
+                    mainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
+                }
+            }
         }
 
         List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
@@ -299,23 +312,37 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                     photos.get(0).getUuid().concat(".jpg"));
             if (bitmap != null) {
                 mImage.setImageBitmap(bitmap);
-                objectIcon.setImageBitmap(bitmap);
+                //objectIcon.setImageBitmap(bitmap);
             }
         } else {
             mObjectDate.setText("фото не было");
         }
         mTitle.setText(currentHouse.getFullTitle());
         mObjectTitle.setText(currentHouse.getFullTitle());
-        MainActivity.toolbar.setSubtitle(null);
+        if (mainActivity != null) {
+            mainActivity.toolbar.setSubtitle(null);
+        }
         mObjectDate.setVisibility(View.VISIBLE);
 
-        fab.setVisibility(View.VISIBLE);
+        make_photo.setVisibility(View.VISIBLE);
+        add_comment.setVisibility(View.VISIBLE);
         back.setVisibility(View.VISIBLE);
         //showEmptyView(list.isEmpty());
+
+        add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FlatActivity.createAddMessageDialog(mainActivityConnector, null, currentHouse);
+            }
+        });
+
     }
 
     public void showStreets(@NonNull final List<Street> list) {
+        MainActivity mainActivity = ((MainActivity) getActivity());
         currentLevel = LEVEL_STREET;
+        setHasOptionsMenu(false);
+
         if (streetAdapter == null) {
             streetAdapter = new StreetAdapter(mainActivityConnector, list);
             streetAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -331,24 +358,29 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             streetAdapter.updateData(list);
             recyclerView.setAdapter(streetAdapter);
         }
+
         if (streetAdapter.getItemCount() > 0) {
-            if (list.get(0)!=null && list.get(0).getCity()!=null) {
+            if (list.get(0) != null && list.get(0).getCity() != null) {
                 mTitle.setText(list.get(0).getCity().getTitle());
                 mObjectTitle.setText(list.get(0).getCity().getTitle());
                 mObjectDate.setVisibility(View.GONE);
             }
         }
+
         mImage.setImageResource(R.drawable.city);
-        if (currentStreet != null) {
-            MainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
-            MainActivity.toolbar.setSubtitle(null);
+        if (currentStreet != null && mainActivity != null) {
+            mainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
+            mainActivity.toolbar.setSubtitle(null);
         }
-        fab.setVisibility(View.GONE);
+        make_photo.setVisibility(View.GONE);
+        add_comment.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
     }
 
     public void showHouses(@NonNull final List<House> list) {
+        MainActivity mainActivity = ((MainActivity) getActivity());
         currentLevel = LEVEL_HOUSE;
+        setHasOptionsMenu(false);
         if (houseAdapter == null) {
             houseAdapter = new HouseAdapter(mainActivityConnector, list);
             houseAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -368,9 +400,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         mTitle.setText(currentStreet.getFullTitle());
         mObjectTitle.setText(currentStreet.getFullTitle());
         mImage.setImageResource(R.drawable.street);
-        MainActivity.toolbar.setTitle(currentStreet.getTitle());
-        MainActivity.toolbar.setSubtitle(null);
-        fab.setVisibility(View.GONE);
+        if (mainActivity != null) {
+            mainActivity.toolbar.setTitle(currentStreet.getTitle());
+            mainActivity.toolbar.setSubtitle(null);
+        }
+
+        make_photo.setVisibility(View.GONE);
+        add_comment.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }
 
@@ -425,16 +461,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         }
     }
 
-    public static void startAlphaAnimation(View v, long duration, int visibility) {
-        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
-                ? new AlphaAnimation(0f, 1f)
-                : new AlphaAnimation(1f, 0f);
-
-        alphaAnimation.setDuration(duration);
-        alphaAnimation.setFillAfter(true);
-        v.startAnimation(alphaAnimation);
-    }
-
     /**
      * Сохраняем фото
      *
@@ -457,9 +483,12 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                                 String uuid = java.util.UUID.randomUUID().toString();
                                 MainUtil.storeNewImage(bitmap, getContext(),
                                         800, uuid.concat(".jpg"));
-                                MainUtil.storePhotoHouse (currentHouse,uuid);
-                                photoFile.delete();
-                                objectIcon.setImageBitmap(bitmap);
+                                MainUtil.storePhotoHouse(currentHouse, uuid);
+                                if (!photoFile.delete()) {
+                                    Log.e(TAG, "Файл не удалён! path: " + photoFile.getAbsolutePath());
+                                }
+
+                                //objectIcon.setImageBitmap(bitmap);
                                 mImage.setImageBitmap(bitmap);
                                 String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
                                         format(new Date());
@@ -474,6 +503,36 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void onActionAddAttribute() {
+
+    }
+
+    private void onActionChangeStatus() {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.actionAddAttribute) {
+            onActionAddAttribute();
+            return true;
+        } else if (id == R.id.actionChangeStatus) {
+            onActionChangeStatus();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
 

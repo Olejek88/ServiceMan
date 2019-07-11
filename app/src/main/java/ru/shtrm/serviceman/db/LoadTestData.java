@@ -95,7 +95,7 @@ public class LoadTestData {
     final static String subjectUuid = "82128989-5c98-4444-86ed-97dddde";
 
     private static Task task;
-    final static String taskUuid = "82128989-5c98-4444-86ed-9788998";
+    final static String taskUuid = "82128989-5c98-4334-86ed-9788998";
 
     private static WorkStatus workStatus;
     final static String workStatusCompleteUuid = "626FC9E9-9F1F-4DE7-937D-74DAD54ED751";
@@ -103,8 +103,9 @@ public class LoadTestData {
 
     private static Operation operation;
     private static Operation operation2;
-    final static String operationUuid1 = "62128919-5c98-4444-86ed-9788992";
-    final static String operationUuid2 = "52128939-5c98-4444-86ed-9788993";
+    final static String operationUuid1 = "62128919-5c98-1234-86ed-9788992";
+    final static String operationUuid2 = "52128939-5c98-4321-86ed-9788993";
+    final static String operationUuid3 = "52128939-5c98-4321-86ed-9712431";
 
     private static OperationTemplate operationTemplate;
     final static String operationTemplateUuid = "52128989-5c98-4444-86ed-9788995";
@@ -553,6 +554,7 @@ public class LoadTestData {
         task = realmDB.where(Task.class).findFirst();
         operationTemplate = realmDB.where(OperationTemplate.class).equalTo("uuid",operationTemplateUuid).findFirst();
         operationTemplate2 = realmDB.where(OperationTemplate.class).equalTo("uuid",operationTemplateUuid2).findFirst();
+        workStatus = realmDB.where(WorkStatus.class).equalTo("uuid",workStatusUnCompleteUuid).findFirst();
 
 /*
         realmDB.executeTransaction(new Realm.Transaction() {
@@ -574,6 +576,7 @@ public class LoadTestData {
                 workStatus.setCreatedAt(new Date());
             }
         });
+*/
 
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
@@ -587,7 +590,7 @@ public class LoadTestData {
                 task.setCreatedAt(new Date());
             }
         });
-
+/*
         realmDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -658,6 +661,34 @@ public class LoadTestData {
                 operation2.setWorkStatus(workStatus);
             }
         });
+    }
+
+    public static void LoadAllTestData7() {
+        final Realm realmDB;
+        realmDB = Realm.getDefaultInstance();
+        user = realmDB.where(User.class).findFirst();
+        flat = realmDB.where(Flat.class).findFirst();
+        equipment = realmDB.where(Equipment.class).findFirst();
+
+        equipmentType = realmDB.where(EquipmentType.class).findFirst();
+        equipmentStatus = realmDB.where(EquipmentStatus.class).findFirst();
+
+        task = realmDB.where(Task.class).findFirst();
+        operationTemplate = realmDB.where(OperationTemplate.class).equalTo("uuid",operationTemplateUuid).findFirst();
+        workStatus = realmDB.where(WorkStatus.class).equalTo("uuid",workStatusUnCompleteUuid).findFirst();
+
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                operation=realmDB.createObject(Operation.class, operationUuid3);
+                operation.setWorkStatus(workStatus);
+                operation.setTask(task);
+                operation.setOperationTemplate(operationTemplate);
+                operation.setChangedAt(new Date());
+                operation.setCreatedAt(new Date());
+            }
+        });
+        realmDB.close();
     }
 
     public static void DeleteSomeData() {

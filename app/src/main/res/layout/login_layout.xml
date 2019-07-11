@@ -65,7 +65,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:background="@color/mdtp_red"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"

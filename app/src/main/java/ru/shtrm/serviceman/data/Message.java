@@ -11,9 +11,12 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
     private long _id;
     @PrimaryKey
     private String uuid;
-    private User user;
+    private Organization organization;
+    private User fromUser;
+    private User toUser;
     private Date date;
-    private String message;
+    private String text;
+    private int status;
     private Date createdAt;
     private Date changedAt;
     private boolean sent;
@@ -34,12 +37,12 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
         this.uuid = uuid;
     }
 
-    public User getUser() {
-        return user;
+    public User getFromUser() {
+        return fromUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setFromUser(User user) {
+        this.fromUser = user;
     }
 
     public Date getDate() {
@@ -50,12 +53,12 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
         this.date = date;
     }
 
-    public String getMessage() {
-        return message;
+    public String getText() {
+        return text;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setText(String message) {
+        this.text = message;
     }
 
     public Date getCreatedAt() {
@@ -80,5 +83,35 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public User getToUser() {
+        return toUser;
+    }
+
+    public void setToUser(User toUser) {
+        this.toUser = toUser;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    class Status {
+        public static final int MESSAGE_NEW = 0;
+        public static final int MESSAGE_READ = 1;
+        public static final int MESSAGE_DELETED = 2;
     }
 }

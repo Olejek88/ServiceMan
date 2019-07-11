@@ -5,7 +5,7 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class ControlPointType extends RealmObject {
+public class ZhObjectType extends RealmObject {
 
     @PrimaryKey
     private long _id;

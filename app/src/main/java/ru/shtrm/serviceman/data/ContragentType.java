@@ -5,7 +5,7 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class EquipmentStatus extends RealmObject {
+public class ContragentType extends RealmObject {
 
     @PrimaryKey
     private long _id;
@@ -54,10 +54,14 @@ public class EquipmentStatus extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Status {
-        public static final String NOT_MOUNTED = "A01B7550-4211-4D7A-9935-80A2FC257E92";
-        public static final String WORK = "E681926C-F4A3-44BD-9F96-F0493712798D";
-        public static final String NOT_WORK = "D5D31037-6640-4A8B-8385-355FC71DEBD7";
-        public static final String UNKNOWN = "ED20012C-629A-4275-9BFA-A81D08B45758";
+    class Type {
+        // исполнитель - рабочий ЖЭК
+        public static final String WORKER = "D9B906FB-0559-4DD3-A632-BAEE215FA3A7";
+        // оператор - сотрудник
+        public static final String EMPLOYEE = "57BF4D1C-2345-49CC-8BAC-7CA9D9EA2283";
+        // подрядчик
+        public static final String CONTRACTOR = "4E39F32F-6E15-4015-BCB8-6E6ED54890B3";
+        // организация
+        public static final String ORGANIZATION = "340B3291-3F97-4B28-8DC4-A8AD74C52F07";
     }
 }

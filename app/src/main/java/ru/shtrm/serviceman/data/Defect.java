@@ -8,26 +8,24 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class Alarm extends RealmObject implements ISend, IBaseRecord {
-
+public class Defect extends RealmObject implements ISend, IBaseRecord {
     @Index
     private long _id;
     @PrimaryKey
     private String uuid;
     private Organization organization;
-    private AlarmType alarmType;
-    private AlarmStatus alarmStatus;
-    private ZhObject object;
     private User user;
-    private Double longitude;
-    private Double latitude;
-    private String comment;
+    private String title;
     private Date date;
+    private Task task;
+    private Equipment equipment;
+    private DefectType defectType;
+    private int status;
     private Date createdAt;
     private Date changedAt;
     private boolean sent;
 
-    public Alarm() {
+    public Defect() {
         uuid = UUID.randomUUID().toString().toUpperCase();
         sent = false;
         Date createDate = new Date();
@@ -40,7 +38,7 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
     public static long getLastId() {
         Realm realm = Realm.getDefaultInstance();
 
-        Number lastId = realm.where(Alarm.class).max("_id");
+        Number lastId = realm.where(Defect.class).max("_id");
         if (lastId == null) {
             lastId = 0;
         }
@@ -65,20 +63,12 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
         this.uuid = uuid;
     }
 
-    public AlarmType getAlarmType() {
-        return alarmType;
+    public Equipment getEquipment() {
+        return equipment;
     }
 
-    public void setAlarmType(AlarmType alarmType) {
-        this.alarmType = alarmType;
-    }
-
-    public AlarmStatus getAlarmStatus() {
-        return alarmStatus;
-    }
-
-    public void setAlarmStatus(AlarmStatus alarmStatus) {
-        this.alarmStatus = alarmStatus;
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
     }
 
     public User getUser() {
@@ -87,30 +77,6 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     public Date getDate() {
@@ -153,11 +119,35 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
         this.organization = organization;
     }
 
-    public ZhObject getObject() {
-        return object;
+    public String getTitle() {
+        return title;
     }
 
-    public void setObject(ZhObject object) {
-        this.object = object;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public DefectType getDefectType() {
+        return defectType;
+    }
+
+    public void setDefectType(DefectType defectType) {
+        this.defectType = defectType;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

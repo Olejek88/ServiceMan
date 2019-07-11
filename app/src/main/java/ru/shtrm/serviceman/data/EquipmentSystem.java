@@ -5,12 +5,13 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class EquipmentStatus extends RealmObject {
+public class EquipmentSystem extends RealmObject {
 
     @PrimaryKey
     private long _id;
     private String uuid;
     private String title;
+    private String titleUser;
     private Date createdAt;
     private Date changedAt;
 
@@ -54,10 +55,11 @@ public class EquipmentStatus extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Status {
-        public static final String NOT_MOUNTED = "A01B7550-4211-4D7A-9935-80A2FC257E92";
-        public static final String WORK = "E681926C-F4A3-44BD-9F96-F0493712798D";
-        public static final String NOT_WORK = "D5D31037-6640-4A8B-8385-355FC71DEBD7";
-        public static final String UNKNOWN = "ED20012C-629A-4275-9BFA-A81D08B45758";
+    public String getTitleUser() {
+        return titleUser;
+    }
+
+    public void setTitleUser(String titleUser) {
+        this.titleUser = titleUser;
     }
 }

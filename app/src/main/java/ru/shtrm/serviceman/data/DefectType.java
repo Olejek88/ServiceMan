@@ -5,7 +5,7 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class EquipmentStatus extends RealmObject {
+public class DefectType extends RealmObject {
 
     @PrimaryKey
     private long _id;
@@ -54,10 +54,7 @@ public class EquipmentStatus extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Status {
-        public static final String NOT_MOUNTED = "A01B7550-4211-4D7A-9935-80A2FC257E92";
-        public static final String WORK = "E681926C-F4A3-44BD-9F96-F0493712798D";
-        public static final String NOT_WORK = "D5D31037-6640-4A8B-8385-355FC71DEBD7";
-        public static final String UNKNOWN = "ED20012C-629A-4275-9BFA-A81D08B45758";
+    class Type {
+        public static final String DEFECT_DEFAULT = "A0DB029F-BD49-4CE8-B25B-DA8066114931";
     }
 }

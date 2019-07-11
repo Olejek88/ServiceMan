@@ -8,49 +8,36 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class Measure extends RealmObject implements ISend, IBaseRecord {
+public class ContragentRegister extends RealmObject implements IBaseRecord {
+
     @Index
     private long _id;
     @PrimaryKey
     private String uuid;
     private Organization organization;
-    private Equipment equipment;
-    private User user;
-    private MeasureType measureType;
+    private Contragent contragent;
     private Date date;
-    private double value;
+    private String description;
     private Date createdAt;
     private Date changedAt;
-    private boolean sent;
 
-    public Measure() {
+    public ContragentRegister() {
         uuid = UUID.randomUUID().toString().toUpperCase();
-        sent = false;
         Date createDate = new Date();
-        date = createDate;
         createdAt = createDate;
         changedAt = createDate;
-        user = AuthorizedUser.getInstance().getUser();
     }
 
     public static long getLastId() {
         Realm realm = Realm.getDefaultInstance();
 
-        Number lastId = realm.where(Measure.class).max("_id");
+        Number lastId = realm.where(ContragentRegister.class).max("_id");
         if (lastId == null) {
             lastId = 0;
         }
 
         realm.close();
         return lastId.longValue();
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
     }
 
     public long get_id() {
@@ -69,30 +56,6 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
         this.uuid = uuid;
     }
 
-    public Equipment getEquipment() {
-        return equipment;
-    }
-
-    public void setEquipment(Equipment equipment) {
-        this.equipment = equipment;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -109,14 +72,6 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
         this.changedAt = changedAt;
     }
 
-    public boolean isSent() {
-        return sent;
-    }
-
-    public void setSent(boolean sent) {
-        this.sent = sent;
-    }
-
     public Organization getOrganization() {
         return organization;
     }
@@ -125,11 +80,27 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
         this.organization = organization;
     }
 
-    public MeasureType getMeasureType() {
-        return measureType;
+    public Contragent getContragent() {
+        return contragent;
     }
 
-    public void setMeasureType(MeasureType measureType) {
-        this.measureType = measureType;
+    public void setContragent(Contragent contragent) {
+        this.contragent = contragent;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

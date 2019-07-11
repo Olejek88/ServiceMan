@@ -21,17 +21,12 @@ import ru.shtrm.serviceman.data.City;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.FlatStatus;
-import ru.shtrm.serviceman.data.FlatType;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.HouseType;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
-import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.Street;
-import ru.shtrm.serviceman.data.Subject;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.UserHouse;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
@@ -83,14 +78,6 @@ public class GetReferenceService extends Service {
                 Journal.add("HouseStatus not updated.");
             }
 
-            if (!updateFlatType(realm)) {
-                Journal.add("FlatType not updated.");
-            }
-
-            if (!updateFlatStatus(realm)) {
-                Journal.add("FlatStatus not updated.");
-            }
-
             if (!updateEquipmentType(realm)) {
                 Journal.add("EquipmentType not updated.");
             }
@@ -117,24 +104,12 @@ public class GetReferenceService extends Service {
                 Journal.add("House not updated.");
             }
 
-            if (!updateFlat(realm)) {
-                Journal.add("Flat not updated.");
-            }
-
             if (!updateEquipment(realm)) {
                 Journal.add("Equipment not updated.");
             }
 
             if (!updateUserHouse(realm)) {
                 Journal.add("UserHouse not updated.");
-            }
-
-            if (!updateSubject(realm)) {
-                Journal.add("Subject not updated.");
-            }
-
-            if (!updateResident(realm)) {
-                Journal.add("Resident not updated.");
             }
 
             realm.close();
@@ -306,65 +281,6 @@ public class GetReferenceService extends Service {
         }
     }
 
-    private boolean updateFlatStatus(Realm realm) {
-        String lastUpdate;
-        String rName = FlatStatus.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<FlatStatus>> call = SManApiFactory.getFlatStatusService().getData(lastUpdate);
-        try {
-            Response<List<FlatStatus>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<FlatStatus> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateFlat(Realm realm) {
-        String lastUpdate;
-        String rName = Flat.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Flat>> call = SManApiFactory.getFlatService().getData(lastUpdate);
-        try {
-            Response<List<Flat>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Flat> list = response.body();
-                if (list.size() > 0) {
-                    // для предотвращения отправки только что полученых данных на сервер
-                    for (Flat flat : list) {
-                        flat.setSent(true);
-                    }
-
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     private boolean updateEquipmentStatus(Realm realm) {
         String lastUpdate;
         String rName = EquipmentStatus.class.getSimpleName() + ":" + userUuid;
@@ -451,60 +367,6 @@ public class GetReferenceService extends Service {
         }
     }
 
-    private boolean updateSubject(Realm realm) {
-        String lastUpdate;
-        String rName = Subject.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Subject>> call = SManApiFactory.getSubjectService().getData(lastUpdate);
-        try {
-            Response<List<Subject>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Subject> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateResident(Realm realm) {
-        String lastUpdate;
-        String rName = Resident.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Resident>> call = SManApiFactory.getResidentService().getData(lastUpdate);
-        try {
-            Response<List<Resident>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Resident> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     private boolean updateUser(Realm realm) {
         String lastUpdate;
         String rName = User.class.getSimpleName() + ":" + userUuid;
@@ -550,33 +412,6 @@ public class GetReferenceService extends Service {
             Response<List<User>> response = call.execute();
             if (response.isSuccessful()) {
                 List<User> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateFlatType(Realm realm) {
-        String lastUpdate;
-        String rName = FlatType.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<FlatType>> call = SManApiFactory.getFlatTypeService().getData(lastUpdate);
-        try {
-            Response<List<FlatType>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<FlatType> list = response.body();
                 if (list.size() > 0) {
                     realm.beginTransaction();
                     realm.copyToRealmOrUpdate(list);

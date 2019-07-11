@@ -7,8 +7,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.Street;

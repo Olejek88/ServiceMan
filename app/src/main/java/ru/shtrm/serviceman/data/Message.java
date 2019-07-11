@@ -12,7 +12,6 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
     @PrimaryKey
     private String uuid;
     private User user;
-    private Flat flat;
     private Date date;
     private String message;
     private Date createdAt;
@@ -41,14 +40,6 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
     }
 
     public Date getDate() {

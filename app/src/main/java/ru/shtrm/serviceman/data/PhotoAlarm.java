@@ -14,7 +14,6 @@ public class PhotoAlarm extends RealmObject implements ISend, IBaseRecord {
     private long _id;
     @PrimaryKey
     private String uuid;
-    private Flat flat;
     private User user;
     private Double longitude;
     private Double lattitude;
@@ -41,14 +40,6 @@ public class PhotoAlarm extends RealmObject implements ISend, IBaseRecord {
 
         realm.close();
         return lastId.longValue();
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
     }
 
     public long get_id() {

@@ -29,18 +29,15 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoMessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
@@ -176,27 +173,6 @@ public class MainUtil {
             photoHouse.setLongitude(App.defaultLongitude);
         }
         photoHouseRepository.savePhotoHouse(photoHouse);
-    }
-
-    public static void storePhotoFlat (Flat flat, String uuid) {
-        PhotoFlat photoFlat = new PhotoFlat();
-        PhotoFlatLocalDataSource photoFlatRepository = PhotoFlatLocalDataSource.getInstance();
-        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
-        photoFlat.set_id(photoFlatRepository.getLastId()+1);
-        photoFlat.setFlat(flat);
-        photoFlat.setUuid(uuid);
-        photoFlat.setCreatedAt(new Date());
-        photoFlat.setChangedAt(new Date());
-        photoFlat.setUser(user);
-        if (gpsTrackRepository.getLastTrack() != null) {
-            photoFlat.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
-            photoFlat.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-        } else {
-            photoFlat.setLattitude(App.defaultLatitude);
-            photoFlat.setLongitude(App.defaultLongitude);
-        }
-        photoFlatRepository.savePhotoFlat(photoFlat);
     }
 
     public static void storePhotoMessage (Message message, String uuid) {

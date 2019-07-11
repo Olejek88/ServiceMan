@@ -2,7 +2,6 @@ package ru.shtrm.serviceman.mvp.equipment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,46 +39,37 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
+
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
 import ru.shtrm.serviceman.data.source.EquipmentTypeRepository;
-import ru.shtrm.serviceman.data.source.FlatRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentTypeLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentFragment.ACTIVITY_PHOTO;
-import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
-import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
 
 public class AddEquipmentFragment extends Fragment {
+    Calendar myCalendar;
     private Activity mainActivityConnector = null;
-
     private EquipmentRepository equipmentRepository;
     private HouseRepository houseRepository;
-    private FlatRepository flatRepository;
     private EquipmentStatusRepository equipmentStatusRepository;
     private EquipmentTypeRepository equipmentTypeRepository;
-
     // View references.
     private AppCompatTextView editTextDate;
     private TextInputEditText editTextSerial;
     private Spinner editEquipmentType, editEquipmentStatus;
     private FloatingActionButton fab;
     private House house;
-    private Flat flat;
     private ImageView imageView;
     private String photoUuid;
     private File photoFile;
-
-    Calendar myCalendar;
     private Bitmap storeBitmap=null;
 
     public AddEquipmentFragment() {}
@@ -100,17 +90,14 @@ public class AddEquipmentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_equipment, container, false);
         Bundle b = getArguments();
         if (b != null) {
-            String flatUuid = b.getString(FLAT_UUID);
-            String houseUuid = b.getString(HOUSE_UUID);
-            if (flatUuid != null) {
-                flat = flatRepository.getFlat(flatUuid);
-                house = houseRepository.getHouse(houseUuid);
-            }
+
         }
 
-        if (flat == null || house == null)
-            if (getFragmentManager() != null)
+        if (house == null) {
+            if (getFragmentManager() != null) {
                 getFragmentManager().popBackStack();
+            }
+        }
 
         initViews(view);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -231,7 +218,6 @@ public class AddEquipmentFragment extends Fragment {
             equipment.setTestDate(new Date());
         equipment.setSerial(editTextSerial.getText().toString());
         equipment.setHouse(house);
-        equipment.setFlat(flat);
         equipment.setEquipmentStatus((EquipmentStatus) editEquipmentStatus.getSelectedItem());
         equipment.setEquipmentType((EquipmentType) editEquipmentType.getSelectedItem());
         equipmentRepository.addEquipment(equipment);
@@ -271,9 +257,6 @@ public class AddEquipmentFragment extends Fragment {
         if (equipmentRepository == null)
             equipmentRepository = EquipmentRepository.getInstance
                     (EquipmentLocalDataSource.getInstance());
-        if (flatRepository == null)
-            flatRepository = FlatRepository.getInstance
-                    (FlatLocalDataSource.getInstance());
         if (houseRepository == null)
             houseRepository = HouseRepository.getInstance
                     (HouseLocalDataSource.getInstance());

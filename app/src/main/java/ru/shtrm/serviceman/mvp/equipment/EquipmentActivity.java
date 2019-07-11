@@ -26,13 +26,10 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
@@ -45,18 +42,102 @@ import ru.shtrm.serviceman.data.source.local.MessageLocalDataSource;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.mvp.equipment.EquipmentFragment.ACTIVITY_PHOTO;
 import static ru.shtrm.serviceman.util.MainUtil.ACTIVITY_PHOTO_MESSAGE;
 
 public class EquipmentActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
-    private EquipmentFragment fragment;
+    public static final String EQUIPMENT_UUID = "EQUIPMENT_UUID";
     private static ImageView add_photo;
     private static String photoUuid;
     private static Bitmap storeBitmap=null;
     private static File photoFile;
+    private EquipmentFragment fragment;
 
-    public static final String EQUIPMENT_UUID = "EQUIPMENT_UUID";
+    public static void createAddMessageDialog(final Activity activity) {
+        final View mView = LayoutInflater.from(activity).inflate(R.layout.message_add_dialog, null);
+        add_photo = mView.findViewById(R.id.imageAddMessage);
+        final EditText userEditText = mView.findViewById(R.id.userMessage);
+
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(activity);
+        alertDialogBuilderUserInput.setView(mView);
+
+        alertDialogBuilderUserInput.setPositiveButton("Отправить",
+                new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                    }
+                });
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setNegativeButton("Отменить",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        add_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    photoUuid = java.util.UUID.randomUUID().toString();
+                    photoFile = MainUtil.createImageFile(photoUuid, activity);
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(activity,
+                                "ru.shtrm.serviceman.fileprovider",
+                                photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        activity.startActivityForResult(intent, ACTIVITY_PHOTO_MESSAGE);
+                    }
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+        alertDialogAndroid.show();
+        alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.
+                getResources().getColor(R.color.colorPrimaryDark));
+        alertDialogAndroid.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(activity.
+                getResources().getColor(R.color.colorPrimaryDark));
+        alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String messageText = userEditText.getText().toString();
+                if (messageText.length()>3) {
+                    Message message = new Message();
+                    MessageLocalDataSource messageRepository = MessageLocalDataSource.getInstance();
+                    User user = AuthorizedUser.getInstance().getUser();
+                    String uuid = java.util.UUID.randomUUID().toString();
+                    message.set_id(messageRepository.getLastId() + 1);
+                    message.setUuid(uuid);
+                    message.setUser(user);
+                    message.setMessage(userEditText.getText().toString());
+                    message.setDate(new Date());
+                    message.setCreatedAt(new Date());
+                    message.setChangedAt(new Date());
+                    messageRepository.saveMessage(message);
+                    MainUtil.storeNewImage(storeBitmap, activity,
+                            800, uuid.concat(".jpg"));
+                    MainUtil.storePhotoMessage(message, photoUuid);
+                    alertDialogAndroid.dismiss();
+                    Toast.makeText(activity.getApplicationContext(),"Добавлен комментарий",
+                            Toast.LENGTH_LONG).show();
+                }
+                else {
+                    TextView error = mView.findViewById(R.id.dialogError);
+                    error.setText(R.string.error_message_title);
+                }
+            }
+        });
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,97 +211,10 @@ public class EquipmentActivity extends AppCompatActivity
                     storeBitmap = bitmap;
                     if (add_photo != null)
                         add_photo.setImageBitmap(bitmap);
-                    if (photoFile!=null)
+                    if (photoFile != null)
                         photoFile.delete();
                 }
                 break;
         }
-    }
-
-    public static void createAddMessageDialog(final Activity activity, final Flat flat) {
-        final View mView = LayoutInflater.from(activity).inflate(R.layout.message_add_dialog, null);
-        add_photo = mView.findViewById(R.id.imageAddMessage);
-        final EditText userEditText = mView.findViewById(R.id.userMessage);
-
-        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(activity);
-        alertDialogBuilderUserInput.setView(mView);
-
-        alertDialogBuilderUserInput.setPositiveButton("Отправить",
-                new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                    }
-                });
-        alertDialogBuilderUserInput
-                .setCancelable(false)
-                .setNegativeButton("Отменить",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogBox, int id) {
-                                dialogBox.cancel();
-                            }
-                        });
-
-        add_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    photoUuid = java.util.UUID.randomUUID().toString();
-                    photoFile = MainUtil.createImageFile(photoUuid, activity);
-                    if (photoFile != null) {
-                        Uri photoURI = FileProvider.getUriForFile(activity,
-                                "ru.shtrm.serviceman.fileprovider",
-                                photoFile);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        activity.startActivityForResult(intent, ACTIVITY_PHOTO_MESSAGE);
-                    }
-                }
-                catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-
-        final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-        alertDialogAndroid.show();
-        alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.
-                getResources().getColor(R.color.colorPrimaryDark));
-        alertDialogAndroid.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(activity.
-                getResources().getColor(R.color.colorPrimaryDark));
-        alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                String messageText = userEditText.getText().toString();
-                if (messageText.length()>3) {
-                    Message message = new Message();
-                    MessageLocalDataSource messageRepository = MessageLocalDataSource.getInstance();
-                    User user = AuthorizedUser.getInstance().getUser();
-                    String uuid = java.util.UUID.randomUUID().toString();
-                    message.set_id(messageRepository.getLastId() + 1);
-                    message.setUuid(uuid);
-                    message.setUser(user);
-                    message.setMessage(userEditText.getText().toString());
-                    message.setFlat(flat);
-                    message.setDate(new Date());
-                    message.setCreatedAt(new Date());
-                    message.setChangedAt(new Date());
-                    messageRepository.saveMessage(message);
-                    MainUtil.storeNewImage(storeBitmap, activity,
-                            800, uuid.concat(".jpg"));
-                    MainUtil.storePhotoMessage(message, photoUuid);
-                    alertDialogAndroid.dismiss();
-                    Toast.makeText(activity.getApplicationContext(),"Добавлен комментарий",
-                            Toast.LENGTH_LONG).show();
-                }
-                else {
-                    TextView error = mView.findViewById(R.id.dialogError);
-                    error.setText(R.string.error_message_title);
-                }
-            }
-        });
     }
 }

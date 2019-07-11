@@ -8,7 +8,6 @@ import java.util.List;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 
 public class EquipmentRepository implements EquipmentDataSource {
@@ -46,11 +45,6 @@ public class EquipmentRepository implements EquipmentDataSource {
     public List<Equipment> getEquipmentByHouse(House house)
     {
         return localDataSource.getEquipmentByHouse(house);
-    }
-
-    @Override
-    public List<Equipment> getEquipmentByFlat(Flat flat) {
-        return localDataSource.getEquipmentByFlat(flat);
     }
 
     @Override

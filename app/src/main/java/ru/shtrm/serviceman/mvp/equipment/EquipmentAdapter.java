@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -17,9 +16,7 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -54,31 +51,33 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Equipment item = list.get(position);
         EquipmentsViewHolder pvh = (EquipmentsViewHolder) holder;
-        if (item.getEquipmentType()!=null)
+        if (item.getEquipmentType() != null)
             pvh.textViewEquipmentTitle.setText(item.getEquipmentType().getTitle());
         else
             pvh.textViewEquipmentTitle.setText(R.string.equipment_unknown);
         pvh.textViewEquipmentSerial.setText(item.getSerial());
         // это работает если один счетчик на хату, иначе добавить метод
-        Measure lastMeasure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item.getFlat());
-        if (item.getChangedAt()!=null) {
+//        Measure lastMeasure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item.getFlat());
+        if (item.getChangedAt() != null) {
             // TODO добавить вывод последнего измерения
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
-            if (lastMeasure!=null)
-                pvh.textViewEquipmentLastMeasure.setText(sDate.concat(" [").
-                        concat(String.valueOf(lastMeasure.getValue())).concat("]"));
-            else pvh.textViewEquipmentLastMeasure.setText(sDate);
+//            if (lastMeasure != null) {
+//                pvh.textViewEquipmentLastMeasure.setText(sDate.concat(" [").
+//                        concat(String.valueOf(lastMeasure.getValue())).concat("]"));
+//            } else {
+            pvh.textViewEquipmentLastMeasure.setText(sDate);
+//            }
+        } else {
+            pvh.textViewEquipmentLastMeasure.setText(R.string.no_last_time);
         }
-        else pvh.textViewEquipmentLastMeasure.setText(R.string.no_last_time);
         // пока убрал
         // pvh.textViewImage.setText(item.getEquipmentType().getTitle().substring(0,1));
         // TODO выдергивать последнее фото из фото?
         PhotoEquipment photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(item);
-        if (photoEquipment!=null) {
+        if (photoEquipment != null) {
             pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
                     MainUtil.getPicturesDirectory(context), photoEquipment.getUuid().concat(".jpg")));
-        }
-        else {
+        } else {
             pvh.circleImageView.setImageResource(R.drawable.counter);
         }
     }
@@ -94,6 +93,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     /**
      * Update the data. Keep the data is the latest.
+     *
      * @param list The data.
      */
     public void updateData(@NonNull List<Equipment> list) {
@@ -123,6 +123,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemView.setOnClickListener(this);
 
         }
+
         @Override
         public void onClick(View v) {
             if (this.listener != null) {

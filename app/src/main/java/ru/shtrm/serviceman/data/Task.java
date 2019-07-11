@@ -14,7 +14,6 @@ public class Task extends RealmObject {
     @PrimaryKey
     private String uuid;
     private String comment;
-    private Flat flat;
     private WorkStatus workStatus;
     private Equipment equipment;
     private Date startDate;
@@ -28,14 +27,6 @@ public class Task extends RealmObject {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
     }
 
     public WorkStatus getWorkStatus() {

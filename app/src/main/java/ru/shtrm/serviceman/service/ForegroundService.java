@@ -28,7 +28,6 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.IBaseRecord;
 import ru.shtrm.serviceman.data.Journal;
@@ -36,7 +35,6 @@ import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.PhotoAlarm;
 import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.PhotoFlat;
 import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
@@ -48,10 +46,10 @@ import ru.shtrm.serviceman.retrofit.ServiceApiFactory;
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
     private static final long START_INTERVAL = 60000;
+    private static final int LIMIT_SIZE = 100;
     private Handler getReference;
     private Handler sendData;
     private Handler serviceUserToken;
-    private static final int LIMIT_SIZE = 100;
 
     @Override
     public void onCreate() {
@@ -210,17 +208,6 @@ public class ForegroundService extends Service {
                     bundle.putLongArray(SendDataService.PHOTO_HOUSE_IDS, ids);
                 }
 
-                // получаем данные для отправки фотографий квартир
-                RealmResults<PhotoFlat> photoFlats = realm.where(PhotoFlat.class)
-                        .equalTo("sent", false)
-                        .findAll().sort("_id");
-                if (photoFlats.size() > 0) {
-                    limitIds = getLimitElements(photoFlats);
-                    photoFlats = realm.where(PhotoFlat.class).in("_id", limitIds).findAll();
-                    ids = getIds(photoFlats);
-                    bundle.putLongArray(SendDataService.PHOTO_FLAT_IDS, ids);
-                }
-
                 // получаем данные для отправки фотографий оборудования
                 RealmResults<PhotoEquipment> photoEquipments = realm.where(PhotoEquipment.class)
                         .equalTo("sent", false)
@@ -230,18 +217,6 @@ public class ForegroundService extends Service {
                     photoEquipments = realm.where(PhotoEquipment.class).in("_id", limitIds).findAll();
                     ids = getIds(photoEquipments);
                     bundle.putLongArray(SendDataService.PHOTO_EQUIPMENT_IDS, ids);
-                }
-
-                // получаем данные для отправки квартиры (их нужно отправлять если у них сменился статус)
-                RealmResults<Flat> flats = realm.where(Flat.class)
-                        .equalTo("sent", false)
-                        .findAll().sort("_id");
-
-                if (flats.size() > 0) {
-                    limitIds = getLimitElements(flats);
-                    flats = realm.where(Flat.class).in("_id", limitIds).findAll();
-                    ids = getIds(flats);
-                    bundle.putLongArray(SendDataService.FLAT_IDS, ids);
                 }
 
                 // получаем данные для отправки сообщений

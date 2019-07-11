@@ -19,7 +19,6 @@ public class EquipmentSerializer implements JsonSerializer<Equipment> {
 
         object.addProperty("uuid", src.getUuid());
         object.addProperty("houseUuid", src.getHouse().getUuid());
-        object.addProperty("flatUuid", src.getFlat().getUuid());
         object.addProperty("equipmentTypeUuid", src.getEquipmentType().getUuid());
         object.addProperty("equipmentStatusUuid", src.getEquipmentStatus().getUuid());
         object.addProperty("serial", src.getSerial());

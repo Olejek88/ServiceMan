@@ -14,7 +14,6 @@ public class Equipment extends RealmObject implements ISend, IBaseRecord {
     @PrimaryKey
     private String uuid;
     private House house;
-    private Flat flat;
     private EquipmentType equipmentType;
     private EquipmentStatus equipmentStatus;
     private String serial;
@@ -74,14 +73,6 @@ public class Equipment extends RealmObject implements ISend, IBaseRecord {
 
     public void setHouse(House house) {
         this.house = house;
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
     }
 
     public EquipmentType getEquipmentType() {

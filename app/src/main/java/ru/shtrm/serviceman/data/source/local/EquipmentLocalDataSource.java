@@ -10,7 +10,6 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.source.EquipmentDataSource;
 
@@ -53,13 +52,6 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
                 realm.where(Equipment.class).equalTo("house", house.getUuid()).findAll());
-    }
-
-    @Override
-    public List<Equipment> getEquipmentByFlat(Flat flat) {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).equalTo("flat.uuid", flat.getUuid()).findAll());
     }
 
     @Override

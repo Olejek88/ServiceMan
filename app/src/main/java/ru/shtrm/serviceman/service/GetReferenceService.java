@@ -346,11 +346,6 @@ public class GetReferenceService extends Service {
             if (response.isSuccessful()) {
                 List<Equipment> list = response.body();
                 if (list.size() > 0) {
-                    // для предотвращения отправки только что полученых данных на сервер
-                    for (Equipment equipment : list) {
-                        equipment.setSent(true);
-                    }
-
                     realm.beginTransaction();
                     realm.copyToRealmOrUpdate(list);
                     realm.commitTransaction();

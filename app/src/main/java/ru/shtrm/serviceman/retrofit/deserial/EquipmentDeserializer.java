@@ -44,20 +44,6 @@ public class EquipmentDeserializer implements JsonDeserializer<Equipment> {
             item.setUuid(element.getAsString());
         }
 
-        field = "houseUuid";
-        element = object.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            House refItem = realm.where(House.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setHouse(refItem);
-            }
-        }
-
         field = "equipmentStatusUuid";
         element = object.get(field);
         if (element == null) {

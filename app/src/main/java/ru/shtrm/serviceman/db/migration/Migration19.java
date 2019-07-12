@@ -6,8 +6,6 @@ import java.util.Date;
 
 import io.realm.DynamicRealm;
 import io.realm.RealmSchema;
-import ru.shtrm.serviceman.data.EquipmentRegisterType;
-import ru.shtrm.serviceman.data.EquipmentSystem;
 
 public class Migration19 implements IAppMigration {
 
@@ -284,7 +282,7 @@ public class Migration19 implements IAppMigration {
         schema.create("TaskOperation").addField("_id", long.class)
                 .addField("uuid", String.class)
                 .addRealmObjectField("taskTemplate", schema.get("TaskTemplate"))
-                .addRealmObjectField("operationTemplate", schema.get("operationTemplate"))
+                .addRealmObjectField("operationTemplate", schema.get("OperationTemplate"))
                 .addField("createdAt", Date.class)
                 .addField("changedAt", Date.class)
                 .addPrimaryKey("_id");

@@ -217,7 +217,7 @@ public class AddEquipmentFragment extends Fragment {
         else
             equipment.setTestDate(new Date());
         equipment.setSerial(editTextSerial.getText().toString());
-        equipment.setHouse(house);
+//        equipment.setHouse(house);
         equipment.setEquipmentStatus((EquipmentStatus) editEquipmentStatus.getSelectedItem());
         equipment.setEquipmentType((EquipmentType) editEquipmentType.getSelectedItem());
         equipmentRepository.addEquipment(equipment);

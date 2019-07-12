@@ -1,6 +1,5 @@
 package ru.shtrm.serviceman.data;
 
-import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -8,20 +7,7 @@ public class Organization extends RealmObject {
     @PrimaryKey
     private long _id;
     private String uuid;
-    private String name;
-
-
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Organization.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
-        }
-
-        realm.close();
-        return lastId.longValue();
-    }
+    private String title;
 
     public long get_id() {
         return _id;
@@ -39,11 +25,11 @@ public class Organization extends RealmObject {
         this.uuid = uuid;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

@@ -86,11 +86,6 @@ public class SendDataService extends Service {
                 sendAlarm(realm, alarmIds);
             }
 
-            // отправка оборудования
-            if (equipmentIds != null && equipmentIds.length > 0) {
-                sendEquipment(realm, equipmentIds);
-            }
-
             // отправка измерений
             if (measureIds != null && measureIds.length > 0) {
                 sendMeasure(realm, measureIds);
@@ -246,46 +241,6 @@ public class SendDataService extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.e(TAG, "Ошибка при отправке аварий.");
-            }
-        }
-
-        void sendEquipment(Realm realm, long[] array) {
-            int count = array.length;
-            Long[] data = new Long[count];
-            for (int i = 0; i < count; i++) {
-                data[i] = array[i];
-            }
-
-            RealmResults<Equipment> items = realm.where(Equipment.class).in("_id", data)
-                    .findAll();
-            // отправляем данные с оборудованием
-            Call<ResponseBody> call = SManApiFactory.getEquipmentService().sendData(realm.copyFromRealm(items));
-            try {
-                Response response = call.execute();
-                ResponseBody result = (ResponseBody) response.body();
-                if (response.isSuccessful()) {
-                    JSONObject jObj = new JSONObject(result.string());
-                    // при сохранении данных на сервере произошли ошибки
-                    // данный флаг пока не используем
-//                        boolean success = (boolean) jObj.get("success");
-                    JSONArray jData = (JSONArray) jObj.get("data");
-                    // устанавливаем флаг отправки записям которые подтвердил сервер
-                    realm.beginTransaction();
-                    for (int idx = 0; idx < jData.length(); idx++) {
-                        JSONObject item = (JSONObject) jData.get(idx);
-                        Long _id = Long.parseLong(item.get("_id").toString());
-                        String uuid = item.get("uuid").toString();
-                        Equipment sentItem = realm.where(Equipment.class).equalTo("uuid", uuid).findFirst();
-                        // устанавливаем id присвоенное сервером
-                        sentItem.set_id(_id);
-                        sentItem.setSent(true);
-                    }
-
-                    realm.commitTransaction();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "Ошибка при отправке оборудования.");
             }
         }
 

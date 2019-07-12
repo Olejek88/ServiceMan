@@ -16,8 +16,8 @@ public class Photo extends RealmObject implements ISend, IBaseRecord {
     private String uuid;
     private ZhObject object;
     private User user;
-    private Double longitude;
-    private Double lattitude;
+    private double longitude;
+    private double latitude;
     private Date createdAt;
     private Date changedAt;
     private boolean sent;
@@ -67,20 +67,20 @@ public class Photo extends RealmObject implements ISend, IBaseRecord {
         this.user = user;
     }
 
-    public Double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public Double getLattitude() {
-        return lattitude;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLattitude(Double lattitude) {
-        this.lattitude = lattitude;
+    public void setLatitude(double lattitude) {
+        this.latitude = lattitude;
     }
 
     public Date getCreatedAt() {

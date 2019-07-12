@@ -2,7 +2,6 @@ package ru.shtrm.serviceman.mvp.equipment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -118,8 +116,10 @@ public class EquipmentActivity extends AppCompatActivity
                     String uuid = java.util.UUID.randomUUID().toString();
                     message.set_id(messageRepository.getLastId() + 1);
                     message.setUuid(uuid);
-                    message.setUser(user);
-                    message.setMessage(userEditText.getText().toString());
+                    message.setFromUser(user);
+                    // TODO: видимо нужно реализовать выше выбор пользователя которому отправляется сообщение
+                    message.setToUser(null);
+                    message.setText(userEditText.getText().toString());
                     message.setDate(new Date());
                     message.setCreatedAt(new Date());
                     message.setChangedAt(new Date());

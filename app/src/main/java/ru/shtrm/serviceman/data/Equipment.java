@@ -1,11 +1,8 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
-import java.util.UUID;
 
-import io.realm.Realm;
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class Equipment extends RealmObject implements IBaseRecord {
@@ -25,25 +22,6 @@ public class Equipment extends RealmObject implements IBaseRecord {
     private ZhObject object;
     private Date createdAt;
     private Date changedAt;
-
-    public Equipment() {
-        uuid = UUID.randomUUID().toString().toUpperCase();
-        Date createDate = new Date();
-        createdAt = createDate;
-        changedAt = createDate;
-    }
-
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Equipment.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
-        }
-
-        realm.close();
-        return lastId.longValue();
-    }
 
     public String getTag() {
         return tag;

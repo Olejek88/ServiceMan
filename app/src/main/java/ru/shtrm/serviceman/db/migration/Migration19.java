@@ -23,7 +23,7 @@ public class Migration19 implements IAppMigration {
         schema.get("User").addRealmObjectField("organization", schema.get("Organization"));
 
         schema.remove("Image");
-        schema.create("ControlPointType");
+        schema.remove("ControlPointType");
 
         schema.create("ZhObjectStatus").addField("_id", long.class)
                 .addField("uuid", String.class)
@@ -51,7 +51,6 @@ public class Migration19 implements IAppMigration {
                 .addPrimaryKey("_id");
         schema.get("Alarm").addRealmObjectField("organization", schema.get("Organization"))
                 .addRealmObjectField("object", schema.get("ZhObject"));
-        ;
         schema.get("City").addRealmObjectField("organization", schema.get("Organization"))
                 .addField("gisId", String.class);
         schema.create("ContragentType").addField("_id", long.class)
@@ -83,7 +82,8 @@ public class Migration19 implements IAppMigration {
                 .addField("description", String.class)
                 .addField("createdAt", Date.class)
                 .addField("changedAt", Date.class)
-                .addPrimaryKey("_id");
+                .addField("sent", boolean.class)
+                .addPrimaryKey("uuid");
         schema.create("MeasureType").addField("_id", long.class)
                 .addField("uuid", String.class)
                 .addField("title", String.class)
@@ -111,7 +111,7 @@ public class Migration19 implements IAppMigration {
                 .addField("createdAt", Date.class)
                 .addField("changedAt", Date.class)
                 .addField("sent", boolean.class)
-                .addPrimaryKey("_id");
+                .addPrimaryKey("uuid");
         schema.create("DocumentationType").addField("_id", long.class)
                 .addField("uuid", String.class)
                 .addField("title", String.class)
@@ -159,7 +159,7 @@ public class Migration19 implements IAppMigration {
                 .addField("createdAt", Date.class)
                 .addField("changedAt", Date.class)
                 .addField("sent", boolean.class)
-                .addPrimaryKey("_id");
+                .addPrimaryKey("uuid");
         schema.create("ObjectContragent").addField("_id", long.class)
                 .addField("uuid", String.class)
                 .addRealmObjectField("organization", schema.get("Organization"))
@@ -265,7 +265,7 @@ public class Migration19 implements IAppMigration {
                 .removeField("sent")
                 .removePrimaryKey()
                 .addPrimaryKey("_id");
-        schema.get("Equipment")
+        schema.get("OperationTemplate")
                 .addRealmObjectField("organization", schema.get("Organization"))
                 .removeField("normative")
                 .removePrimaryKey()

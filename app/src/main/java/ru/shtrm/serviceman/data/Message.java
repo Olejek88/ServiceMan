@@ -1,7 +1,9 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.UUID;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -20,6 +22,27 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
     private Date createdAt;
     private Date changedAt;
     private boolean sent;
+
+    public Message() {
+        uuid = UUID.randomUUID().toString().toUpperCase();
+        Date createDate = new Date();
+        date = createDate;
+        sent = false;
+        createdAt = createDate;
+        changedAt = createDate;
+    }
+
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Message.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
 
     public long get_id() {
         return _id;

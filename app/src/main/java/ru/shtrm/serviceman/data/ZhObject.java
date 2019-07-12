@@ -5,14 +5,12 @@ import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class ZhObject extends RealmObject implements IBaseRecord {
 
-    @Index
-    private long _id;
     @PrimaryKey
+    private long _id;
     private String uuid;
     private Organization organization;
     private String title;

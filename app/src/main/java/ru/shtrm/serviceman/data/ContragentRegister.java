@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class ContragentRegister extends RealmObject implements IBaseRecord {
+public class ContragentRegister extends RealmObject implements IBaseRecord, ISend {
 
     @Index
     private long _id;
@@ -20,10 +20,13 @@ public class ContragentRegister extends RealmObject implements IBaseRecord {
     private String description;
     private Date createdAt;
     private Date changedAt;
+    private boolean sent;
 
     public ContragentRegister() {
         uuid = UUID.randomUUID().toString().toUpperCase();
         Date createDate = new Date();
+        date = createDate;
+        sent = false;
         createdAt = createDate;
         changedAt = createDate;
     }
@@ -102,5 +105,13 @@ public class ContragentRegister extends RealmObject implements IBaseRecord {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 }

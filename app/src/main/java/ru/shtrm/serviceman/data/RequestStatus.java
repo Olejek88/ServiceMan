@@ -3,13 +3,11 @@ package ru.shtrm.serviceman.data;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class RequestStatus extends RealmObject {
-    @Index
-    private long _id;
     @PrimaryKey
+    private long _id;
     private String uuid;
     private String title;
     private Date createdAt;

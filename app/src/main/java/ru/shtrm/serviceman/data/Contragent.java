@@ -1,18 +1,14 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
-import java.util.UUID;
 
-import io.realm.Realm;
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class Contragent extends RealmObject implements IBaseRecord {
 
-    @Index
-    private long _id;
     @PrimaryKey
+    private long _id;
     private String uuid;
     private Organization organization;
     private String gisId;
@@ -26,25 +22,6 @@ public class Contragent extends RealmObject implements IBaseRecord {
     private ContragentType contragentType;
     private Date createdAt;
     private Date changedAt;
-
-    public Contragent() {
-        uuid = UUID.randomUUID().toString().toUpperCase();
-        Date createDate = new Date();
-        createdAt = createDate;
-        changedAt = createDate;
-    }
-
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Contragent.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
-        }
-
-        realm.close();
-        return lastId.longValue();
-    }
 
     public long get_id() {
         return _id;

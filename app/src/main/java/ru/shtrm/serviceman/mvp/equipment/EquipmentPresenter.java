@@ -6,7 +6,6 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
@@ -43,11 +42,6 @@ public class EquipmentPresenter implements EquipmentContract.Presenter {
 
     @Override
     public void unsubscribe() {
-    }
-
-    @Override
-    public List<Equipment> loadEquipmentsByFlat(Flat flat){
-        return equipmentRepository.getEquipmentByFlat(flat);
     }
 
     @Override

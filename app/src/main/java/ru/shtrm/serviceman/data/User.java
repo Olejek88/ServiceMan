@@ -16,6 +16,7 @@ public class User extends RealmObject {
     private String pin;
     private String image;
     private String contact;
+    private Organization organization;
 
     public static long getLastId() {
         Realm realm = Realm.getDefaultInstance();
@@ -75,5 +76,13 @@ public class User extends RealmObject {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }

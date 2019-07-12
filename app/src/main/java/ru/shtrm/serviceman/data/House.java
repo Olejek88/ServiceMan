@@ -10,19 +10,23 @@ public class House extends RealmObject {
     @PrimaryKey
     private long _id;
     private String uuid;
+    private Organization organization;
+    private String gisId;
     private String number;
     private Street street;
     private HouseStatus houseStatus;
     private HouseType houseType;
+    private double latitude;
+    private double longitude;
     private Date createdAt;
     private Date changedAt;
 
-    public void setHouseType(HouseType houseType) {
-        this.houseType = houseType;
-    }
-
     public HouseType getHouseType() {
         return houseType;
+    }
+
+    public void setHouseType(HouseType houseType) {
+        this.houseType = houseType;
     }
 
     public Street getStreet() {
@@ -83,5 +87,37 @@ public class House extends RealmObject {
 
     public String getFullTitle() {
         return getStreet().getTitle().concat(", ").concat(getNumber());
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public String getGisId() {
+        return gisId;
+    }
+
+    public void setGisId(String gisId) {
+        this.gisId = gisId;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

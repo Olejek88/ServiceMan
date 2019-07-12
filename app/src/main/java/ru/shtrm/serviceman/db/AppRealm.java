@@ -10,7 +10,7 @@ import io.realm.RealmConfiguration;
 
 public class AppRealm {
     // версия схемы базы данных приложения
-    private static final int VERSION = 18;
+    private static final int VERSION = 21;
 
     public static void init(Context context) {
         init(context, "serviceman.realm");

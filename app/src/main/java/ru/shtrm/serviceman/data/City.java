@@ -10,6 +10,8 @@ public class City extends RealmObject {
     @PrimaryKey
     private long _id;
     private String uuid;
+    private Organization organization;
+    private String gisId;
     private String title;
     private Date createdAt;
     private Date changedAt;
@@ -52,5 +54,21 @@ public class City extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public String getGisId() {
+        return gisId;
+    }
+
+    public void setGisId(String gisId) {
+        this.gisId = gisId;
     }
 }

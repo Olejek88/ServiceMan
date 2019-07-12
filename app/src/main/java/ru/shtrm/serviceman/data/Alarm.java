@@ -14,8 +14,10 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
     private long _id;
     @PrimaryKey
     private String uuid;
+    private Organization organization;
     private AlarmType alarmType;
     private AlarmStatus alarmStatus;
+    private ZhObject object;
     private User user;
     private Double longitude;
     private Double latitude;
@@ -33,6 +35,18 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
         createdAt = createDate;
         changedAt = createDate;
         user = AuthorizedUser.getInstance().getUser();
+    }
+
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Alarm.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
     }
 
     public long get_id() {
@@ -123,23 +137,27 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
         this.changedAt = changedAt;
     }
 
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Alarm.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
-        }
-
-        realm.close();
-        return lastId.longValue();
-    }
-
     public boolean isSent() {
         return sent;
     }
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public ZhObject getObject() {
+        return object;
+    }
+
+    public void setObject(ZhObject object) {
+        this.object = object;
     }
 }

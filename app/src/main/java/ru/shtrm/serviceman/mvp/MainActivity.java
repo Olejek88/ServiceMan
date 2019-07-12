@@ -42,17 +42,11 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
-import ru.shtrm.serviceman.data.source.FlatRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
-import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.FlatLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.gps.GPSListener;
-import ru.shtrm.serviceman.mvp.abonents.AbonentsFragment;
-import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.alarm.AlarmFragment;
 import ru.shtrm.serviceman.mvp.alarm.AlarmPresenter;
@@ -80,7 +74,6 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
     private MapFragment mapFragment;
-    private AbonentsFragment abonentsFragment;
     private AlarmFragment alarmsFragment;
     private WorkFragment workFragment;
     private int selectedNavItem = 0;
@@ -328,11 +321,6 @@ public class MainActivity extends AppCompatActivity
         if (profileFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "UserFragment", profileFragment);
         }
-
-        if (abonentsFragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "AbonentFragment", abonentsFragment);
-        }
-
         if (workFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "WorkFragment", workFragment);
         }
@@ -342,8 +330,6 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "UserFragment");
-            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "AbonentFragment");
             alarmsFragment = (AlarmFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "AlarmFragment");
             mapFragment = (MapFragment) getSupportFragmentManager().
@@ -352,8 +338,6 @@ public class MainActivity extends AppCompatActivity
                     getFragment(savedInstanceState, "WorkFragment");
             selectedNavItem = savedInstanceState.getInt(KEY_NAV_ITEM);
         } else {
-            abonentsFragment = (AbonentsFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
             mapFragment = (MapFragment) getSupportFragmentManager().
                     findFragmentById(R.id.content_main);
             alarmsFragment = (AlarmFragment) getSupportFragmentManager().
@@ -365,10 +349,6 @@ public class MainActivity extends AppCompatActivity
 
             if (profileFragment == null) {
                 profileFragment = UserDetailFragment.newInstance();
-            }
-
-            if (abonentsFragment == null) {
-                abonentsFragment = AbonentsFragment.newInstance();
             }
 
             if (mapFragment == null) {
@@ -402,12 +382,6 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         }
 
-        if (abonentsFragment != null && !abonentsFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, abonentsFragment, "AbonentFragment")
-                    .commit();
-        }
-
         if (workFragment != null && !workFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, workFragment, "WorkFragment")
@@ -422,17 +396,6 @@ public class MainActivity extends AppCompatActivity
 
         new AlarmPresenter(alarmsFragment,
                 AlarmRepository.getInstance(AlarmLocalDataSource.getInstance()));
-
-        new AbonentsPresenter(abonentsFragment,
-                StreetRepository.getInstance(StreetLocalDataSource.getInstance()),
-                HouseRepository.getInstance(HouseLocalDataSource.getInstance()),
-                FlatRepository.getInstance(FlatLocalDataSource.getInstance()));
-
-        new AbonentsPresenter(workFragment,
-                StreetRepository.getInstance(StreetLocalDataSource.getInstance()),
-                HouseRepository.getInstance(HouseLocalDataSource.getInstance()),
-                FlatRepository.getInstance(FlatLocalDataSource.getInstance())
-        );
 
         // Show the default fragment.
         if (selectedNavItem == 0) {
@@ -509,7 +472,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showMessagesFragment() {
-        changeFragment(abonentsFragment);
+//        changeFragment(abonentsFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_users));
         toolbar.setSubtitle(null);
         navigationView.setCheckedItem(R.id.nav_users);
@@ -532,17 +495,12 @@ public class MainActivity extends AppCompatActivity
     void changeFragment(Fragment selectedFragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.hide(mapFragment);
-        fragmentTransaction.hide(abonentsFragment);
         fragmentTransaction.hide(alarmsFragment);
         fragmentTransaction.hide(profileFragment);
         fragmentTransaction.hide(workFragment);
 
         if (selectedFragment == mapFragment) {
             fragmentTransaction.show(mapFragment);
-        }
-
-        if (selectedFragment == abonentsFragment) {
-            fragmentTransaction.show(abonentsFragment);
         }
 
         if (selectedFragment == alarmsFragment) {

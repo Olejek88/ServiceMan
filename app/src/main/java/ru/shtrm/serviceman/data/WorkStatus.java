@@ -56,10 +56,10 @@ public class WorkStatus extends RealmObject {
     }
     
     public class Status {
-        //public static final String NEW_OPERATION = "18D3D5D4-336F-4B25-BA2B-00A6C7D5EB6C";
-        //public static final String IN_WORK = "78063CCA-4463-45AD-9124-88CEA2B51017";
-        public static final String COMPLETE = "626FC9E9-9F1F-4DE7-937D-74DAD54ED751";
-        public static final String UN_COMPLETE = "0F733A22-B65A-4D96-AF86-34F7E6A62B0B";
-        //public static final String CANCELED = "1A277EB1-1A22-400F-9E03-F094E19FEEDE";
+        public static final String NEW = "1E9B4D73-044C-471B-A08D-26F32EBB22B0";
+        public static final String IN_WORK = "31179027-8416-47E4-832F-2A94D7804A4F";
+        public static final String COMPLETE = "F1576F3E-ACB6-4EEB-B8AF-E34E4D345CE9";
+        public static final String UN_COMPLETE = "EFDE80D2-D00E-413B-B430-0A011056C6EA";
+        public static final String CANCELED = "C2FA4A7B-0D7C-4407-A449-78FA70A11D47";
     }
 }

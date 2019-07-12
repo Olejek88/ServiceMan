@@ -7,9 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.mvp.flat.FlatActivity.FLAT_UUID;
-import static ru.shtrm.serviceman.mvp.flat.FlatActivity.HOUSE_UUID;
-
 public class AddEquipmentActivity extends AppCompatActivity {
     private AddEquipmentFragment fragment;
 
@@ -28,11 +25,7 @@ public class AddEquipmentActivity extends AppCompatActivity {
         }
 
         if (!fragment.isAdded()) {
-            String house_id = getIntent().getStringExtra(HOUSE_UUID);
-            String flat_id = getIntent().getStringExtra(FLAT_UUID);
             Bundle b = new Bundle();
-            b.putString(HOUSE_UUID, house_id);
-            b.putString(FLAT_UUID, flat_id);
             fragment.setArguments(b);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.view_pager, fragment, "AddEquipmentFragment")

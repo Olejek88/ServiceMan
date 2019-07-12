@@ -4,11 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -40,10 +38,8 @@ import java.util.TimerTask;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
@@ -51,11 +47,9 @@ import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 import static android.content.Context.LOCATION_SERVICE;
 
 public class MapFragment extends Fragment implements MapContract.View {
-    private Activity mainActivityConnector = null;
-
     ArrayList<OverlayItem> aOverlayItemArray;
     ItemizedIconOverlay<OverlayItem> positionItemizedIconOverlay;
-
+    private Activity mainActivityConnector = null;
     private RecyclerView recyclerView;
     private HouseAdapter houseAdapter;
     private MapContract.Presenter presenter;
@@ -190,12 +184,12 @@ public class MapFragment extends Fragment implements MapContract.View {
                 public void OnItemClick(View v, int position) {
                     House house = list.get(position);
                     if (house != null) {
-                        PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
-                                getLastPhotoByHouse(house);
-                        if (photoHouse != null) {
-                            GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
-                            mapController.setCenter(point2);
-                        }
+//                        PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
+//                                getLastPhotoByHouse(house);
+//                        if (photoHouse != null) {
+//                            GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
+//                            mapController.setCenter(point2);
+//                        }
                     }
                 }
             });
@@ -255,21 +249,21 @@ public class MapFragment extends Fragment implements MapContract.View {
         //List<House> houses = HouseLocalDataSource.getInstance().getHousesByUser();
         List<House> houses = HouseLocalDataSource.getInstance().getHouses();
         for (House house : houses) {
-            PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
-            if (photoHouse != null) {
-                HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
-                        "Дом", new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude()));
-                houseItem.house = house;
-                Drawable newMarker;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Resources.Theme theme = mainActivityConnector.getTheme();
-                    newMarker = this.getResources().getDrawable(R.drawable.marker_house, theme);
-                } else {
-                    newMarker = this.getResources().getDrawable(R.drawable.marker_house);
-                }
-                houseItem.setMarker(newMarker);
-                houseOverlayItemArray.add(houseItem);
-            }
+//            PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
+//            if (photoHouse != null) {
+//                HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
+//                        "Дом", new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude()));
+//                houseItem.house = house;
+//                Drawable newMarker;
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Resources.Theme theme = mainActivityConnector.getTheme();
+//                    newMarker = this.getResources().getDrawable(R.drawable.marker_house, theme);
+//                } else {
+//                    newMarker = this.getResources().getDrawable(R.drawable.marker_house);
+//                }
+//                houseItem.setMarker(newMarker);
+//                houseOverlayItemArray.add(houseItem);
+//            }
         }
 
         ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(

@@ -8,7 +8,6 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.source.MeasureDataSource;
@@ -66,18 +65,6 @@ public class MeasureLocalDataSource implements MeasureDataSource {
         }
         realm.close();
         return lastId.longValue();
-    }
-
-    @Override
-    public Measure getLastMeasureByFlat(Flat flat) {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<Measure> measures  = realm.where(Measure.class).
-                equalTo("equipment.flat.uuid", flat.getUuid()).
-                findAllSorted("date");
-        if (measures.size()>0)
-            return realm.copyFromRealm(measures.first());
-        else
-            return null;
     }
 
     @Override

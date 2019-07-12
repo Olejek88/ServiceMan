@@ -14,6 +14,7 @@ public class Migration18 implements IAppMigration {
     public void migration(DynamicRealm realm) {
         Log.d(this.getClass().getSimpleName(), "from 17 version");
         RealmSchema schema = realm.getSchema();
+
         schema.get("User").transform(new RealmObjectSchema.Function() {
             @Override
             public void apply(DynamicRealmObject obj) {
@@ -22,5 +23,18 @@ public class Migration18 implements IAppMigration {
                 }
             }
         });
+
+        schema.get("Equipment").removeField("flat");
+        schema.get("Message").removeField("flat");
+        schema.get("Task").removeField("flat");
+        schema.get("PhotoAlarm").removeField("flat");
+
+        schema.remove("Resident");
+        schema.remove("Subject");
+        schema.remove("PhotoFlat");
+
+        schema.remove("Flat");
+        schema.remove("FlatStatus");
+        schema.remove("FlatType");
     }
 }

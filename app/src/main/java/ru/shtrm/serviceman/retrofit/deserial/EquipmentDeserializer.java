@@ -13,7 +13,6 @@ import io.realm.Realm;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 
 public class EquipmentDeserializer implements JsonDeserializer<Equipment> {
@@ -43,34 +42,6 @@ public class EquipmentDeserializer implements JsonDeserializer<Equipment> {
             fail(field, realm);
         } else {
             item.setUuid(element.getAsString());
-        }
-
-        field = "houseUuid";
-        element = object.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            House refItem = realm.where(House.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setHouse(refItem);
-            }
-        }
-
-        field = "flatUuid";
-        element = object.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            Flat refItem = realm.where(Flat.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setFlat(refItem);
-            }
         }
 
         field = "equipmentStatusUuid";

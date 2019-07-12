@@ -16,14 +16,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
-import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -57,24 +53,19 @@ import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Operation;
-import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
-import ru.shtrm.serviceman.data.source.PhotoEquipmentRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.OperationLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.operations.OperationAdapter;
-import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_UUID;
@@ -86,12 +77,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private Activity mainActivityConnector = null;
     private EquipmentContract.Presenter presenter;
     private Equipment equipment;
-    private PhotoEquipment photoEquipment;
     private GpsTrackRepository gpsTrackRepository;
-    private PhotoEquipmentRepository photoEquipmentRepository;
     private MeasureRepository measureRepository;
     private EquipmentRepository equipmentRepository;
-    private RecyclerView recyclerView;
     private ListView listView;
     private ListView listView_archive;
     private CircleImageView circleImageView;
@@ -147,7 +135,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         }
         view = inflater.inflate(R.layout.fragment_equipment, container, false);
         if (equipment != null) {
-            photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(equipment);
             initViews(view);
         } else {
             equipmentRepository.deleteEmptyEquipment();
@@ -216,16 +203,16 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             mToolbar.setTitleMarginStart(1);
         }
 
-        if (photoEquipment != null) {
-            textViewPhotoDate.setText(sDf.format(photoEquipment.getCreatedAt()));
-            // TODO заменить на ?
-            circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-                    MainUtil.getPicturesDirectory(mainActivityConnector),
-                    photoEquipment.getUuid().concat(".jpg")));
-        } else {
+//        if (photoEquipment != null) {
+//            textViewPhotoDate.setText(sDf.format(photoEquipment.getCreatedAt()));
+//            // TODO заменить на ?
+//            circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
+//                    MainUtil.getPicturesDirectory(mainActivityConnector),
+//                    photoEquipment.getUuid().concat(".jpg")));
+//        } else {
             circleImageView.setImageResource(R.drawable.counter);
             textViewPhotoDate.setText("нет фото");
-        }
+//        }
 
         final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
         EquipmentStatusListAdapter adapter = new EquipmentStatusListAdapter(mainActivityConnector,
@@ -348,9 +335,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     void checkRepository() {
-        if (photoEquipmentRepository == null)
-            photoEquipmentRepository = PhotoEquipmentRepository.getInstance
-                    (PhotoEquipmentLocalDataSource.getInstance());
         if (gpsTrackRepository == null)
             gpsTrackRepository = GpsTrackRepository.getInstance
                     (GpsTrackLocalDataSource.getInstance());

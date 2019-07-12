@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import ru.shtrm.serviceman.data.Message;
-import ru.shtrm.serviceman.data.PhotoMessage;
 
 public class MessageRepository implements MessageDataSource {
 

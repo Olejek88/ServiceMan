@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.Message;
-import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.source.MessageDataSource;
 
 public class MessageLocalDataSource implements MessageDataSource {
@@ -45,7 +44,7 @@ public class MessageLocalDataSource implements MessageDataSource {
     @Override
     public long getLastId() {
         Realm realm = Realm.getDefaultInstance();
-        Number lastId = realm.where(PhotoMessage.class).max("_id");
+        Number lastId = realm.where(Message.class).max("_id");
         if (lastId == null) {
             lastId = 0;
         }

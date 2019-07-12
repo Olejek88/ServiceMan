@@ -16,10 +16,7 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.util.MainUtil;
 
 public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -73,13 +70,13 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         // пока убрал
         // pvh.textViewImage.setText(item.getEquipmentType().getTitle().substring(0,1));
         // TODO выдергивать последнее фото из фото?
-        PhotoEquipment photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(item);
-        if (photoEquipment != null) {
-            pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-                    MainUtil.getPicturesDirectory(context), photoEquipment.getUuid().concat(".jpg")));
-        } else {
+//        PhotoEquipment photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(item);
+//        if (photoEquipment != null) {
+//            pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
+//                    MainUtil.getPicturesDirectory(context), photoEquipment.getUuid().concat(".jpg")));
+//        } else {
             pvh.circleImageView.setImageResource(R.drawable.counter);
-        }
+//        }
     }
 
     @Override

@@ -39,9 +39,7 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
-import ru.shtrm.serviceman.data.source.PhotoHouseRepository;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -72,7 +70,6 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
     private HouseAdapter houseAdapter;
     private File photoFile;
     private String photoUuid;
-    private PhotoHouseRepository photoHouseRepository;
     private GpsTrackRepository gpsTrackRepository;
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
@@ -168,9 +165,6 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
     public void onResume() {
         super.onResume();
 //        presenter.subscribe();
-        if (photoHouseRepository == null)
-            photoHouseRepository = PhotoHouseRepository.getInstance
-                    (PhotoHouseLocalDataSource.getInstance());
         if (gpsTrackRepository == null)
             gpsTrackRepository = GpsTrackRepository.getInstance
                     (GpsTrackLocalDataSource.getInstance());

@@ -93,7 +93,7 @@ public class SManApiFactory {
                         Request request = chain.request();
                         HttpUrl url = request.url()
                                 .newBuilder()
-                                .addQueryParameter("XDEBUG_SESSION_START", "PHPSTORM1")
+                                .addQueryParameter("XDEBUG_SESSION_START", "xdebug")
                                 .build();
                         Request.Builder requestBuilder = request.newBuilder().url(url);
                         Request newRequest = requestBuilder.build();

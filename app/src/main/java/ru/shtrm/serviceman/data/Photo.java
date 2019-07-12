@@ -14,7 +14,7 @@ public class Photo extends RealmObject implements ISend, IBaseRecord {
     private long _id;
     @PrimaryKey
     private String uuid;
-    private ZhObject object;
+    private String objectUuid;
     private User user;
     private double longitude;
     private double latitude;
@@ -107,11 +107,11 @@ public class Photo extends RealmObject implements ISend, IBaseRecord {
         this.sent = sent;
     }
 
-    public ZhObject getObject() {
-        return object;
+    public String getObjectUuid() {
+        return objectUuid;
     }
 
-    public void setObject(ZhObject object) {
-        this.object = object;
+    public void setObjectUuid(String objectUuid) {
+        this.objectUuid = objectUuid;
     }
 }

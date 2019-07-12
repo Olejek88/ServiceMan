@@ -54,7 +54,7 @@ public class ServiceApiFactory {
                         Request request = chain.request();
                         HttpUrl url = request.url()
                                 .newBuilder()
-                                .addQueryParameter("XDEBUG_SESSION_START", "PHPSTORM1")
+                                .addQueryParameter("XDEBUG_SESSION_START", "xdebug")
                                 .build();
                         Request.Builder requestBuilder = request.newBuilder().url(url);
                         Request newRequest = requestBuilder.build();
@@ -112,6 +112,10 @@ public class ServiceApiFactory {
                 .build();
     }
 
+    public static void setToken(String t) {
+        token = t;
+    }
+
     /**
      * Класс для хранения типа и десереализатора к этому типу.
      */
@@ -139,9 +143,5 @@ public class ServiceApiFactory {
         public void setDeserializer(JsonDeserializer<?> deserializer) {
             this.deserializer = deserializer;
         }
-    }
-
-    public static void setToken(String t) {
-        token = t;
     }
 }

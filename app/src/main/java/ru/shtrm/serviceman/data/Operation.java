@@ -8,10 +8,10 @@ import io.realm.annotations.PrimaryKey;
 
 public class Operation extends RealmObject {
 
-    @Index
-    private long _id;
     @PrimaryKey
+    private long _id;
     private String uuid;
+    private Organization organization;
     private Task task;
     private WorkStatus workStatus;
     private OperationTemplate operationTemplate;
@@ -72,5 +72,13 @@ public class Operation extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }

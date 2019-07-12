@@ -3,17 +3,16 @@ package ru.shtrm.serviceman.data;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class OperationTemplate extends RealmObject {
+public class TaskUser extends RealmObject {
 
     @PrimaryKey
     private long _id;
     private String uuid;
     private Organization organization;
-    private String title;
-    private String description;
+    private User user;
+    private Task task;
     private Date createdAt;
     private Date changedAt;
 
@@ -25,14 +24,6 @@ public class OperationTemplate extends RealmObject {
         this._id = _id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getUuid() {
         return uuid;
     }
@@ -41,12 +32,12 @@ public class OperationTemplate extends RealmObject {
         this.uuid = uuid;
     }
 
-    public String getTitle() {
-        return title;
+    public User getUser() {
+        return user;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Date getCreatedAt() {
@@ -71,5 +62,13 @@ public class OperationTemplate extends RealmObject {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
     }
 }

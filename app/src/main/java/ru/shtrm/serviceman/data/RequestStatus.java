@@ -6,14 +6,12 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class OperationTemplate extends RealmObject {
-
-    @PrimaryKey
+public class RequestStatus extends RealmObject {
+    @Index
     private long _id;
+    @PrimaryKey
     private String uuid;
-    private Organization organization;
     private String title;
-    private String description;
     private Date createdAt;
     private Date changedAt;
 
@@ -23,14 +21,6 @@ public class OperationTemplate extends RealmObject {
 
     public void set_id(long _id) {
         this._id = _id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getUuid() {
@@ -65,11 +55,11 @@ public class OperationTemplate extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public class Status {
+        public static final String NEW_REQUEST = "F45775D3-9876-4831-9781-92E00240D44F";
+        public static final String IN_WORK = "49085FF9-5223-404A-B98D-7B042BB571A3";
+        public static final String COMPLETE = "FB7E8A7C-E228-4226-AAF5-AD3DB472F4ED";
+        public static final String UN_COMPLETE = "B17CB2E0-58DF-4CA3-B620-AF8B39D6C229";
+        public static final String CANCELED = "8DA302D8-978B-4900-872C-4EB4DE13682A";
     }
 }

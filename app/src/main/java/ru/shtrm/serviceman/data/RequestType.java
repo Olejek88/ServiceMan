@@ -3,17 +3,15 @@ package ru.shtrm.serviceman.data;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class OperationTemplate extends RealmObject {
+public class RequestType extends RealmObject {
 
     @PrimaryKey
     private long _id;
     private String uuid;
-    private Organization organization;
     private String title;
-    private String description;
+    private TaskTemplate taskTemplate;
     private Date createdAt;
     private Date changedAt;
 
@@ -23,14 +21,6 @@ public class OperationTemplate extends RealmObject {
 
     public void set_id(long _id) {
         this._id = _id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getUuid() {
@@ -65,11 +55,15 @@ public class OperationTemplate extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public TaskTemplate getTaskTemplate() {
+        return taskTemplate;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setTaskTemplate(TaskTemplate taskTemplate) {
+        this.taskTemplate = taskTemplate;
+    }
+
+    class Type {
+        public static final String GENERAL = "E49AE9AD-3C31-42F8-A751-AAEB890C2190";
     }
 }

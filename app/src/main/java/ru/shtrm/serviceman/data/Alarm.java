@@ -16,6 +16,7 @@ public class Alarm extends RealmObject implements ISend, IBaseRecord {
     private String uuid;
     private AlarmType alarmType;
     private AlarmStatus alarmStatus;
+    private Object object;
     private User user;
     private Double longitude;
     private Double latitude;

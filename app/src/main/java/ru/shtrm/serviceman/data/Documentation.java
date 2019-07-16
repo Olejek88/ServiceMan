@@ -9,6 +9,7 @@ public class Documentation extends RealmObject implements IBaseRecord {
     @PrimaryKey
     private long _id;
     private String uuid;
+    private Organization organization;
     private Equipment equipment;
     private EquipmentType equipmentType;
     private DocumentationType documentationType;
@@ -87,5 +88,13 @@ public class Documentation extends RealmObject implements IBaseRecord {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }

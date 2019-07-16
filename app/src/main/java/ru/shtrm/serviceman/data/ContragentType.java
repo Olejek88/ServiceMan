@@ -54,7 +54,7 @@ public class ContragentType extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Type {
+    public class Type {
         // исполнитель - рабочий ЖЭК
         public static final String WORKER = "D9B906FB-0559-4DD3-A632-BAEE215FA3A7";
         // оператор - сотрудник

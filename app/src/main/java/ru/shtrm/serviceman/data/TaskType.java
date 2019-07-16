@@ -54,7 +54,7 @@ public class TaskType extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Type {
+    public class Type {
         public static final String TASK_TYPE_CURRENT_REPAIR = "E39AE9CC-E98B-485C-930D-62315076DBBE";
         public static final String TASK_TYPE_PLAN_REPAIR = "E624A870-2064-40CF-80A1-ADD414EBA4FB";
         public static final String TASK_TYPE_CURRENT_CHECK = "13FC82D2-AE8C-42AF-A406-33E5036C33E1";

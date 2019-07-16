@@ -13,7 +13,8 @@ import io.realm.Realm;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Organization;
+import ru.shtrm.serviceman.data.ZhObject;
 
 public class EquipmentDeserializer implements JsonDeserializer<Equipment> {
 
@@ -44,19 +45,26 @@ public class EquipmentDeserializer implements JsonDeserializer<Equipment> {
             item.setUuid(element.getAsString());
         }
 
-        field = "equipmentStatusUuid";
+        field = "oid";
         element = object.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
             String refUuid = element.getAsString();
-            EquipmentStatus refItem = realm.where(EquipmentStatus.class)
-                    .equalTo("uuid", refUuid).findFirst();
+            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
             if (refItem == null) {
                 fail(field, realm);
             } else {
-                item.setEquipmentStatus(refItem);
+                item.setOrganization(refItem);
             }
+        }
+
+        field = "title";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            item.setTitle(element.getAsString());
         }
 
         field = "equipmentTypeUuid";
@@ -81,6 +89,43 @@ public class EquipmentDeserializer implements JsonDeserializer<Equipment> {
             item.setSerial(element.getAsString());
         }
 
+        field = "tag";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            item.setTag(element.getAsString());
+        }
+
+        field = "equipmentStatusUuid";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            String refUuid = element.getAsString();
+            EquipmentStatus refItem = realm.where(EquipmentStatus.class)
+                    .equalTo("uuid", refUuid).findFirst();
+            if (refItem == null) {
+                fail(field, realm);
+            } else {
+                item.setEquipmentStatus(refItem);
+            }
+        }
+
+        field = "inputDate";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            try {
+                Date date = dtd.deserialize(element, null, null);
+                item.setInputDate(date);
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+                fail(field, realm);
+            }
+        }
+
         field = "testDate";
         element = object.get(field);
         if (element == null) {
@@ -92,6 +137,43 @@ public class EquipmentDeserializer implements JsonDeserializer<Equipment> {
             } catch (JsonParseException e) {
                 e.printStackTrace();
                 fail(field, realm);
+            }
+        }
+
+        field = "period";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            item.setPeriod(element.getAsInt());
+        }
+
+        field = "replaceDate";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            try {
+                Date date = dtd.deserialize(element, null, null);
+                item.setReplaceDate(date);
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+                fail(field, realm);
+            }
+        }
+
+        field = "objectUuid";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            String refUuid = element.getAsString();
+            ZhObject refItem = realm.where(ZhObject.class)
+                    .equalTo("uuid", refUuid).findFirst();
+            if (refItem == null) {
+                fail(field, realm);
+            } else {
+                item.setObject(refItem);
             }
         }
 

@@ -5,8 +5,6 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.UserHouse;
 
 public class UserHouseRepository implements UserHouseDataSource {
@@ -32,11 +30,6 @@ public class UserHouseRepository implements UserHouseDataSource {
     @Override
     public List<UserHouse> getAllUserHouses() {
         return localDataSource.getAllUserHouses();
-    }
-
-    @Override
-    public User getUserByHouse(@NonNull String houseUuid) {
-        return localDataSource.getUserByHouse(houseUuid);
     }
 
     @Override

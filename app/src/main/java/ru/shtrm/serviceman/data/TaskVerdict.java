@@ -54,7 +54,7 @@ public class TaskVerdict extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Verdict {
+    public class Verdict {
         public static final String NOT_DEFINED = "0916D468-A631-4FC9-898C-04B7C9415284";
         public static final String INSPECTED = "DFD29CF9-A817-41CD-B78C-3AC44C8A4747";
     }

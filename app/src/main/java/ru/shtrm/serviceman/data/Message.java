@@ -132,7 +132,7 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
         this.status = status;
     }
 
-    class Status {
+    public class Status {
         public static final int MESSAGE_NEW = 0;
         public static final int MESSAGE_READ = 1;
         public static final int MESSAGE_DELETED = 2;

@@ -27,4 +27,9 @@ public class UserPresenter implements UserContract.Presenter {
     public RealmResults<User> loadUsers() {
         return userRepository.getUsers();
     }
+
+    @Override
+    public RealmResults<User> loadUsers(int type) {
+        return userRepository.getUsers(type);
+    }
 }

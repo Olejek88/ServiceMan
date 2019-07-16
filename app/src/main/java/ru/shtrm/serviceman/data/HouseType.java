@@ -72,7 +72,7 @@ public class HouseType extends RealmObject {
         this.gisId = gisId;
     }
 
-    class Type {
+    public class Type {
         public static final String HOUSE_TYPE_PRIVATE = "6A0AB43B-AEA7-44BE-8E6C-001F4F854A4F";
         public static final String HOUSE_TYPE_MKD = "583C8D20-CE23-401D-8E90-0FFCDAA6BE50";
         public static final String HOUSE_TYPE_COMMERCE = "A156A75E-CE7A-4ED9-87D5-0FCEF89DBC9F";

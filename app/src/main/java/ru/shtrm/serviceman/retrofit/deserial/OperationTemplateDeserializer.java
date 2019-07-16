@@ -10,26 +10,25 @@ import java.lang.reflect.Type;
 import java.util.Date;
 
 import io.realm.Realm;
-import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.HouseType;
+import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.Organization;
-import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.UserHouse;
 
-public class UserHouseDeserializer implements JsonDeserializer<UserHouse> {
+public class OperationTemplateDeserializer implements JsonDeserializer<OperationTemplate> {
 
     @Override
-    public UserHouse deserialize(JsonElement jsonElement, Type typeOF,
-                                 JsonDeserializationContext context) throws JsonParseException {
+    public OperationTemplate deserialize(JsonElement jsonElement, Type typeOF,
+                                         JsonDeserializationContext context) throws JsonParseException {
 
-        UserHouse item = new UserHouse();
+        OperationTemplate item = new OperationTemplate();
         JsonElement element;
-        JsonObject object = jsonElement.getAsJsonObject();
+        JsonObject itemObject = jsonElement.getAsJsonObject();
         Realm realm = Realm.getDefaultInstance();
         String field;
         DateTypeDeserializer dtd = new DateTypeDeserializer();
 
         field = "_id";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -37,7 +36,7 @@ public class UserHouseDeserializer implements JsonDeserializer<UserHouse> {
         }
 
         field = "uuid";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -45,7 +44,7 @@ public class UserHouseDeserializer implements JsonDeserializer<UserHouse> {
         }
 
         field = "oid";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -58,36 +57,24 @@ public class UserHouseDeserializer implements JsonDeserializer<UserHouse> {
             }
         }
 
-        field = "houseUuid";
-        element = object.get(field);
+        field = "title";
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
-            String refUuid = element.getAsString();
-            House refItem = realm.where(House.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setHouse(refItem);
-            }
+            item.setTitle(element.getAsString());
         }
 
-        field = "userUuid";
-        element = object.get(field);
+        field = "description";
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
-            String refUuid = element.getAsString();
-            User refItem = realm.where(User.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setUser(refItem);
-            }
+            item.setDescription(element.getAsString());
         }
 
         field = "createdAt";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -101,7 +88,7 @@ public class UserHouseDeserializer implements JsonDeserializer<UserHouse> {
         }
 
         field = "changedAt";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {

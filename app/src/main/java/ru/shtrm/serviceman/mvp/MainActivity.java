@@ -672,6 +672,7 @@ public class MainActivity extends AppCompatActivity
                     sUser.setName(User.SERVICE_USER_NAME);
                     sUser.setPin(User.SERVICE_USER_PIN);
                     sUser.setContact("");
+                    sUser.setType(User.Type.WORKER);
                     realm.copyToRealmOrUpdate(sUser);
                 }
             }

@@ -54,7 +54,7 @@ public class DefectType extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Type {
+    public class Type {
         public static final String DEFECT_DEFAULT = "A0DB029F-BD49-4CE8-B25B-DA8066114931";
     }
 }

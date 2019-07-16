@@ -72,7 +72,7 @@ public class UserSystem extends RealmObject {
         this.equipmentSystem = equipmentSystem;
     }
 
-    class Type {
+    public class Type {
         public static final int REQUEST_PAY = 1;
         public static final int REQUEST_FREE = 0;
     }

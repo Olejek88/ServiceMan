@@ -54,7 +54,7 @@ public class MeasureType extends RealmObject {
         this.changedAt = changedAt;
     }
 
-    class Type {
+    public class Type {
         public static final String NONE = "E9ADE49A-3C31-42F8-A751-AAEB890C2190";
         public static final String FREQUENCY = "481C2E40-421E-41AB-8BC1-5FB0D01A4CC3";
         public static final String VOLTAGE = "1BEC4685-466F-4AA6-95FC-A3C01BAF09FE";

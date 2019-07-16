@@ -13,6 +13,7 @@ import io.realm.Realm;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.HouseType;
+import ru.shtrm.serviceman.data.Organization;
 import ru.shtrm.serviceman.data.Street;
 
 public class HouseDeserializer implements JsonDeserializer<House> {
@@ -23,13 +24,13 @@ public class HouseDeserializer implements JsonDeserializer<House> {
 
         House item = new House();
         JsonElement element;
-        JsonObject object = jsonElement.getAsJsonObject();
+        JsonObject itemObject = jsonElement.getAsJsonObject();
         Realm realm = Realm.getDefaultInstance();
         String field;
         DateTypeDeserializer dtd = new DateTypeDeserializer();
 
         field = "_id";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -37,15 +38,37 @@ public class HouseDeserializer implements JsonDeserializer<House> {
         }
 
         field = "uuid";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
             item.setUuid(element.getAsString());
         }
 
+        field = "oid";
+        element = itemObject.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            String refUuid = element.getAsString();
+            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
+            if (refItem == null) {
+                fail(field, realm);
+            } else {
+                item.setOrganization(refItem);
+            }
+        }
+
+        field = "gis_id";
+        element = itemObject.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            item.setGisId(element.getAsString());
+        }
+
         field = "number";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -53,7 +76,7 @@ public class HouseDeserializer implements JsonDeserializer<House> {
         }
 
         field = "streetUuid";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -67,7 +90,7 @@ public class HouseDeserializer implements JsonDeserializer<House> {
         }
 
         field = "houseStatusUuid";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -81,7 +104,7 @@ public class HouseDeserializer implements JsonDeserializer<House> {
         }
 
         field = "houseTypeUuid";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -95,7 +118,7 @@ public class HouseDeserializer implements JsonDeserializer<House> {
         }
 
         field = "createdAt";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {
@@ -109,7 +132,7 @@ public class HouseDeserializer implements JsonDeserializer<House> {
         }
 
         field = "changedAt";
-        element = object.get(field);
+        element = itemObject.get(field);
         if (element == null) {
             fail(field, realm);
         } else {

@@ -90,7 +90,7 @@ public class TaskTemplate extends RealmObject {
         this.normative = normative;
     }
 
-    class Template {
+    public class Template {
         public static final String DEFAULT_TASK = "138C39D3-F0F0-443C-95E7-698A5CAC6E74";
     }
 }

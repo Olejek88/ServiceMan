@@ -63,7 +63,7 @@ public class RequestType extends RealmObject {
         this.taskTemplate = taskTemplate;
     }
 
-    class Type {
+    public class Type {
         public static final String GENERAL = "E49AE9AD-3C31-42F8-A751-AAEB890C2190";
     }
 }

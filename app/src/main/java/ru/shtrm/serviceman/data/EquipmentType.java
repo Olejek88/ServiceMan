@@ -63,7 +63,7 @@ public class EquipmentType extends RealmObject {
         this.equipmentSystem = equipmentSystem;
     }
 
-    class Type {
+    public class Type {
         public static final String EQUIPMENT_HVS = "7AB0B720-9FDB-448C-86C1-4649A7FCF279";
         public static final String EQUIPMENT_GVS = "4F50C767-A044-465B-A69F-02DD321BC5FB";
         public static final String EQUIPMENT_ELECTRICITY = "B6904443-363B-4F01-B940-F47B463E66D8";

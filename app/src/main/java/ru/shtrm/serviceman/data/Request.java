@@ -162,7 +162,7 @@ public class Request extends RealmObject {
         this.closeDate = closeDate;
     }
 
-    class Type {
+    public class Type {
         public static final int REQUEST_PAY = 1;
         public static final int REQUEST_FREE = 0;
     }

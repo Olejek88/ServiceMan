@@ -11,6 +11,7 @@ import java.util.Date;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.City;
+import ru.shtrm.serviceman.data.Organization;
 import ru.shtrm.serviceman.data.Street;
 
 public class StreetDeserializer implements JsonDeserializer<Street> {
@@ -40,6 +41,20 @@ public class StreetDeserializer implements JsonDeserializer<Street> {
             fail(field, realm);
         } else {
             item.setUuid(element.getAsString());
+        }
+
+        field = "oid";
+        element = streetObject.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            String refUuid = element.getAsString();
+            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
+            if (refItem == null) {
+                fail(field, realm);
+            } else {
+                item.setOrganization(refItem);
+            }
         }
 
         field = "title";

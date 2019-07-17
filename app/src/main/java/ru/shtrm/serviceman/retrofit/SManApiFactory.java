@@ -38,6 +38,10 @@ import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmTypeService;
 import ru.shtrm.serviceman.retrofit.iface.ICityService;
+import ru.shtrm.serviceman.retrofit.iface.IDefectService;
+import ru.shtrm.serviceman.retrofit.iface.IDefectTypeService;
+import ru.shtrm.serviceman.retrofit.iface.IDocumentationService;
+import ru.shtrm.serviceman.retrofit.iface.IDocumentationTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentTypeService;
@@ -47,16 +51,24 @@ import ru.shtrm.serviceman.retrofit.iface.IHouseStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IJournalService;
 import ru.shtrm.serviceman.retrofit.iface.IMeasureService;
+import ru.shtrm.serviceman.retrofit.iface.IMeasureTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IMessageService;
+import ru.shtrm.serviceman.retrofit.iface.IOperationTemplateService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoEquipmentService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoMessageService;
 import ru.shtrm.serviceman.retrofit.iface.IPingService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskTemplateService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskTypeService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskVerdictService;
 import ru.shtrm.serviceman.retrofit.iface.ITokenService;
 import ru.shtrm.serviceman.retrofit.iface.IUserHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
+import ru.shtrm.serviceman.retrofit.iface.IWorkStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IZhObjectStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IZhObjectTypeService;
 import ru.shtrm.serviceman.retrofit.serial.AlarmSerializer;
 import ru.shtrm.serviceman.retrofit.serial.EquipmentSerializer;
 import ru.shtrm.serviceman.retrofit.serial.MeasureSerializer;
@@ -218,6 +230,66 @@ public class SManApiFactory {
     @NonNull
     public static IUserHouseService getUserHouseService() {
         return getRetrofit().create(IUserHouseService.class);
+    }
+
+    @NonNull
+    public static IDefectTypeService getDefectTypeService() {
+        return getRetrofit().create(IDefectTypeService.class);
+    }
+
+    @NonNull
+    public static IDocumentationTypeService getDocumentationTypeService() {
+        return getRetrofit().create(IDocumentationTypeService.class);
+    }
+
+    @NonNull
+    public static IMeasureTypeService getMeasureTypeService() {
+        return getRetrofit().create(IMeasureTypeService.class);
+    }
+
+    @NonNull
+    public static IZhObjectStatusService getZhObjectStatusService() {
+        return getRetrofit().create(IZhObjectStatusService.class);
+    }
+
+    @NonNull
+    public static IZhObjectTypeService getZhObjectTypeService() {
+        return getRetrofit().create(IZhObjectTypeService.class);
+    }
+
+    @NonNull
+    public static ITaskTypeService getTaskTypeService() {
+        return getRetrofit().create(ITaskTypeService.class);
+    }
+
+    @NonNull
+    public static ITaskVerdictService getTaskVerdictService() {
+        return getRetrofit().create(ITaskVerdictService.class);
+    }
+
+    @NonNull
+    public static IWorkStatusService getWorkStatusService() {
+        return getRetrofit().create(IWorkStatusService.class);
+    }
+
+    @NonNull
+    public static IDefectService getDefectService() {
+        return getRetrofit().create(IDefectService.class);
+    }
+
+    @NonNull
+    public static IDocumentationService getDocumentationService() {
+        return getRetrofit().create(IDocumentationService.class);
+    }
+
+    @NonNull
+    public static IOperationTemplateService getOperationTemplateService() {
+        return getRetrofit().create(IOperationTemplateService.class);
+    }
+
+    @NonNull
+    public static ITaskTemplateService getTaskTemplateService() {
+        return getRetrofit().create(ITaskTemplateService.class);
     }
 
     @NonNull

@@ -31,4 +31,9 @@ public class EquipmentTypeRepository implements EquipmentTypeDataSource {
     public List<EquipmentType> getEquipmentTypes() {
         return localDataSource.getEquipmentTypes();
     }
+
+    @Override
+    public EquipmentType getEquipmentType(String uuid) {
+        return localDataSource.getEquipmentType(uuid);
+    }
 }

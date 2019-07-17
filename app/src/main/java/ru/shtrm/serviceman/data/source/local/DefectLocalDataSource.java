@@ -6,40 +6,40 @@ import java.util.List;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.source.EquipmentTypeDataSource;
+import ru.shtrm.serviceman.data.Defect;
+import ru.shtrm.serviceman.data.source.DefectDataSource;
 
-public class EquipmentTypeLocalDataSource implements EquipmentTypeDataSource {
+public class DefectLocalDataSource implements DefectDataSource {
 
     @Nullable
-    private static EquipmentTypeLocalDataSource INSTANCE = null;
+    private static DefectLocalDataSource INSTANCE = null;
 
     // Prevent direct instantiation
-    private EquipmentTypeLocalDataSource() {
+    private DefectLocalDataSource() {
 
     }
 
-    public static EquipmentTypeLocalDataSource getInstance() {
+    public static DefectLocalDataSource getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new EquipmentTypeLocalDataSource();
+            INSTANCE = new DefectLocalDataSource();
         }
         return INSTANCE;
     }
 
     @Override
-    public List<EquipmentType> getEquipmentTypes() {
+    public List<Defect> getDefects() {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(EquipmentType.class)
+                realm.where(Defect.class)
                         .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
                         .findAllSorted("title"));
     }
 
     @Override
-    public EquipmentType getEquipmentType(String uuid) {
+    public Defect getDefect(String uuid) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
-                realm.where(EquipmentType.class).equalTo("uuid", uuid)
+                realm.where(Defect.class).equalTo("uuid", uuid)
                         .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
                         .findFirst());
     }

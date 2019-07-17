@@ -3,6 +3,8 @@ package ru.shtrm.serviceman.data.source;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.List;
+
 import ru.shtrm.serviceman.data.Message;
 
 public class MessageRepository implements MessageDataSource {
@@ -24,6 +26,17 @@ public class MessageRepository implements MessageDataSource {
         }
         return INSTANCE;
     }
+
+    @Override
+    public List<Message> getMessages() {
+        return localDataSource.getMessages();
+    }
+
+    @Override
+    public Message getMessage(String uuid) {
+        return localDataSource.getMessage(uuid);
+    }
+
     @Override
     public void saveMessage(Message message) {
         localDataSource.saveMessage(message);

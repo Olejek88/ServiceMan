@@ -56,6 +56,16 @@ public class CityDeserializer implements JsonDeserializer<City> {
             }
         }
 
+        field = "gis_id";
+        element = itemObject.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            if (!element.isJsonNull()) {
+                item.setGisId(element.getAsString());
+            }
+        }
+
         field = "title";
         element = itemObject.get(field);
         if (element == null) {

@@ -72,7 +72,9 @@ public class ObjectDeserializer implements JsonDeserializer<ZhObject> {
         if (element == null) {
             fail(field, realm);
         } else {
-            item.setGisId(element.getAsString());
+            if (!element.isJsonNull()) {
+                item.setGisId(element.getAsString());
+            }
         }
 
         field = "square";

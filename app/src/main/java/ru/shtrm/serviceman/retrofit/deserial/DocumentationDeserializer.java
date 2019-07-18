@@ -61,7 +61,7 @@ public class DocumentationDeserializer implements JsonDeserializer<Documentation
 
         field = "equipmentUuid";
         element = itemObject.get(field);
-        if (element == null) {
+        if (element == null || element.isJsonNull()) {
             // документация может быть не привязана к оборудованию, а привязана к типу оборудования
             item.setEquipment(null);
         } else {
@@ -76,7 +76,7 @@ public class DocumentationDeserializer implements JsonDeserializer<Documentation
 
         field = "equipmentTypeUuid";
         element = itemObject.get(field);
-        if (element == null) {
+        if (element == null || element.isJsonNull()) {
             // документация может быть не привязана к типу оборудования, а привязана к оборудованию
             item.setEquipmentType(null);
         } else {

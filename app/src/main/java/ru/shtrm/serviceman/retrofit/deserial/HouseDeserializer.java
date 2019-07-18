@@ -64,7 +64,9 @@ public class HouseDeserializer implements JsonDeserializer<House> {
         if (element == null) {
             fail(field, realm);
         } else {
-            item.setGisId(element.getAsString());
+            if (!element.isJsonNull()) {
+                item.setGisId(element.getAsString());
+            }
         }
 
         field = "number";

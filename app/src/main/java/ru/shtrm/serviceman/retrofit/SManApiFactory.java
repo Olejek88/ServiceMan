@@ -23,16 +23,37 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.City;
+import ru.shtrm.serviceman.data.Defect;
+import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.HouseType;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
+import ru.shtrm.serviceman.data.Operation;
+import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskTemplate;
 import ru.shtrm.serviceman.data.UserHouse;
+import ru.shtrm.serviceman.data.ZhObject;
+import ru.shtrm.serviceman.retrofit.deserial.CityDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.DateTypeDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.DefectDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.DocumentationDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.EquipmentDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.EquipmentTypeDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.HouseDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.HouseTypeDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.MessageDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.ObjectDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.OperationDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.OperationTemplateDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.StreetDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.TaskDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.TaskTemplateDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.UserHouseDeserializer;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
@@ -44,6 +65,7 @@ import ru.shtrm.serviceman.retrofit.iface.IDocumentationService;
 import ru.shtrm.serviceman.retrofit.iface.IDocumentationTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IEquipmentSystemService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IGpsTrackService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseService;
@@ -273,6 +295,11 @@ public class SManApiFactory {
     }
 
     @NonNull
+    public static IEquipmentSystemService getEquipmentSystemService() {
+        return getRetrofit().create(IEquipmentSystemService.class);
+    }
+
+    @NonNull
     public static IDefectService getDefectService() {
         return getRetrofit().create(IDefectService.class);
     }
@@ -322,15 +349,30 @@ public class SManApiFactory {
             }
         }
 
+        // Deserializers
+        builder.registerTypeAdapter(City.class, new CityDeserializer());
         builder.registerTypeAdapter(Date.class, new DateTypeDeserializer());
+        builder.registerTypeAdapter(Defect.class, new DefectDeserializer());
+        builder.registerTypeAdapter(Documentation.class, new DocumentationDeserializer());
+        builder.registerTypeAdapter(Equipment.class, new EquipmentDeserializer());
+        builder.registerTypeAdapter(EquipmentType.class, new EquipmentTypeDeserializer());
+        builder.registerTypeAdapter(House.class, new HouseDeserializer());
+        builder.registerTypeAdapter(HouseType.class, new HouseTypeDeserializer());
+        builder.registerTypeAdapter(Message.class, new MessageDeserializer());
+        builder.registerTypeAdapter(ZhObject.class, new ObjectDeserializer());
+        builder.registerTypeAdapter(Operation.class, new OperationDeserializer());
+        builder.registerTypeAdapter(OperationTemplate.class, new OperationTemplateDeserializer());
+        builder.registerTypeAdapter(Street.class, new StreetDeserializer());
+        builder.registerTypeAdapter(Task.class, new TaskDeserializer());
+        builder.registerTypeAdapter(TaskTemplate.class, new TaskTemplateDeserializer());
+//        builder.registerTypeAdapter(UserHouse.class, new UserHouseDeserializer());
+
+        // Serializers
         builder.registerTypeAdapter(Equipment.class, new EquipmentSerializer());
         builder.registerTypeAdapter(Measure.class, new MeasureSerializer());
         builder.registerTypeAdapter(Alarm.class, new AlarmSerializer());
         builder.registerTypeAdapter(Message.class, new MessageSerializer());
-        builder.registerTypeAdapter(Street.class, new StreetDeserializer());
-        builder.registerTypeAdapter(House.class, new HouseDeserializer());
-        builder.registerTypeAdapter(Equipment.class, new EquipmentDeserializer());
-        builder.registerTypeAdapter(UserHouse.class, new UserHouseDeserializer());
+
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Gson gson = builder.create();
         return new Retrofit.Builder()

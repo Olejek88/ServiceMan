@@ -12,8 +12,8 @@ public interface IDocumentationService {
     Call<List<Documentation>> getData(@Query("changedAfter") String changeAfter);
 
     @GET("/documentation")
-    Call<List<Documentation>> getData(@Query("equipmentUuid") String equipmentUuid, @Query("changedAfter") String changeAfter);
+    Call<List<Documentation>> getData(@Query("eqUuid") String equipmentUuid, @Query("changedAfter") String changeAfter);
 
     @GET("/documentation")
-    Call<List<Documentation>> getData(@Query("equipmentUuid") List<String> equipmentUuid, @Query("changedAfter") String changeAfter);
+    Call<List<Documentation>> getData(@Query("eqUuid") List<String> equipmentUuid, @Query("changedAfter") String changeAfter);
 }

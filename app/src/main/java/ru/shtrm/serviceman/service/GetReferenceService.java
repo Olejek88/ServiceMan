@@ -8,12 +8,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Response;
 import ru.shtrm.serviceman.data.AlarmStatus;
@@ -42,6 +40,7 @@ import ru.shtrm.serviceman.data.TaskType;
 import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.WorkStatus;
+import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.data.ZhObjectStatus;
 import ru.shtrm.serviceman.data.ZhObjectType;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
@@ -152,8 +151,16 @@ public class GetReferenceService extends Service {
                 Journal.add("House not updated.");
             }
 
+            if (!updateObject(realm)) {
+                Journal.add("Object not updated.");
+            }
+
             if (!updateEquipmentType(realm)) {
                 Journal.add("EquipmentType not updated.");
+            }
+
+            if (!updateEquipment(realm)) {
+                Journal.add("Equipment not updated.");
             }
 
             if (!updateDefect(realm)) {
@@ -175,10 +182,6 @@ public class GetReferenceService extends Service {
             if (!updateTaskTemplate(realm)) {
                 Journal.add("TaskTemplate not updated.");
             }
-
-//            if (!updateEquipment(realm)) {
-//                Journal.add("Equipment not updated.");
-//            }
 
 //            if (!updateUserHouse(realm)) {
 //                Journal.add("UserHouse not updated.");
@@ -326,6 +329,33 @@ public class GetReferenceService extends Service {
         }
     }
 
+    private boolean updateObject(Realm realm) {
+        String lastUpdate;
+        String rName = ZhObject.class.getSimpleName() + ":" + userUuid;
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
+        Call<List<ZhObject>> call = SManApiFactory.getObjectService().getData(lastUpdate);
+        try {
+            Response<List<ZhObject>> response = call.execute();
+            if (response.isSuccessful()) {
+                List<ZhObject> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private boolean updateHouse(Realm realm) {
         String lastUpdate;
         String rName = House.class.getSimpleName() + ":" + userUuid;
@@ -407,32 +437,32 @@ public class GetReferenceService extends Service {
         }
     }
 
-//    private boolean updateEquipment(Realm realm) {
-//        String lastUpdate;
-//        String rName = Equipment.class.getSimpleName() + ":" + userUuid;
-//        Date updateDate = new Date();
-//        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-//        Call<List<Equipment>> call = SManApiFactory.getEquipmentService().getData(lastUpdate);
-//        try {
-//            Response<List<Equipment>> response = call.execute();
-//            if (response.isSuccessful()) {
-//                List<Equipment> list = response.body();
-//                if (list.size() > 0) {
-//                    realm.beginTransaction();
-//                    realm.copyToRealmOrUpdate(list);
-//                    realm.commitTransaction();
-//                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-//                }
-//
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
+    private boolean updateEquipment(Realm realm) {
+        String lastUpdate;
+        String rName = Equipment.class.getSimpleName() + ":" + userUuid;
+        Date updateDate = new Date();
+        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
+        Call<List<Equipment>> call = SManApiFactory.getEquipmentService().getData(lastUpdate);
+        try {
+            Response<List<Equipment>> response = call.execute();
+            if (response.isSuccessful()) {
+                List<Equipment> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
+                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     private boolean updateUser(Realm realm) {
         String lastUpdate;
@@ -798,14 +828,8 @@ public class GetReferenceService extends Service {
         String rName = Defect.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        // TODO: оборудования может быть очень много, нужно как-то по другому решить этот вопрос.
-        RealmResults<Equipment> equipments = realm.where(Equipment.class).findAll();
-        List<String> equipmentUuids = new ArrayList<>();
-        for (Equipment e : equipments) {
-            equipmentUuids.add(e.getUuid());
-        }
 
-        Call<List<Defect>> call = SManApiFactory.getDefectService().getData(equipmentUuids, lastUpdate);
+        Call<List<Defect>> call = SManApiFactory.getDefectService().getData(lastUpdate);
         try {
             Response<List<Defect>> response = call.execute();
             if (response.isSuccessful()) {
@@ -832,19 +856,8 @@ public class GetReferenceService extends Service {
         String rName = Documentation.class.getSimpleName() + ":" + userUuid;
         Date updateDate = new Date();
         lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        // TODO: оборудования может быть очень много, нужно как-то по другому решить этот вопрос.
-        RealmResults<Equipment> equipments = realm.where(Equipment.class).findAll();
-        if (equipments.size() == 0) {
-            // оборудования ни какого на устройстве нет, ни чего не запрашиваем, т.к. привязать ни к чему не сможем
-            return true;
-        }
 
-        List<String> equipmentUuids = new ArrayList<>();
-        for (Equipment e : equipments) {
-            equipmentUuids.add(e.getUuid());
-        }
-
-        Call<List<Documentation>> call = SManApiFactory.getDocumentationService().getData(equipmentUuids, lastUpdate);
+        Call<List<Documentation>> call = SManApiFactory.getDocumentationService().getData(lastUpdate);
         try {
             Response<List<Documentation>> response = call.execute();
             if (response.isSuccessful()) {

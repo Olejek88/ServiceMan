@@ -143,11 +143,11 @@ public class Defect extends RealmObject implements ISend, IBaseRecord {
         this.defectType = defectType;
     }
 
-    public int getStatus() {
+    public int getDefectStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setDefectStatus(int status) {
         this.status = status;
     }
 }

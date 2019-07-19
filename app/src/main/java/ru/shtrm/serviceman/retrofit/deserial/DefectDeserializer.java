@@ -8,7 +8,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.Defect;
@@ -18,53 +17,34 @@ import ru.shtrm.serviceman.data.Organization;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.User;
 
-public class DefectDeserializer implements JsonDeserializer<Defect> {
+public class DefectDeserializer extends BaseDeserialzer implements JsonDeserializer<Defect> {
 
     @Override
-    public Defect deserialize(JsonElement jsonElement, Type typeOF,
-                              JsonDeserializationContext context) throws JsonParseException {
+    public Defect deserialize(JsonElement jsonElement, Type typeOF, JsonDeserializationContext context) {
 
         Defect item = new Defect();
         JsonElement element;
         JsonObject userObject;
-        JsonObject itemObject = jsonElement.getAsJsonObject();
+        JsonObject object = jsonElement.getAsJsonObject();
         Realm realm = Realm.getDefaultInstance();
         String field;
-        DateTypeDeserializer dtd = new DateTypeDeserializer();
 
-        field = "_id";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.set_id(element.getAsLong());
-        }
+        item.set_id(getLong(object, "_id"));
+        item.setUuid(getString(object, "uuid"));
+        item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
+        item.setTitle(getString(object, "title"));
+        item.setDate(getDate(object, "date"));
+        item.setTask((Task) getReference(object, Task.class, "taskUuid", "uuid", true));
+        item.setEquipment((Equipment) getReference(object, Equipment.class, "equipmentUuid"));
+        item.setDefectType((DefectType) getReference(object, DefectType.class, "defectTypeUuid"));
+        item.setDefectStatus(getInt(object, "defectStatus"));
+        item.setCreatedAt(getDate(object, "createdAt"));
+        item.setChangedAt(getDate(object, "changedAt"));
+        item.setSent(true);
 
-        field = "uuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setUuid(element.getAsString());
-        }
-
-        field = "oid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setOrganization(refItem);
-            }
-        }
-
-        field = "userUuid";
-        userObject = itemObject.getAsJsonObject(field);
-        if (userObject == null) {
+        field = "user";
+        userObject = object.getAsJsonObject(field);
+        if (userObject == null || userObject.isJsonNull()) {
             fail(field, realm);
         } else {
             JsonPrimitive refUuid = userObject.getAsJsonPrimitive("uuid");
@@ -79,8 +59,8 @@ public class DefectDeserializer implements JsonDeserializer<Defect> {
                 newUser.setContact(userObject.getAsJsonPrimitive("contact").getAsString());
 
                 field = "oid";
-                element = itemObject.get(field);
-                if (element == null) {
+                element = object.get(field);
+                if (element == null || element.isJsonNull()) {
                     fail(field, realm);
                 } else {
                     refUuid = userObject.getAsJsonPrimitive("oid");
@@ -97,111 +77,7 @@ public class DefectDeserializer implements JsonDeserializer<Defect> {
             }
         }
 
-        field = "title";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setTitle(element.getAsString());
-        }
-
-        field = "date";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setDate(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "taskUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            item.setTask(null);
-        } else {
-            String refUuid = element.getAsString();
-            Task refItem = realm.where(Task.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setTask(refItem);
-            }
-        }
-
-        field = "equipmentUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            Equipment refItem = realm.where(Equipment.class).equalTo("uuid", refUuid).findFirst();
-            // TODO: Так как список оборудования не обновляем принутительно, нужно решить как быть с дефектами
-            // которые указаны для оборудования которго нет на устройстве.
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setEquipment(refItem);
-            }
-        }
-
-        field = "defectTypeUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            DefectType refItem = realm.where(DefectType.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setDefectType(refItem);
-            }
-        }
-
-        field = "status";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setStatus(element.getAsInt());
-        }
-
-        field = "createdAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setCreatedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "changedAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setChangedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        item.setSent(true);
-
-        realm.close();
+        super.close();
 
         return item;
     }

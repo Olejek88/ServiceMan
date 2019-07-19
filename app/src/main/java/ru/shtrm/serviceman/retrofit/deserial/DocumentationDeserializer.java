@@ -4,156 +4,39 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 
-import io.realm.Realm;
 import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.DocumentationType;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Organization;
 
-public class DocumentationDeserializer implements JsonDeserializer<Documentation> {
+public class DocumentationDeserializer extends BaseDeserialzer
+        implements JsonDeserializer<Documentation> {
 
     @Override
     public Documentation deserialize(JsonElement jsonElement, Type typeOF,
-                                     JsonDeserializationContext context) throws JsonParseException {
+                                     JsonDeserializationContext context) {
 
         Documentation item = new Documentation();
-        JsonElement element;
-        JsonObject itemObject = jsonElement.getAsJsonObject();
-        Realm realm = Realm.getDefaultInstance();
-        String field;
-        DateTypeDeserializer dtd = new DateTypeDeserializer();
+        JsonObject object = jsonElement.getAsJsonObject();
 
-        field = "_id";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.set_id(element.getAsLong());
-        }
+        item.set_id(getLong(object, "_id"));
+        item.setUuid(getString(object, "uuid"));
+        item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
+        item.setEquipment((Equipment) getReference(object, Equipment.class, "equipmentUuid", "uuid", true));
+        item.setEquipmentType((EquipmentType) getReference(object, EquipmentType.class, "equipmentTypeUuid", "uuid", true));
+        item.setDocumentationType((DocumentationType) getReference(object, DocumentationType.class, "documentationTypeUuid"));
+        item.setTitle(getString(object, "title"));
+        item.setPath(getString(object, "path"));
+        item.setCreatedAt(getDate(object, "createdAt"));
+        item.setChangedAt(getDate(object, "changedAt"));
 
-        field = "uuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setUuid(element.getAsString());
-        }
-
-        field = "oid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setOrganization(refItem);
-            }
-        }
-
-        field = "equipmentUuid";
-        element = itemObject.get(field);
-        if (element == null || element.isJsonNull()) {
-            // документация может быть не привязана к оборудованию, а привязана к типу оборудования
-            item.setEquipment(null);
-        } else {
-            String refUuid = element.getAsString();
-            Equipment refItem = realm.where(Equipment.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setEquipment(refItem);
-            }
-        }
-
-        field = "equipmentTypeUuid";
-        element = itemObject.get(field);
-        if (element == null || element.isJsonNull()) {
-            // документация может быть не привязана к типу оборудования, а привязана к оборудованию
-            item.setEquipmentType(null);
-        } else {
-            String refUuid = element.getAsString();
-            EquipmentType refItem = realm.where(EquipmentType.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setEquipmentType(refItem);
-            }
-        }
-
-        field = "documentationTypeUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            DocumentationType refItem = realm.where(DocumentationType.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setDocumentationType(refItem);
-            }
-        }
-
-        field = "title";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setTitle(element.getAsString());
-        }
-
-        field = "path";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setPath(element.getAsString());
-        }
-
-        field = "createdAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setCreatedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "changedAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setChangedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        realm.close();
+        super.close();
 
         return item;
     }
 
-    private void fail(String field, Realm realm) {
-        realm.close();
-        throw new JsonParseException("Unparseable data: " + field);
-    }
 }

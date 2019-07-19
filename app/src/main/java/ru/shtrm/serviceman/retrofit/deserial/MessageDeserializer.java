@@ -8,59 +8,36 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.Organization;
 import ru.shtrm.serviceman.data.User;
 
-public class MessageDeserializer implements JsonDeserializer<Message> {
+public class MessageDeserializer extends BaseDeserialzer implements JsonDeserializer<Message> {
 
     @Override
     public Message deserialize(JsonElement jsonElement, Type typeOF,
-                               JsonDeserializationContext context) throws JsonParseException {
+                               JsonDeserializationContext context) {
 
         Message item = new Message();
         JsonElement element;
         JsonObject userObject;
-        JsonObject itemObject = jsonElement.getAsJsonObject();
+        JsonObject object = jsonElement.getAsJsonObject();
         Realm realm = Realm.getDefaultInstance();
         String field;
-        DateTypeDeserializer dtd = new DateTypeDeserializer();
 
-        field = "_id";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.set_id(element.getAsLong());
-        }
-
-        field = "uuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setUuid(element.getAsString());
-        }
-
-        field = "oid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setOrganization(refItem);
-            }
-        }
+        item.set_id(getLong(object, "_id"));
+        item.setUuid(getString(object, "uuid"));
+        item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
+        item.setDate(getDate(object, "date"));
+        item.setText(getString(object, "text"));
+        item.setStatus(getInt(object, "status"));
+        item.setCreatedAt(getDate(object, "createdAt"));
+        item.setChangedAt(getDate(object, "changedAt"));
 
         field = "fromUser";
-        userObject = itemObject.getAsJsonObject(field);
+        userObject = object.getAsJsonObject(field);
         if (userObject == null) {
             fail(field, realm);
         } else {
@@ -76,7 +53,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
                 newUser.setContact(userObject.getAsJsonPrimitive("contact").getAsString());
 
                 field = "oid";
-                element = itemObject.get(field);
+                element = object.get(field);
                 if (element == null) {
                     fail(field, realm);
                 } else {
@@ -95,7 +72,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
         }
 
         field = "toUser";
-        userObject = itemObject.getAsJsonObject(field);
+        userObject = object.getAsJsonObject(field);
         if (userObject == null) {
             fail(field, realm);
         } else {
@@ -111,7 +88,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
                 newUser.setContact(userObject.getAsJsonPrimitive("contact").getAsString());
 
                 field = "oid";
-                element = itemObject.get(field);
+                element = object.get(field);
                 if (element == null) {
                     fail(field, realm);
                 } else {
@@ -129,67 +106,9 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
             }
         }
 
-        field = "date";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setDate(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "text";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setText(element.getAsString());
-        }
-
-        field = "status";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setStatus(element.getAsInt());
-        }
-
-        field = "createdAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setCreatedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "changedAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setChangedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
         item.setSent(true);
 
-        realm.close();
+        super.close();
 
         return item;
     }

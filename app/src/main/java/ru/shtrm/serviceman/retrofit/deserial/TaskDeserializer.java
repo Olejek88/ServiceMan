@@ -8,7 +8,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.Equipment;
@@ -19,74 +18,36 @@ import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.WorkStatus;
 
-public class TaskDeserializer implements JsonDeserializer<Task> {
+public class TaskDeserializer extends BaseDeserialzer implements JsonDeserializer<Task> {
 
     @Override
     public Task deserialize(JsonElement jsonElement, Type typeOF,
-                            JsonDeserializationContext context) throws JsonParseException {
+                            JsonDeserializationContext context) {
 
         Task item = new Task();
         JsonElement element;
         JsonObject userObject;
-        JsonObject itemObject = jsonElement.getAsJsonObject();
+        JsonObject object = jsonElement.getAsJsonObject();
         Realm realm = Realm.getDefaultInstance();
         String field;
-        DateTypeDeserializer dtd = new DateTypeDeserializer();
 
-        field = "_id";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.set_id(element.getAsLong());
-        }
-
-        field = "uuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setUuid(element.getAsString());
-        }
-
-        field = "oid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setOrganization(refItem);
-            }
-        }
-
-        field = "comment";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            item.setComment(element.getAsString());
-        }
-
-        field = "workStatusUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            WorkStatus refItem = realm.where(WorkStatus.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setWorkStatus(refItem);
-            }
-        }
+        item.set_id(getLong(object, "_id"));
+        item.setUuid(getString(object, "uuid"));
+        item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
+        item.setComment(getString(object, "comment"));
+        item.setWorkStatus((WorkStatus) getReference(object, WorkStatus.class, "workStatusUuid"));
+        item.setEquipment((Equipment) getReference(object, Equipment.class, "equipmentUuid"));
+        item.setTaskVerdict((TaskVerdict) getReference(object, TaskVerdict.class, "taskVerdictUuid"));
+        item.setTaskTemplate((TaskTemplate) getReference(object, TaskTemplate.class, "taskTemplateUuid"));
+        item.setTaskDate(getDate(object, "taskDate"));
+        item.setStartDate(getDate(object, "startDate"));
+        item.setDeadlineDate(getDate(object, "deadlineDate"));
+        item.setEndDate(getDate(object, "endDate"));
+        item.setCreatedAt(getDate(object, "createdAt"));
+        item.setChangedAt(getDate(object, "changedAt"));
 
         field = "authorUuid";
-        userObject = itemObject.getAsJsonObject(field);
+        userObject = object.getAsJsonObject(field);
         if (userObject == null) {
             fail(field, realm);
         } else {
@@ -102,7 +63,7 @@ public class TaskDeserializer implements JsonDeserializer<Task> {
                 newUser.setContact(userObject.getAsJsonPrimitive("contact").getAsString());
 
                 field = "oid";
-                element = itemObject.get(field);
+                element = object.get(field);
                 if (element == null) {
                     fail(field, realm);
                 } else {
@@ -120,133 +81,7 @@ public class TaskDeserializer implements JsonDeserializer<Task> {
             }
         }
 
-        field = "equipmentUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            Equipment refItem = realm.where(Equipment.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setEquipment(refItem);
-            }
-        }
-
-        field = "taskVerdictUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            TaskVerdict refItem = realm.where(TaskVerdict.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setTaskVerdict(refItem);
-            }
-        }
-
-        field = "taskTemplateUuid";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            String refUuid = element.getAsString();
-            TaskTemplate refItem = realm.where(TaskTemplate.class).equalTo("uuid", refUuid).findFirst();
-            if (refItem == null) {
-                fail(field, realm);
-            } else {
-                item.setTaskTemplate(refItem);
-            }
-        }
-
-        field = "taskDate";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setTaskDate(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "startDate";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setStartDate(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "deadlineDate";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setDeadlineDate(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "endDate";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setEndDate(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "createdAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setCreatedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        field = "changedAt";
-        element = itemObject.get(field);
-        if (element == null) {
-            fail(field, realm);
-        } else {
-            try {
-                Date date = dtd.deserialize(element, null, null);
-                item.setChangedAt(date);
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-                fail(field, realm);
-            }
-        }
-
-        realm.close();
+        super.close();
 
         return item;
     }

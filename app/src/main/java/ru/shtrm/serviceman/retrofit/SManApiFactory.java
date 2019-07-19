@@ -37,7 +37,6 @@ import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.TaskTemplate;
-import ru.shtrm.serviceman.data.UserHouse;
 import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.retrofit.deserial.CityDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.DateTypeDeserializer;
@@ -54,7 +53,6 @@ import ru.shtrm.serviceman.retrofit.deserial.OperationTemplateDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.StreetDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.TaskDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.TaskTemplateDeserializer;
-import ru.shtrm.serviceman.retrofit.deserial.UserHouseDeserializer;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmTypeService;
@@ -76,19 +74,16 @@ import ru.shtrm.serviceman.retrofit.iface.IMeasureService;
 import ru.shtrm.serviceman.retrofit.iface.IMeasureTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IMessageService;
 import ru.shtrm.serviceman.retrofit.iface.IOperationTemplateService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoAlarmService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoEquipmentService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoHouseService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoMessageService;
 import ru.shtrm.serviceman.retrofit.iface.IPingService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskService;
 import ru.shtrm.serviceman.retrofit.iface.ITaskTemplateService;
 import ru.shtrm.serviceman.retrofit.iface.ITaskTypeService;
 import ru.shtrm.serviceman.retrofit.iface.ITaskVerdictService;
 import ru.shtrm.serviceman.retrofit.iface.ITokenService;
-import ru.shtrm.serviceman.retrofit.iface.IUserHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
 import ru.shtrm.serviceman.retrofit.iface.IWorkStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IZhObjectService;
 import ru.shtrm.serviceman.retrofit.iface.IZhObjectStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IZhObjectTypeService;
 import ru.shtrm.serviceman.retrofit.serial.AlarmSerializer;
@@ -200,21 +195,6 @@ public class SManApiFactory {
     }
 
     @NonNull
-    public static IPhotoAlarmService getPhotoAlarmService() {
-        return getRetrofit().create(IPhotoAlarmService.class);
-    }
-
-    @NonNull
-    public static IPhotoEquipmentService getPhotoEquipmentService() {
-        return getRetrofit().create(IPhotoEquipmentService.class);
-    }
-
-    @NonNull
-    public static IPhotoHouseService getPhotoHouseService() {
-        return getRetrofit().create(IPhotoHouseService.class);
-    }
-
-    @NonNull
     public static IStreetService getStreetService() {
         return getRetrofit().create(IStreetService.class);
     }
@@ -242,16 +222,6 @@ public class SManApiFactory {
     @NonNull
     public static IMessageService getMessageService() {
         return getRetrofit().create(IMessageService.class);
-    }
-
-    @NonNull
-    public static IPhotoMessageService getPhotoMessageService() {
-        return getRetrofit().create(IPhotoMessageService.class);
-    }
-
-    @NonNull
-    public static IUserHouseService getUserHouseService() {
-        return getRetrofit().create(IUserHouseService.class);
     }
 
     @NonNull
@@ -290,6 +260,11 @@ public class SManApiFactory {
     }
 
     @NonNull
+    public static ITaskService getTaskService() {
+        return getRetrofit().create(ITaskService.class);
+    }
+
+    @NonNull
     public static IWorkStatusService getWorkStatusService() {
         return getRetrofit().create(IWorkStatusService.class);
     }
@@ -317,6 +292,11 @@ public class SManApiFactory {
     @NonNull
     public static ITaskTemplateService getTaskTemplateService() {
         return getRetrofit().create(ITaskTemplateService.class);
+    }
+
+    @NonNull
+    public static IZhObjectService getObjectService() {
+        return getRetrofit().create(IZhObjectService.class);
     }
 
     @NonNull

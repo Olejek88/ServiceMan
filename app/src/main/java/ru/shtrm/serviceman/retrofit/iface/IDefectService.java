@@ -12,8 +12,8 @@ public interface IDefectService {
     Call<List<Defect>> getData(@Query("changedAfter") String changeAfter);
 
     @GET("/defect")
-    Call<List<Defect>> getData(@Query("equipmentUuid") String equipmentUuid, @Query("changedAfter") String changeAfter);
+    Call<List<Defect>> getData(@Query("eqUuid") String equipmentUuid, @Query("changedAfter") String changeAfter);
 
     @GET("/defect")
-    Call<List<Defect>> getData(@Query("equipmentUuid") List<String> equipmentUuid, @Query("changedAfter") String changeAfter);
+    Call<List<Defect>> getData(@Query("eqUuid") List<String> equipmentUuid, @Query("changedAfter") String changeAfter);
 }

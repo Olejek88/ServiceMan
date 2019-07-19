@@ -35,6 +35,7 @@ import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.TaskTemplate;
 import ru.shtrm.serviceman.data.TaskType;
 import ru.shtrm.serviceman.data.TaskVerdict;
@@ -181,6 +182,10 @@ public class GetReferenceService extends Service {
 
             if (!updateTaskTemplate(realm)) {
                 Journal.add("TaskTemplate not updated.");
+            }
+
+            if (!getNewTask(realm)) {
+                Journal.add("Task not received.");
             }
 
 //            if (!updateUserHouse(realm)) {
@@ -948,6 +953,28 @@ public class GetReferenceService extends Service {
                     realm.copyToRealmOrUpdate(list);
                     realm.commitTransaction();
                     ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                }
+
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean getNewTask(Realm realm) {
+        Call<List<Task>> call = SManApiFactory.getTaskService().getByStatus(WorkStatus.Status.NEW);
+        try {
+            Response<List<Task>> response = call.execute();
+            if (response.isSuccessful()) {
+                List<Task> list = response.body();
+                if (list.size() > 0) {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(list);
+                    realm.commitTransaction();
                 }
 
                 return true;

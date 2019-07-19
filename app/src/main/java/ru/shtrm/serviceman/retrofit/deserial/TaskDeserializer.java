@@ -1,5 +1,6 @@
 package ru.shtrm.serviceman.retrofit.deserial;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -10,7 +11,10 @@ import com.google.gson.JsonPrimitive;
 import java.lang.reflect.Type;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.Operation;
+import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.Organization;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.TaskTemplate;
@@ -40,13 +44,13 @@ public class TaskDeserializer extends BaseDeserialzer implements JsonDeserialize
         item.setTaskVerdict((TaskVerdict) getReference(object, TaskVerdict.class, "taskVerdictUuid"));
         item.setTaskTemplate((TaskTemplate) getReference(object, TaskTemplate.class, "taskTemplateUuid"));
         item.setTaskDate(getDate(object, "taskDate"));
-        item.setStartDate(getDate(object, "startDate"));
+        item.setStartDate(getDate(object, "startDate", new DateTypeDeserializer(), true));
         item.setDeadlineDate(getDate(object, "deadlineDate"));
-        item.setEndDate(getDate(object, "endDate"));
+        item.setEndDate(getDate(object, "endDate", new DateTypeDeserializer(), true));
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 
-        field = "authorUuid";
+        field = "author";
         userObject = object.getAsJsonObject(field);
         if (userObject == null) {
             fail(field, realm);
@@ -80,6 +84,24 @@ public class TaskDeserializer extends BaseDeserialzer implements JsonDeserialize
                 item.setAuthor(refItem);
             }
         }
+
+        RealmList<Operation> opList = new RealmList<>();
+        JsonArray operationsArray = object.getAsJsonArray("operations");
+        for (JsonElement arrayElement : operationsArray) {
+            JsonObject opObject = arrayElement.getAsJsonObject();
+            Operation op = new Operation();
+            op.set_id(getLong(opObject, "_id"));
+            op.setUuid(getString(opObject, "uuid"));
+            op.setOrganization((Organization) getReference(opObject, Organization.class, "oid"));
+            op.setTaskUuid(getString(opObject, "taskUuid"));
+            op.setWorkStatus((WorkStatus) getReference(opObject, WorkStatus.class, "workStatusUuid"));
+            op.setOperationTemplate((OperationTemplate) getReference(opObject, OperationTemplate.class, "operationTemplateUuid"));
+            op.setCreatedAt(getDate(opObject, "createdAt"));
+            op.setChangedAt(getDate(opObject, "changedAt"));
+            opList.add(op);
+        }
+
+        item.setOperations(opList);
 
         super.close();
 

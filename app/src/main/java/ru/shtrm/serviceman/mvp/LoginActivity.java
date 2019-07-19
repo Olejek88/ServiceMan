@@ -81,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                             // по кодам из RFID можно показать более подробные сообщения
                             Toast.makeText(getApplicationContext(),
                                     "Операция прервана", Toast.LENGTH_SHORT).show();
+                            rfidDialog.dismiss();
                             return true;
                         }
 

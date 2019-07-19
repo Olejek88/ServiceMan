@@ -104,14 +104,18 @@ public class BaseDeserialzer {
     }
 
     Date getDate(JsonObject object, String field) throws JsonParseException {
-        return getDate(object, field, new DateTypeDeserializer());
+        return getDate(object, field, new DateTypeDeserializer(), false);
     }
 
-    Date getDate(JsonObject object, String field, JsonDeserializer<Date> deserializer) throws JsonParseException {
+    Date getDate(JsonObject object, String field, JsonDeserializer<Date> deserializer, boolean isNullable) throws JsonParseException {
         JsonElement element = object.get(field);
-        if (element == null) {
-            realm.close();
-            throw new JsonParseException("Unparseable data: " + field);
+        if (element == null || element.isJsonNull()) {
+            if (isNullable) {
+                return null;
+            } else {
+                realm.close();
+                throw new JsonParseException("Unparseable data: " + field);
+            }
         }
 
         try {

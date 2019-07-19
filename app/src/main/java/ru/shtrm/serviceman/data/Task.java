@@ -4,7 +4,6 @@ import java.util.Date;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class Task extends RealmObject {
@@ -19,6 +18,7 @@ public class Task extends RealmObject {
     private Equipment equipment;
     private TaskVerdict taskVerdict;
     private TaskTemplate taskTemplate;
+    private RealmList<Operation> operations;
     private Date taskDate;
     private Date startDate;
     private Date deadlineDate;
@@ -145,4 +145,13 @@ public class Task extends RealmObject {
     public void setDeadlineDate(Date deadlineDate) {
         this.deadlineDate = deadlineDate;
     }
+
+    public RealmList<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(RealmList<Operation> operations) {
+        this.operations = operations;
+    }
+
 }

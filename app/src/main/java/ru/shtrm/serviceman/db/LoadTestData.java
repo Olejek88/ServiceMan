@@ -474,7 +474,7 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 operation=realmDB.createObject(Operation.class, operationUuid1);
                 operation.setWorkStatus(workStatus);
-                operation.setTask(task);
+                operation.setTaskUuid(task.getUuid());
                 operation.setOperationTemplate(operationTemplate);
                 operation.setChangedAt(new Date());
                 operation.setCreatedAt(new Date());
@@ -486,7 +486,7 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 operation2=realmDB.createObject(Operation.class, operationUuid2);
                 operation2.setWorkStatus(workStatus);
-                operation2.setTask(task);
+                operation2.setTaskUuid(task.getUuid());
                 operation2.setOperationTemplate(operationTemplate2);
                 operation2.setChangedAt(new Date());
                 operation2.setCreatedAt(new Date());
@@ -534,7 +534,7 @@ public class LoadTestData {
             public void execute(Realm realm) {
                 operation=realmDB.createObject(Operation.class, operationUuid3);
                 operation.setWorkStatus(workStatus);
-                operation.setTask(task);
+                operation.setTaskUuid(task.getUuid());
                 operation.setOperationTemplate(operationTemplate);
                 operation.setChangedAt(new Date());
                 operation.setCreatedAt(new Date());

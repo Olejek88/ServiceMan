@@ -56,6 +56,7 @@ import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.retrofit.TokenTask;
 import ru.shtrm.serviceman.service.ForegroundService;
+import ru.shtrm.serviceman.service.GetReferenceService;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
@@ -183,12 +184,21 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         Log.d(TAG, "MainActivity:onResume()");
         super.onResume();
-        if (AuthorizedUser.getInstance().getUser() != null) {
-            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
-            if (user != null) {
-                TextView profileName = navigationView.getHeaderView(0).findViewById(R.id.name);
-                profileName.setText(user.getName());
-            }
+        User user = AuthorizedUser.getInstance().getUser();
+        if (user != null) {
+//            User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
+//            if (user != null) {
+            TextView profileName = navigationView.getHeaderView(0).findViewById(R.id.name);
+            profileName.setText(user.getName());
+//            }
+
+            // стартуем сервис получения справочников
+            Log.d(TAG, "startGetReference()");
+            Context context = getApplicationContext();
+            Intent serviceIntent = new Intent(context, GetReferenceService.class);
+            serviceIntent.setAction(GetReferenceService.ACTION);
+            context.startService(serviceIntent);
+
         }
         //if (_gpsListener==null)
         CheckRunGPSListener();

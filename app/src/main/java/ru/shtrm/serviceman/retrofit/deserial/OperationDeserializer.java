@@ -25,7 +25,7 @@ public class OperationDeserializer extends BaseDeserialzer implements JsonDeseri
         item.set_id(getLong(object, "_id"));
         item.setUuid(getString(object, "uuid"));
         item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
-        item.setTask((Task) getReference(object, Task.class, "taskUuid"));
+        item.setTaskUuid(getString(object, "taskUuid"));
         item.setWorkStatus((WorkStatus) getReference(object, WorkStatus.class, "workStatusUuid"));
         item.setOperationTemplate((OperationTemplate) getReference(object, OperationTemplate.class, "operationTemplateUuid"));
         item.setCreatedAt(getDate(object, "createdAt"));

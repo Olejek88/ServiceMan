@@ -10,7 +10,6 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.source.EquipmentDataSource;
 
@@ -56,13 +55,6 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     }
 
     @Override
-    public List<Equipment> getEquipmentByFlat(Flat flat) {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).equalTo("flat.uuid", flat.getUuid()).findAll());
-    }
-
-    @Override
     public List<Equipment> getEquipmentByType(EquipmentType equipmentType) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(
@@ -76,7 +68,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipment.setSent(false);
+//                equipment.setSent(false);
                 realm.copyToRealmOrUpdate(equipment);
             }
         });
@@ -105,7 +97,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipment.setSent(false);
+//                equipment.setSent(false);
                 equipment.setEquipmentStatus(equipmentStatus);
                 realm.copyToRealmOrUpdate(equipment);
             }

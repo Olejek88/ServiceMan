@@ -7,6 +7,4 @@ import ru.shtrm.serviceman.data.Street;
 public interface StreetDataSource {
 
     List<Street> getStreets();
-
-    List<Street> getStreetsByCurrentUser();
 }

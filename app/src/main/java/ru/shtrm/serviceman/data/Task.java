@@ -4,20 +4,24 @@ import java.util.Date;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class Task extends RealmObject {
 
-    @Index
-    private long _id;
     @PrimaryKey
+    private long _id;
     private String uuid;
+    private Organization organization;
     private String comment;
-    private Flat flat;
     private WorkStatus workStatus;
+    private User author;
     private Equipment equipment;
+    private TaskVerdict taskVerdict;
+    private TaskTemplate taskTemplate;
+    private RealmList<Operation> operations;
+    private Date taskDate;
     private Date startDate;
+    private Date deadlineDate;
     private Date endDate;
     private Date createdAt;
     private Date changedAt;
@@ -28,14 +32,6 @@ public class Task extends RealmObject {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
     }
 
     public WorkStatus getWorkStatus() {
@@ -100,6 +96,62 @@ public class Task extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public TaskVerdict getTaskVerdict() {
+        return taskVerdict;
+    }
+
+    public void setTaskVerdict(TaskVerdict taskVerdict) {
+        this.taskVerdict = taskVerdict;
+    }
+
+    public TaskTemplate getTaskTemplate() {
+        return taskTemplate;
+    }
+
+    public void setTaskTemplate(TaskTemplate taskTemplate) {
+        this.taskTemplate = taskTemplate;
+    }
+
+    public Date getTaskDate() {
+        return taskDate;
+    }
+
+    public void setTaskDate(Date taskDate) {
+        this.taskDate = taskDate;
+    }
+
+    public Date getDeadlineDate() {
+        return deadlineDate;
+    }
+
+    public void setDeadlineDate(Date deadlineDate) {
+        this.deadlineDate = deadlineDate;
+    }
+
+    public RealmList<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(RealmList<Operation> operations) {
+        this.operations = operations;
     }
 
 }

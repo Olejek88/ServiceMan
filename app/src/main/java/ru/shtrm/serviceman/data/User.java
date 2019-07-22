@@ -6,6 +6,8 @@ import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
     public static final String SERVICE_USER_UUID = "00000000-9BF0-4542-B127-F4ECEFCE49DA";
+    public static final String SERVICE_USER_PIN = "PIN:qwerfvgtbsasljflasjflajsljdsa";
+    public static final String SERVICE_USER_NAME = "sUser";
 
     @PrimaryKey
     private long _id;
@@ -14,6 +16,8 @@ public class User extends RealmObject {
     private String pin;
     private String image;
     private String contact;
+    private Organization organization;
+    private int type;
 
     public static long getLastId() {
         Realm realm = Realm.getDefaultInstance();
@@ -73,5 +77,26 @@ public class User extends RealmObject {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public class Type {
+        public static final int ARM = 1;
+        public static final int WORKER = 2;
     }
 }

@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
 
@@ -34,11 +32,6 @@ public class TaskRepository implements TaskDataSource {
     @Override
     public List<Task> getTaskByEquipment(Equipment equipment, String status) {
         return localDataSource.getTaskByEquipment(equipment,status);
-    }
-
-    @Override
-    public List<Task> getTaskByFlat(Flat flat, String status) {
-        return localDataSource.getTaskByFlat(flat, status);
     }
 
     @Override

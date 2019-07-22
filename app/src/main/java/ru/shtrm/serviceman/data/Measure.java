@@ -13,8 +13,10 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
     private long _id;
     @PrimaryKey
     private String uuid;
+    private Organization organization;
     private Equipment equipment;
     private User user;
+    private MeasureType measureType;
     private Date date;
     private double value;
     private Date createdAt;
@@ -113,5 +115,21 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public MeasureType getMeasureType() {
+        return measureType;
+    }
+
+    public void setMeasureType(MeasureType measureType) {
+        this.measureType = measureType;
     }
 }

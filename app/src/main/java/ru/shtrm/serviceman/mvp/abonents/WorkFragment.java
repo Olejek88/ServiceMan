@@ -36,21 +36,15 @@ import java.util.List;
 import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
-import ru.shtrm.serviceman.data.source.PhotoHouseRepository;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
-import ru.shtrm.serviceman.mvp.flat.FlatActivity;
-import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
-public class WorkFragment extends Fragment implements AbonentsContract.View, AppBarLayout.OnOffsetChangedListener {
+public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChangedListener {
     public final static int ACTIVITY_PHOTO = 100;
     private static final String TAG;
     private static final int LEVEL_CITY = 0;
@@ -72,12 +66,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private FloatingActionButton back;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
-    private FlatAdapter flatAdapter;
     private StreetAdapter streetAdapter;
     private HouseAdapter houseAdapter;
     private File photoFile;
     private String photoUuid;
-    private PhotoHouseRepository photoHouseRepository;
     private GpsTrackRepository gpsTrackRepository;
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
@@ -91,7 +83,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     private ImageView mImage;
     //private ImageView objectIcon;
     private AppBarLayout mAppBarLayout;
-    private AbonentsContract.Presenter presenter;
 
     // As a fragment, default constructor is needed.
     public WorkFragment() {
@@ -128,13 +119,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             public void onClick(View v) {
                 switch (currentLevel) {
                     case LEVEL_INFO:
-                        presenter.loadFlats(currentHouse);
+//                        presenter.loadFlats(currentHouse);
                         break;
                     case LEVEL_FLAT:
-                        presenter.loadHouses(currentStreet);
+//                        presenter.loadHouses(currentStreet);
                         break;
                     case LEVEL_HOUSE:
-                        presenter.loadStreets();
+//                        presenter.loadStreets();
                         break;
                     case LEVEL_STREET:
                         break;
@@ -166,17 +157,14 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
 
         mAppBarLayout.addOnOffsetChangedListener(this);
         startAlphaAnimation(mTitle, 0, View.INVISIBLE);
-        presenter.loadStreets();
+//        presenter.loadStreets();
         return contentView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        presenter.subscribe();
-        if (photoHouseRepository == null)
-            photoHouseRepository = PhotoHouseRepository.getInstance
-                    (PhotoHouseLocalDataSource.getInstance());
+//        presenter.subscribe();
         if (gpsTrackRepository == null)
             gpsTrackRepository = GpsTrackRepository.getInstance
                     (GpsTrackLocalDataSource.getInstance());
@@ -185,7 +173,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
     @Override
     public void onPause() {
         super.onPause();
-        presenter.unsubscribe();
+//        presenter.unsubscribe();
     }
 
     /**
@@ -193,7 +181,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
      *
      * @param view The container view.
      */
-    @Override
+//    @Override
     public void initViews(View view) {
         add_comment = view.findViewById(R.id.fab_comment);
         make_photo = view.findViewById(R.id.fab_photo);
@@ -238,15 +226,15 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
         });
     }
 
-    /**
-     * Set a presenter for this fragment(View),
-     *
-     * @param presenter The presenter.
-     */
-    @Override
-    public void setPresenter(@NonNull AbonentsContract.Presenter presenter) {
-        this.presenter = presenter;
-    }
+//    /**
+//     * Set a presenter for this fragment(View),
+//     *
+//     * @param presenter The presenter.
+//     */
+//    @Override
+//    public void setPresenter(@NonNull AbonentsContract.Presenter presenter) {
+//        this.presenter = presenter;
+//    }
 
     /**
      * Hide a RecyclerView when it is empty and show a empty view
@@ -254,7 +242,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
      *
      * @param toShow Hide or show.
      */
-    @Override
+//    @Override
     public void showEmptyView(boolean toShow) {
         if (toShow) {
             recyclerView.setVisibility(View.INVISIBLE);
@@ -263,79 +251,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
             recyclerView.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.INVISIBLE);
         }
-    }
-
-    /**
-     * Show flats with recycler view.
-     *
-     * @param list The data.
-     */
-    @Override
-    public void showFlats(@NonNull final List<Flat> list) {
-        currentLevel = LEVEL_FLAT;
-        setHasOptionsMenu(true);
-        if (flatAdapter == null) {
-            flatAdapter = new FlatAdapter(mainActivityConnector, list);
-            flatAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
-                @Override
-                public void OnItemClick(View v, int position) {
-                    Flat flat = list.get(position);
-                    Intent intent = new Intent(getActivity(), FlatActivity.class);
-                    intent.putExtra("FLAT_UUID", String.valueOf(flat.getUuid()));
-                    startActivity(intent);
-                }
-            });
-            recyclerView.setAdapter(flatAdapter);
-        } else {
-            flatAdapter.updateData(list);
-            recyclerView.setAdapter(flatAdapter);
-        }
-
-        MainActivity mainActivity = ((MainActivity) getActivity());
-        if (currentHouse.getHouseType() != null) {
-            if (mainActivity != null) {
-                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280) {
-                    mainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
-                } else {
-                    mainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
-                }
-            }
-        }
-
-        List<PhotoHouse> photos = photoHouseRepository.getPhotoByHouse(currentHouse);
-        if (photos.size() > 0) {
-            if (photos.get(0).getChangedAt() != null) {
-                String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(photos.get(0).getChangedAt());
-                mObjectDate.setText(sDate);
-            } else mObjectDate.setText("фото не было");
-            Bitmap bitmap = MainUtil.getBitmapByPath(MainUtil.getPicturesDirectory(mainActivityConnector),
-                    photos.get(0).getUuid().concat(".jpg"));
-            if (bitmap != null) {
-                mImage.setImageBitmap(bitmap);
-                //objectIcon.setImageBitmap(bitmap);
-            }
-        } else {
-            mObjectDate.setText("фото не было");
-        }
-        mTitle.setText(currentHouse.getFullTitle());
-        mObjectTitle.setText(currentHouse.getFullTitle());
-        if (mainActivity != null) {
-            mainActivity.toolbar.setSubtitle(null);
-        }
-        mObjectDate.setVisibility(View.VISIBLE);
-
-        make_photo.setVisibility(View.VISIBLE);
-        add_comment.setVisibility(View.VISIBLE);
-        back.setVisibility(View.VISIBLE);
-        //showEmptyView(list.isEmpty());
-
-        add_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FlatActivity.createAddMessageDialog(mainActivityConnector, null, currentHouse);
-            }
-        });
-
     }
 
     public void showStreets(@NonNull final List<Street> list) {
@@ -350,7 +265,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 public void OnItemClick(View v, int position) {
                     Street street = list.get(position);
                     currentStreet = street;
-                    presenter.loadHouses(street);
+//                    presenter.loadHouses(street);
                 }
             });
             recyclerView.setAdapter(streetAdapter);
@@ -388,7 +303,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View, App
                 public void OnItemClick(View v, int position) {
                     House house = list.get(position);
                     currentHouse = house;
-                    presenter.loadFlats(house);
+//                    presenter.loadFlats(house);
                 }
             });
             recyclerView.setAdapter(houseAdapter);

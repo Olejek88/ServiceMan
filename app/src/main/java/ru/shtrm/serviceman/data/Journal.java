@@ -12,6 +12,8 @@ public class Journal extends RealmObject implements ISend, IBaseRecord {
     private String userUuid;
     private String description;
     private Date date;
+    private String type;
+    private String title;
     private boolean sent;
 
     public static long getLastId() {
@@ -24,6 +26,43 @@ public class Journal extends RealmObject implements ISend, IBaseRecord {
 
         realm.close();
         return lastId.longValue();
+    }
+
+    public static void add(String message) {
+        User user = AuthorizedUser.getInstance().getUser();
+        String userUuid;
+
+        if (user != null) {
+            userUuid = user.getUuid();
+        } else {
+            userUuid = User.SERVICE_USER_UUID;
+        }
+
+        if (userUuid == null) {
+            userUuid = User.SERVICE_USER_UUID;
+        }
+
+        Realm realm = Realm.getDefaultInstance();
+
+        Journal journal = new Journal();
+        journal.set_id(getLastId() + 1);
+        journal.setUserUuid(userUuid);
+        journal.setDescription(message);
+        journal.setDate(new Date());
+        journal.setSent(false);
+
+        boolean isTransaction = realm.isInTransaction();
+        if (!isTransaction) {
+            realm.beginTransaction();
+        }
+
+        realm.copyToRealmOrUpdate(journal);
+
+        if (!isTransaction) {
+            realm.commitTransaction();
+        }
+
+        realm.close();
     }
 
     @Override
@@ -68,40 +107,19 @@ public class Journal extends RealmObject implements ISend, IBaseRecord {
         this.sent = sent;
     }
 
-    public static void add(String message) {
-        User user = AuthorizedUser.getInstance().getUser();
-        String userUuid;
+    public String getType() {
+        return type;
+    }
 
-        if (user != null) {
-            userUuid = user.getUuid();
-        } else {
-            userUuid = User.SERVICE_USER_UUID;
-        }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-        if (userUuid == null) {
-            userUuid = User.SERVICE_USER_UUID;
-        }
+    public String getTitle() {
+        return title;
+    }
 
-        Realm realm = Realm.getDefaultInstance();
-
-        Journal journal = new Journal();
-        journal.set_id(getLastId() + 1);
-        journal.setUserUuid(userUuid);
-        journal.setDescription(message);
-        journal.setDate(new Date());
-        journal.setSent(false);
-
-        boolean isTransaction = realm.isInTransaction();
-        if (!isTransaction) {
-            realm.beginTransaction();
-        }
-
-        realm.copyToRealmOrUpdate(journal);
-
-        if (!isTransaction) {
-            realm.commitTransaction();
-        }
-
-        realm.close();
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

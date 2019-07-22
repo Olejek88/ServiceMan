@@ -36,6 +36,16 @@ public class UsersLocalDataSource implements UsersDataSource {
                 .findAllSorted("name", Sort.ASCENDING);
     }
 
+    @Override
+    public RealmResults<User> getUsers(int type) {
+        Realm realm = Realm.getDefaultInstance();
+        return realm
+                .where(User.class)
+                .notEqualTo("uuid", User.SERVICE_USER_UUID)
+                .equalTo("type", type)
+                .findAllSorted("name", Sort.ASCENDING);
+    }
+
     public User getLastUser() {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).findFirst();

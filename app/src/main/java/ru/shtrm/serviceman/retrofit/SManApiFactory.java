@@ -23,55 +23,71 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.City;
+import ru.shtrm.serviceman.data.Defect;
+import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
+import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.HouseType;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
-import ru.shtrm.serviceman.data.Resident;
+import ru.shtrm.serviceman.data.Operation;
+import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.Street;
-import ru.shtrm.serviceman.data.Subject;
-import ru.shtrm.serviceman.data.UserHouse;
+import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskTemplate;
+import ru.shtrm.serviceman.data.ZhObject;
+import ru.shtrm.serviceman.retrofit.deserial.CityDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.DateTypeDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.DefectDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.DocumentationDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.EquipmentDeserializer;
-import ru.shtrm.serviceman.retrofit.deserial.FlatDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.EquipmentTypeDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.HouseDeserializer;
-import ru.shtrm.serviceman.retrofit.deserial.ResidentDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.HouseTypeDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.MessageDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.ObjectDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.OperationDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.OperationTemplateDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.StreetDeserializer;
-import ru.shtrm.serviceman.retrofit.deserial.SubjectDeserializer;
-import ru.shtrm.serviceman.retrofit.deserial.UserHouseDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.TaskDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.TaskTemplateDeserializer;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmTypeService;
 import ru.shtrm.serviceman.retrofit.iface.ICityService;
+import ru.shtrm.serviceman.retrofit.iface.IDefectService;
+import ru.shtrm.serviceman.retrofit.iface.IDefectTypeService;
+import ru.shtrm.serviceman.retrofit.iface.IDocumentationService;
+import ru.shtrm.serviceman.retrofit.iface.IDocumentationTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IEquipmentSystemService;
 import ru.shtrm.serviceman.retrofit.iface.IEquipmentTypeService;
-import ru.shtrm.serviceman.retrofit.iface.IFlatService;
-import ru.shtrm.serviceman.retrofit.iface.IFlatStatusService;
-import ru.shtrm.serviceman.retrofit.iface.IFlatTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IGpsTrackService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IHouseTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IJournalService;
 import ru.shtrm.serviceman.retrofit.iface.IMeasureService;
+import ru.shtrm.serviceman.retrofit.iface.IMeasureTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IMessageService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoAlarmService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoEquipmentService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoFlatService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoHouseService;
-import ru.shtrm.serviceman.retrofit.iface.IPhotoMessageService;
+import ru.shtrm.serviceman.retrofit.iface.IOperationTemplateService;
 import ru.shtrm.serviceman.retrofit.iface.IPingService;
-import ru.shtrm.serviceman.retrofit.iface.IResidentService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
-import ru.shtrm.serviceman.retrofit.iface.ISubjectService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskTemplateService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskTypeService;
+import ru.shtrm.serviceman.retrofit.iface.ITaskVerdictService;
 import ru.shtrm.serviceman.retrofit.iface.ITokenService;
-import ru.shtrm.serviceman.retrofit.iface.IUserHouseService;
 import ru.shtrm.serviceman.retrofit.iface.IUsersService;
+import ru.shtrm.serviceman.retrofit.iface.IWorkStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IZhObjectService;
+import ru.shtrm.serviceman.retrofit.iface.IZhObjectStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IZhObjectTypeService;
 import ru.shtrm.serviceman.retrofit.serial.AlarmSerializer;
 import ru.shtrm.serviceman.retrofit.serial.EquipmentSerializer;
-import ru.shtrm.serviceman.retrofit.serial.FlatSerializer;
 import ru.shtrm.serviceman.retrofit.serial.MeasureSerializer;
 import ru.shtrm.serviceman.retrofit.serial.MessageSerializer;
 
@@ -106,7 +122,7 @@ public class SManApiFactory {
                         Request request = chain.request();
                         HttpUrl url = request.url()
                                 .newBuilder()
-                                .addQueryParameter("XDEBUG_SESSION_START", "PHPSTORM1")
+                                .addQueryParameter("XDEBUG_SESSION_START", "xdebug")
                                 .build();
                         Request.Builder requestBuilder = request.newBuilder().url(url);
                         Request newRequest = requestBuilder.build();
@@ -154,16 +170,6 @@ public class SManApiFactory {
     }
 
     @NonNull
-    public static IFlatService getFlatService() {
-        return getRetrofit().create(IFlatService.class);
-    }
-
-    @NonNull
-    public static IFlatStatusService getFlatStatusService() {
-        return getRetrofit().create(IFlatStatusService.class);
-    }
-
-    @NonNull
     public static IGpsTrackService getGpsTrackService() {
         return getRetrofit().create(IGpsTrackService.class);
     }
@@ -189,38 +195,8 @@ public class SManApiFactory {
     }
 
     @NonNull
-    public static IPhotoAlarmService getPhotoAlarmService() {
-        return getRetrofit().create(IPhotoAlarmService.class);
-    }
-
-    @NonNull
-    public static IPhotoEquipmentService getPhotoEquipmentService() {
-        return getRetrofit().create(IPhotoEquipmentService.class);
-    }
-
-    @NonNull
-    public static IPhotoFlatService getPhotoFlatService() {
-        return getRetrofit().create(IPhotoFlatService.class);
-    }
-
-    @NonNull
-    public static IPhotoHouseService getPhotoHouseService() {
-        return getRetrofit().create(IPhotoHouseService.class);
-    }
-
-    @NonNull
-    public static IResidentService getResidentService() {
-        return getRetrofit().create(IResidentService.class);
-    }
-
-    @NonNull
     public static IStreetService getStreetService() {
         return getRetrofit().create(IStreetService.class);
-    }
-
-    @NonNull
-    public static ISubjectService getSubjectService() {
-        return getRetrofit().create(ISubjectService.class);
     }
 
     @NonNull
@@ -231,11 +207,6 @@ public class SManApiFactory {
     @NonNull
     public static IUsersService getUsersService() {
         return getRetrofit().create(IUsersService.class);
-    }
-
-    @NonNull
-    public static IFlatTypeService getFlatTypeService() {
-        return getRetrofit().create(IFlatTypeService.class);
     }
 
     @NonNull
@@ -254,13 +225,78 @@ public class SManApiFactory {
     }
 
     @NonNull
-    public static IPhotoMessageService getPhotoMessageService() {
-        return getRetrofit().create(IPhotoMessageService.class);
+    public static IDefectTypeService getDefectTypeService() {
+        return getRetrofit().create(IDefectTypeService.class);
     }
 
     @NonNull
-    public static IUserHouseService getUserHouseService() {
-        return getRetrofit().create(IUserHouseService.class);
+    public static IDocumentationTypeService getDocumentationTypeService() {
+        return getRetrofit().create(IDocumentationTypeService.class);
+    }
+
+    @NonNull
+    public static IMeasureTypeService getMeasureTypeService() {
+        return getRetrofit().create(IMeasureTypeService.class);
+    }
+
+    @NonNull
+    public static IZhObjectStatusService getZhObjectStatusService() {
+        return getRetrofit().create(IZhObjectStatusService.class);
+    }
+
+    @NonNull
+    public static IZhObjectTypeService getZhObjectTypeService() {
+        return getRetrofit().create(IZhObjectTypeService.class);
+    }
+
+    @NonNull
+    public static ITaskTypeService getTaskTypeService() {
+        return getRetrofit().create(ITaskTypeService.class);
+    }
+
+    @NonNull
+    public static ITaskVerdictService getTaskVerdictService() {
+        return getRetrofit().create(ITaskVerdictService.class);
+    }
+
+    @NonNull
+    public static ITaskService getTaskService() {
+        return getRetrofit().create(ITaskService.class);
+    }
+
+    @NonNull
+    public static IWorkStatusService getWorkStatusService() {
+        return getRetrofit().create(IWorkStatusService.class);
+    }
+
+    @NonNull
+    public static IEquipmentSystemService getEquipmentSystemService() {
+        return getRetrofit().create(IEquipmentSystemService.class);
+    }
+
+    @NonNull
+    public static IDefectService getDefectService() {
+        return getRetrofit().create(IDefectService.class);
+    }
+
+    @NonNull
+    public static IDocumentationService getDocumentationService() {
+        return getRetrofit().create(IDocumentationService.class);
+    }
+
+    @NonNull
+    public static IOperationTemplateService getOperationTemplateService() {
+        return getRetrofit().create(IOperationTemplateService.class);
+    }
+
+    @NonNull
+    public static ITaskTemplateService getTaskTemplateService() {
+        return getRetrofit().create(ITaskTemplateService.class);
+    }
+
+    @NonNull
+    public static IZhObjectService getObjectService() {
+        return getRetrofit().create(IZhObjectService.class);
     }
 
     @NonNull
@@ -293,19 +329,30 @@ public class SManApiFactory {
             }
         }
 
+        // Deserializers
+        builder.registerTypeAdapter(City.class, new CityDeserializer());
         builder.registerTypeAdapter(Date.class, new DateTypeDeserializer());
+        builder.registerTypeAdapter(Defect.class, new DefectDeserializer());
+        builder.registerTypeAdapter(Documentation.class, new DocumentationDeserializer());
+        builder.registerTypeAdapter(Equipment.class, new EquipmentDeserializer());
+        builder.registerTypeAdapter(EquipmentType.class, new EquipmentTypeDeserializer());
+        builder.registerTypeAdapter(House.class, new HouseDeserializer());
+        builder.registerTypeAdapter(HouseType.class, new HouseTypeDeserializer());
+        builder.registerTypeAdapter(Message.class, new MessageDeserializer());
+        builder.registerTypeAdapter(ZhObject.class, new ObjectDeserializer());
+        builder.registerTypeAdapter(Operation.class, new OperationDeserializer());
+        builder.registerTypeAdapter(OperationTemplate.class, new OperationTemplateDeserializer());
+        builder.registerTypeAdapter(Street.class, new StreetDeserializer());
+        builder.registerTypeAdapter(Task.class, new TaskDeserializer());
+        builder.registerTypeAdapter(TaskTemplate.class, new TaskTemplateDeserializer());
+//        builder.registerTypeAdapter(UserHouse.class, new UserHouseDeserializer());
+
+        // Serializers
         builder.registerTypeAdapter(Equipment.class, new EquipmentSerializer());
         builder.registerTypeAdapter(Measure.class, new MeasureSerializer());
         builder.registerTypeAdapter(Alarm.class, new AlarmSerializer());
-        builder.registerTypeAdapter(Flat.class, new FlatSerializer());
         builder.registerTypeAdapter(Message.class, new MessageSerializer());
-        builder.registerTypeAdapter(Street.class, new StreetDeserializer());
-        builder.registerTypeAdapter(House.class, new HouseDeserializer());
-        builder.registerTypeAdapter(Flat.class, new FlatDeserializer());
-        builder.registerTypeAdapter(Equipment.class, new EquipmentDeserializer());
-        builder.registerTypeAdapter(UserHouse.class, new UserHouseDeserializer());
-        builder.registerTypeAdapter(Subject.class, new SubjectDeserializer());
-        builder.registerTypeAdapter(Resident.class, new ResidentDeserializer());
+
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Gson gson = builder.create();
         return new Retrofit.Builder()
@@ -313,6 +360,15 @@ public class SManApiFactory {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(CLIENT)
                 .build();
+    }
+
+    public static boolean pingService() {
+        Call<Void> call = getPingService().ping();
+        try {
+            return call.execute().isSuccessful();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -341,15 +397,6 @@ public class SManApiFactory {
 
         public void setDeserializer(JsonDeserializer<?> deserializer) {
             this.deserializer = deserializer;
-        }
-    }
-
-    public static boolean pingService() {
-        Call<Void> call = getPingService().ping();
-        try {
-            return call.execute().isSuccessful();
-        } catch (Exception e) {
-            return false;
         }
     }
 }

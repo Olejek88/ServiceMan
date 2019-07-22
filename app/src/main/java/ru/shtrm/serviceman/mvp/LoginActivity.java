@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -80,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                             // по кодам из RFID можно показать более подробные сообщения
                             Toast.makeText(getApplicationContext(),
                                     "Операция прервана", Toast.LENGTH_SHORT).show();
+                            rfidDialog.dismiss();
                             return true;
                         }
 
@@ -127,6 +129,20 @@ public class LoginActivity extends AppCompatActivity {
                 rfidDialog.show(getFragmentManager(), RfidDialog.TAG);
             }
         });
+
+        if (!ViewConfiguration.get(getApplicationContext()).hasPermanentMenuKey()) {
+            Button settingButton = findViewById(R.id.setting_button);
+            settingButton.setVisibility(View.VISIBLE);
+            settingButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(LoginActivity.this, PrefsActivity.class);
+                    intent.putExtra(PrefsActivity.EXTRA_FLAG, PrefsActivity.FLAG_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+        }
+
     }
 
     public void initViews() {
@@ -176,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
 //        });
 //        pinCode.requestFocus();
 
-        RealmResults<User> users = presenter.loadUsers();
+        RealmResults<User> users = presenter.loadUsers(User.Type.WORKER);
         UserListAdapter adapter = new UserListAdapter(this, R.layout.item_user, users);
         userSelect.setAdapter(adapter);
         SharedPreferences sp = getApplicationContext().getSharedPreferences("lastUser", MODE_PRIVATE);
@@ -213,13 +229,13 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        Log.d("xxxx", "LoginActivity:onPause()");
+        Log.d(TAG, "LoginActivity:onPause()");
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        Log.d("xxxx", "LoginActivity:onResume()");
+        Log.d(TAG, "LoginActivity:onResume()");
         super.onResume();
     }
 

@@ -10,6 +10,7 @@ public class UserHouse extends RealmObject {
     @PrimaryKey
     private long _id;
     private String uuid;
+    private Organization organization;
     private House house;
     private User user;
     private Date createdAt;
@@ -61,5 +62,13 @@ public class UserHouse extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }

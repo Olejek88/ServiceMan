@@ -8,13 +8,12 @@ import io.realm.annotations.PrimaryKey;
 
 public class OperationTemplate extends RealmObject {
 
-    @Index
-    private long _id;
     @PrimaryKey
+    private long _id;
     private String uuid;
+    private Organization organization;
     private String title;
     private String description;
-    private int normative;
     private Date createdAt;
     private Date changedAt;
 
@@ -32,14 +31,6 @@ public class OperationTemplate extends RealmObject {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getNormative() {
-        return normative;
-    }
-
-    public void setNormative(int normative) {
-        this.normative = normative;
     }
 
     public String getUuid() {
@@ -72,5 +63,13 @@ public class OperationTemplate extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }

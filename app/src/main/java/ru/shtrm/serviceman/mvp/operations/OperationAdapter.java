@@ -76,11 +76,6 @@ public class OperationAdapter extends BaseAdapter {
         //this.listener = listener;
     }
 
-    public interface OnOperationItemClickListener {
-        public void onCheckboxClicked(int position, Operation item);
-
-    }
-
     public List<Operation> getUpdatedList() {
         return list;
     }
@@ -117,14 +112,21 @@ public class OperationAdapter extends BaseAdapter {
                     if (complete!=null) {
                         OperationLocalDataSource.getInstance().setOperationStatus(item, complete);
                     }
-                    boolean finish = TaskLocalDataSource.getInstance().checkAllOperationsComplete(item.getTask());
-                    if (finish) {
-                        TaskLocalDataSource.getInstance().setTaskStatus(item.getTask(), complete);
-                    }
+
+                    // TODO: исправить в соответствии с тем что операции у нас теперь не ссылаются на задачу, и их вообще может не быть в задаче.
+//                    boolean finish = TaskLocalDataSource.getInstance().checkAllOperationsComplete(item.getTask());
+//                    if (finish) {
+//                        TaskLocalDataSource.getInstance().setTaskStatus(item.getTask(), complete);
+//                    }
                 }
             });
         }
         return view;
+    }
+
+    public interface OnOperationItemClickListener {
+        public void onCheckboxClicked(int position, Operation item);
+
     }
 
     public class OperationViewHolder {

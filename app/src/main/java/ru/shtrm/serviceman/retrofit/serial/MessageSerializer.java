@@ -18,10 +18,11 @@ public class MessageSerializer implements JsonSerializer<Message> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         object.addProperty("uuid", src.getUuid());
-        object.addProperty("flatUuid", src.getFlat().getUuid());
-        object.addProperty("userUuid", src.getUser().getUuid());
+        object.addProperty("oid", src.getOrganization().getUuid());
+        object.addProperty("fromUserUuid", src.getFromUser().getUuid());
+        object.addProperty("toUserUuid", src.getToUser().getUuid());
         object.addProperty("date", sdf.format(src.getDate()));
-        object.addProperty("message", src.getMessage());
+        object.addProperty("text", src.getText());
         object.addProperty("createdAt", sdf.format(src.getCreatedAt()));
         object.addProperty("changedAt", sdf.format(src.getChangedAt()));
 

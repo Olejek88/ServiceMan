@@ -172,6 +172,8 @@
     <string name="delete_test_data">Удалить справочники</string>
     <string name="data">Данные</string>
     <string name="server_address">Адрес сервера</string>
+    <string name="organization_id">Идентификатор организации</string>
+    <string name="organization_secret">Секрет организации</string>
     <string name="server_key">server_ip</string>
 
     <string name="do_not_disturb_mode">Режим не беспокоить</string>
@@ -243,6 +245,10 @@
     <string name="api_url">api_url</string>
     <string name="api_pref_title">Сервер</string>
     <string name="api_url_default">http://api.serviceman.tehnosber.ru</string>
+    <string name="api_oid_default">0</string>
+    <string name="api_oid_key">oid</string>
+    <string name="api_organization_secret_default" />
+    <string name="api_organization_secret_key">organization_secret</string>
 
     <!--drivers-->
     <string name="pleasePutTag">Поднесите метку</string>

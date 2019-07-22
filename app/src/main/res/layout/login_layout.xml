@@ -65,7 +65,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:background="@color/mdtp_red"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
@@ -75,6 +75,23 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/mdtp_white"
         android:textSize="14sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/setting_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loginButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:height="35dp"
+        android:background="@color/colorPrimary"
+        android:minHeight="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/nav_settings"
+        android:textColor="@color/mdtp_white"
+        android:tint="@android:color/white"
         android:visibility="gone" />
 
 </RelativeLayout>

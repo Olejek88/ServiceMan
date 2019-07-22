@@ -6,13 +6,10 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.Sort;
-import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.OperationDataSource;
-import ru.shtrm.serviceman.data.source.TaskDataSource;
 
 public class OperationLocalDataSource implements OperationDataSource {
 

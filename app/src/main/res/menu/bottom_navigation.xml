@@ -5,23 +5,29 @@
         android:enabled="true">
 
         <item android:id="@+id/nav_map"
-            android:icon="@drawable/baseline_place_black_24dp"
             android:enabled="true"
+            android:icon="@drawable/baseline_place_black_24dp"
             android:title="@string/nav_map" />
 
-        <item android:id="@+id/nav_objects"
-            android:icon="@drawable/baseline_home_black_24dp"
+        <item
+            android:id="@+id/nav_tasks"
             android:enabled="true"
+            android:icon="@drawable/hammer_black_48"
+            android:title="@string/nav_tasks" />
+
+        <item android:id="@+id/nav_objects"
+            android:enabled="true"
+            android:icon="@drawable/baseline_home_black_24dp"
             android:title="@string/nav_users" />
 
-        <item android:id="@+id/nav_tasks"
-            android:icon="@drawable/baseline_notification_important_black_24dp"
-            android:enabled="true"
-            android:title="@string/nav_alarms" />
+        <!--<item android:id="@+id/nav_tasks"-->
+        <!--android:icon="@drawable/baseline_notification_important_black_24dp"-->
+        <!--android:enabled="true"-->
+        <!--android:title="@string/nav_alarms" />-->
 
         <item android:id="@+id/nav_messages"
-            android:icon="@drawable/baseline_email_black_24dp"
             android:enabled="true"
+            android:icon="@drawable/baseline_email_black_24dp"
             android:title="@string/nav_checkin" />
 
     </group>

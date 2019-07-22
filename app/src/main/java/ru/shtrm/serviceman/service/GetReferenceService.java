@@ -8,10 +8,12 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import ru.shtrm.serviceman.data.AlarmStatus;
@@ -966,15 +968,53 @@ public class GetReferenceService extends Service {
     }
 
     private boolean getNewTask(Realm realm) {
+        List<Task> list;
         Call<List<Task>> call = SManApiFactory.getTaskService().getByStatus(WorkStatus.Status.NEW);
         try {
             Response<List<Task>> response = call.execute();
             if (response.isSuccessful()) {
-                List<Task> list = response.body();
+                list = response.body();
                 if (list.size() > 0) {
+                    WorkStatus inWorkStatus = realm.where(WorkStatus.class)
+                            .equalTo("uuid", WorkStatus.Status.IN_WORK).findFirst();
+                    final List<String> uuids = new ArrayList<>();
+                    Date date = new Date();
+
+                    // проставляем дату получения задач
+                    for (Task task : list) {
+                        task.setTaskDate(date);
+                        task.setStartDate(date);
+                        if (task.getWorkStatus().getUuid().equals(WorkStatus.Status.NEW)) {
+                            uuids.add(task.getUuid());
+                            // устанавливаем статус "В работе"
+                            task.setWorkStatus(inWorkStatus);
+                        }
+                    }
+
+
                     realm.beginTransaction();
                     realm.copyToRealmOrUpdate(list);
                     realm.commitTransaction();
+
+                    // если есть новые задачи, отправляем подтверждение о получении
+                    // TODO: реализовать через отправку через очередь, т.е. здесь добавить запись которую нужно передать на сервер
+                    // а в отдельном сервисе, эту запись отправить на сервер.
+                    if (!uuids.isEmpty()) {
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                Call<ResponseBody> call = SManApiFactory.getTaskService().setInWork(uuids);
+                                try {
+                                    call.execute();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+
+                        Thread thread = new Thread(runnable);
+                        thread.start();
+                    }
                 }
 
                 return true;

@@ -8,6 +8,12 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class Message extends RealmObject implements ISend, IBaseRecord {
     @Index
     private long _id;
@@ -42,6 +48,22 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
 
         realm.close();
         return lastId.longValue();
+    }
+
+    public static List<Message> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Message.class));
+        Call<List<Message>> call = SManApiFactory.getMessageService().getData(lastUpdate);
+        try {
+            Response<List<Message>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public long get_id() {

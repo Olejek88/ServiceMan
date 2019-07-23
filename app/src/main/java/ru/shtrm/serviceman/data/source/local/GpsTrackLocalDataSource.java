@@ -3,9 +3,8 @@ package ru.shtrm.serviceman.data.source.local;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.List;
-
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.source.GpsTrackDataSource;
@@ -30,11 +29,14 @@ public class GpsTrackLocalDataSource implements GpsTrackDataSource {
     @Override
     public GpsTrack getLastTrack() {
         Realm realm = Realm.getDefaultInstance();
-        List <GpsTrack> gpsTracks = realm.where(GpsTrack.class).findAllSorted("date", Sort.DESCENDING);
-        if (gpsTracks.size()>0)
-            return realm.copyFromRealm(gpsTracks.get(0));
-        else
-            return null;
+        RealmResults<GpsTrack> gpsTracks = realm.where(GpsTrack.class).findAllSorted("date", Sort.DESCENDING);
+        GpsTrack list = null;
+        if (gpsTracks.size() > 0) {
+            list = realm.copyFromRealm(gpsTracks.first());
+        }
+
+        realm.close();
+        return list;
     }
 
     @Override

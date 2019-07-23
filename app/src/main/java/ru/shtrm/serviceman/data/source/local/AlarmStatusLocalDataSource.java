@@ -29,7 +29,10 @@ public class AlarmStatusLocalDataSource implements AlarmStatusDataSource {
     @Override
     public List<AlarmStatus> getAllAlarmStatus() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(AlarmStatus.class).findAllSorted("title", Sort.ASCENDING));
+        List<AlarmStatus> list = realm.where(AlarmStatus.class)
+                .findAllSorted("title", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

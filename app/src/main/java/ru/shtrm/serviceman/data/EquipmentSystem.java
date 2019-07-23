@@ -5,6 +5,12 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class EquipmentSystem extends RealmObject {
 
     @PrimaryKey
@@ -14,6 +20,22 @@ public class EquipmentSystem extends RealmObject {
     private String titleUser;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<EquipmentSystem> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(EquipmentSystem.class));
+        Call<List<EquipmentSystem>> call = SManApiFactory.getEquipmentSystemService().getData(lastUpdate);
+        try {
+            Response<List<EquipmentSystem>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;

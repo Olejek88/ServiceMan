@@ -1,9 +1,13 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class Documentation extends RealmObject implements IBaseRecord {
     @PrimaryKey
@@ -17,6 +21,22 @@ public class Documentation extends RealmObject implements IBaseRecord {
     private String path;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<Documentation> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Documentation.class));
+        Call<List<Documentation>> call = SManApiFactory.getDocumentationService().getData(lastUpdate);
+        try {
+            Response<List<Documentation>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;

@@ -29,14 +29,21 @@ public class MeasureTypeLocalDataSource implements MeasureTypeDataSource {
     @Override
     public List<MeasureType> getMeasureTypes() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<MeasureType> list = realm.copyFromRealm(
                 realm.where(MeasureType.class).findAllSorted("title"));
+        realm.close();
+        return list;
     }
 
     @Override
     public MeasureType getMeasureType(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(MeasureType.class).equalTo("uuid", uuid).findFirst());
+        MeasureType list = realm.where(MeasureType.class).equalTo("uuid", uuid).findFirst();
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

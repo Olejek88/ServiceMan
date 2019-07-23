@@ -28,15 +28,22 @@ public class ObjectTypeLocalDataSource implements ObjectTypeDataSource {
     @Override
     public List<ZhObjectType> getObjectTypes() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<ZhObjectType> list = realm.copyFromRealm(
                 realm.where(ZhObjectType.class).findAllSorted("title"));
+        realm.close();
+        return list;
     }
 
     @Override
     public ZhObjectType getObjectType(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(ZhObjectType.class).equalTo("uuid", uuid).
-                        findFirst());
+        ZhObjectType list = realm.where(ZhObjectType.class).equalTo("uuid", uuid)
+                .findFirst();
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

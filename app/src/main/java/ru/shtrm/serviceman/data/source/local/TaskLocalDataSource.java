@@ -30,12 +30,14 @@ public class TaskLocalDataSource implements TaskDataSource {
     }
 
     @Override
-    public List<Task> getTaskByEquipment(Equipment equipment, String  status) {
+    public List<Task> getTaskByEquipment(Equipment equipment, String status) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
-                        equalTo("workStatus.uuid", status).
-                        findAllSorted("createdAt", Sort.ASCENDING));
+        List<Task> list = realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
+                equalTo("workStatus.uuid", status).
+                findAllSorted("createdAt", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
@@ -45,6 +47,7 @@ public class TaskLocalDataSource implements TaskDataSource {
                 equalTo("task.uuid", task.getUuid()).
                 equalTo("workStatus.uuid", WorkStatus.Status.UN_COMPLETE).
                 count();
+        realm.close();
         return unCompleteOperations <= 0;
     }
 

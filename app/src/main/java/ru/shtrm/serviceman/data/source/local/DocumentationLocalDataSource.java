@@ -30,15 +30,24 @@ public class DocumentationLocalDataSource implements DocumentationDataSource {
     @Override
     public List<Documentation> getDocumentations() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(realm.where(Documentation.class)
+        List<Documentation> list = realm.where(Documentation.class)
                 .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
-                .findAllSorted("title"));
+                .findAllSorted("title");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public Documentation getDocumentation(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Documentation.class).equalTo("uuid", uuid).findFirst());
+        Documentation list = realm.where(Documentation.class)
+                .equalTo("uuid", uuid).findFirst();
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

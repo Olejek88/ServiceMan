@@ -1,12 +1,16 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class Defect extends RealmObject implements ISend, IBaseRecord {
     @Index
@@ -45,6 +49,22 @@ public class Defect extends RealmObject implements ISend, IBaseRecord {
 
         realm.close();
         return lastId.longValue();
+    }
+
+    public static List<Defect> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Defect.class));
+        Call<List<Defect>> call = SManApiFactory.getDefectService().getData(lastUpdate);
+        try {
+            Response<List<Defect>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public long get_id() {

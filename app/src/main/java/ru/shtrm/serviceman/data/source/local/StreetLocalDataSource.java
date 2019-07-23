@@ -28,7 +28,9 @@ public class StreetLocalDataSource implements StreetDataSource {
     @Override
     public List<Street> getStreets() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Street.class).findAllSorted("title"));
+        List<Street> list = realm.where(Street.class).findAllSorted("title");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

@@ -5,6 +5,12 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class HouseStatus extends RealmObject {
 
     @PrimaryKey
@@ -13,6 +19,22 @@ public class HouseStatus extends RealmObject {
     private String title;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<HouseStatus> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(HouseStatus.class));
+        Call<List<HouseStatus>> call = SManApiFactory.getHouseStatusService().getData(lastUpdate);
+        try {
+            Response<List<HouseStatus>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;

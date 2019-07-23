@@ -6,6 +6,12 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class WorkStatus extends RealmObject {
     @Index
     private long _id;
@@ -14,6 +20,22 @@ public class WorkStatus extends RealmObject {
     private String title;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<WorkStatus> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(WorkStatus.class));
+        Call<List<WorkStatus>> call = SManApiFactory.getWorkStatusService().getData(lastUpdate);
+        try {
+            Response<List<WorkStatus>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;
@@ -54,7 +76,7 @@ public class WorkStatus extends RealmObject {
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
     }
-    
+
     public class Status {
         public static final String NEW = "1E9B4D73-044C-471B-A08D-26F32EBB22B0";
         public static final String IN_WORK = "31179027-8416-47E4-832F-2A94D7804A4F";

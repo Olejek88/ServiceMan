@@ -29,7 +29,10 @@ public class DocumentationTypeLocalDataSource implements DocumentationTypeDataSo
     @Override
     public List<DocumentationType> getAllDocumentationTypes() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(DocumentationType.class).findAllSorted("title", Sort.ASCENDING));
+        List<DocumentationType> list = realm.where(DocumentationType.class)
+                .findAllSorted("title", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

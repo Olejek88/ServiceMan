@@ -29,14 +29,22 @@ public class TaskVerdictLocalDataSource implements TaskTypeDataSource {
     @Override
     public List<TaskType> getTaskTypes() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<TaskType> list = realm.copyFromRealm(
                 realm.where(TaskType.class).findAllSorted("title"));
+        realm.close();
+        return list;
     }
 
     @Override
     public TaskType getTaskType(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        TaskType list = realm.copyFromRealm(
                 realm.where(TaskType.class).equalTo("uuid", uuid).findFirst());
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

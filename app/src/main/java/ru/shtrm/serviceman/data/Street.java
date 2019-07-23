@@ -5,6 +5,12 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class Street extends RealmObject {
 
     @PrimaryKey
@@ -16,6 +22,22 @@ public class Street extends RealmObject {
     private City city;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<Street> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Street.class));
+        Call<List<Street>> call = SManApiFactory.getStreetService().getData(lastUpdate);
+        try {
+            Response<List<Street>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public City getCity() {
         return city;

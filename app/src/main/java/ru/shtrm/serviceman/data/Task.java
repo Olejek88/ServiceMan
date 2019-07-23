@@ -6,6 +6,12 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class Task extends RealmObject {
 
     @PrimaryKey
@@ -25,6 +31,22 @@ public class Task extends RealmObject {
     private Date endDate;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<Task> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Task.class));
+        Call<List<Task>> call = SManApiFactory.getTaskService().getData(lastUpdate);
+        try {
+            Response<List<Task>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public String getComment() {
         return comment;
@@ -153,5 +175,4 @@ public class Task extends RealmObject {
     public void setOperations(RealmList<Operation> operations) {
         this.operations = operations;
     }
-
 }

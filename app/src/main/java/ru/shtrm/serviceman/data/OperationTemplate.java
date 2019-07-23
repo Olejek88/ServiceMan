@@ -6,6 +6,12 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class OperationTemplate extends RealmObject {
 
     @PrimaryKey
@@ -16,6 +22,22 @@ public class OperationTemplate extends RealmObject {
     private String description;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<OperationTemplate> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(OperationTemplate.class));
+        Call<List<OperationTemplate>> call = SManApiFactory.getOperationTemplateService().getData(lastUpdate);
+        try {
+            Response<List<OperationTemplate>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;

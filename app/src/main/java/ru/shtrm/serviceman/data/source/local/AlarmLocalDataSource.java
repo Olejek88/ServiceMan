@@ -32,30 +32,42 @@ public class AlarmLocalDataSource implements AlarmDataSource {
     @Override
     public List<Alarm> getAlarms() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                        realm.where(Alarm.class).findAllSorted("date", Sort.ASCENDING));
+        List<Alarm> list = realm.where(Alarm.class).findAllSorted("date", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public Alarm getAlarm(@NonNull String uuid) {
         Realm realm = Realm.getDefaultInstance();
         Alarm alarm = realm.where(Alarm.class).equalTo("uuid", uuid).findFirst();
-        if (alarm!=null)
-            return realm.copyFromRealm(alarm);
-        else
-            return null;
+        if (alarm != null) {
+            alarm = realm.copyFromRealm(alarm);
+        }
+
+        realm.close();
+        return alarm;
     }
 
     @Override
     public List<Alarm> getAlarmsByType(AlarmType alarmType) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(Alarm.class).equalTo("alarmType", alarmType.getUuid()).findAll();
+        List<Alarm> list = realm.where(Alarm.class)
+                .equalTo("alarmType", alarmType.getUuid()).findAll();
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public List<Alarm> getAlarmsByStatus(AlarmStatus alarmStatus) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(Alarm.class).equalTo("alarmStatus", alarmStatus.getUuid()).findAll();
+        List<Alarm> list = realm.where(Alarm.class)
+                .equalTo("alarmStatus", alarmStatus.getUuid()).findAll();
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
@@ -65,6 +77,7 @@ public class AlarmLocalDataSource implements AlarmDataSource {
         if (lastId == null) {
             lastId = 0;
         }
+
         realm.close();
         return lastId.longValue();
     }

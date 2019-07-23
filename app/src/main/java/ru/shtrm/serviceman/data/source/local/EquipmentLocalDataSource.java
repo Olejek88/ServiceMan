@@ -34,32 +34,41 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     public Equipment getEquipmentByUuid(String uuid) {
         Realm realm = Realm.getDefaultInstance();
         Equipment equipment = realm.where(Equipment.class).equalTo("uuid", uuid).findFirst();
-        if (equipment!=null)
-            return realm.copyFromRealm(equipment);
-        else
-            return null;
+        if (equipment != null) {
+            equipment = realm.copyFromRealm(equipment);
+        }
+
+        realm.close();
+        return equipment;
     }
 
     @Override
     public List<Equipment> getAllEquipment() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).findAllSorted("equipmentType", Sort.ASCENDING));
+        List<Equipment> list = realm.where(Equipment.class).findAllSorted("equipmentType", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public List<Equipment> getEquipmentByHouse(House house) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).equalTo("house", house.getUuid()).findAll());
+        List<Equipment> list = realm.where(Equipment.class)
+                .equalTo("house", house.getUuid()).findAll();
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public List<Equipment> getEquipmentByType(EquipmentType equipmentType) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).
-                        equalTo("equipmentType", equipmentType.getUuid()).findAll());
+        List<Equipment> list = realm.where(Equipment.class)
+                .equalTo("equipmentType", equipmentType.getUuid()).findAll();
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override

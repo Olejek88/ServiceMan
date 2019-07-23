@@ -28,7 +28,9 @@ public class EquipmentSystemLocalDataSource implements EquipmentSystemDataSource
     @Override
     public List<EquipmentSystem> getAllEquipmentSystems() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(EquipmentSystem.class).findAllSorted("title"));
+        List<EquipmentSystem> list = realm.where(EquipmentSystem.class).findAllSorted("title");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

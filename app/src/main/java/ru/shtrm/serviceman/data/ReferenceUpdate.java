@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import io.realm.Realm;
+import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
@@ -64,6 +65,10 @@ public class ReferenceUpdate extends RealmObject {
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(item);
         realm.commitTransaction();
+    }
+
+    public static String makeReferenceName(Class<? extends RealmModel> clazz) {
+        return clazz.getSimpleName() + ":" + AuthorizedUser.getInstance().getUser().getUuid();
     }
 
     public String getReferenceName() {

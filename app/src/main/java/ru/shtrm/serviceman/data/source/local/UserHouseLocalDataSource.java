@@ -30,16 +30,19 @@ public class UserHouseLocalDataSource implements UserHouseDataSource {
     @Override
     public List<UserHouse> getAllUserHouses() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(UserHouse.class).findAllSorted("user.name", Sort.ASCENDING));
+        List<UserHouse> list = realm.copyFromRealm(realm.where(UserHouse.class)
+                .findAllSorted("user.name", Sort.ASCENDING));
+        realm.close();
+        return list;
     }
 
     @Override
     public List<UserHouse> getHousesByUser(@NonNull String userUuid) {
         Realm realm = Realm.getDefaultInstance();
-        List<UserHouse> userHouses = realm.where(UserHouse.class).
+        List<UserHouse> list = realm.where(UserHouse.class).
                 findAllSorted("name", Sort.ASCENDING);
-        return realm.copyFromRealm(realm.where(UserHouse.class).
-                        findAllSorted("name", Sort.ASCENDING));
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

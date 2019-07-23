@@ -5,6 +5,12 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class Equipment extends RealmObject implements IBaseRecord {
     @PrimaryKey
     private long _id;
@@ -22,6 +28,22 @@ public class Equipment extends RealmObject implements IBaseRecord {
     private ZhObject object;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<Equipment> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Equipment.class));
+        Call<List<Equipment>> call = SManApiFactory.getEquipmentService().getData(lastUpdate);
+        try {
+            Response<List<Equipment>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public String getTag() {
         return tag;

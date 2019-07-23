@@ -7,6 +7,12 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class ZhObject extends RealmObject implements IBaseRecord {
 
     @PrimaryKey
@@ -39,6 +45,22 @@ public class ZhObject extends RealmObject implements IBaseRecord {
 
         realm.close();
         return lastId.longValue();
+    }
+
+    public static List<ZhObject> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(ZhObject.class));
+        Call<List<ZhObject>> call = SManApiFactory.getObjectService().getData(lastUpdate);
+        try {
+            Response<List<ZhObject>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public long get_id() {

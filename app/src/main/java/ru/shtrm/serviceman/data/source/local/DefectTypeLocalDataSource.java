@@ -29,7 +29,10 @@ public class DefectTypeLocalDataSource implements DefectTypeDataSource {
     @Override
     public List<DefectType> getAllDefectTypes() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(DefectType.class).findAllSorted("title", Sort.ASCENDING));
+        List<DefectType> list = realm.where(DefectType.class)
+                .findAllSorted("title", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

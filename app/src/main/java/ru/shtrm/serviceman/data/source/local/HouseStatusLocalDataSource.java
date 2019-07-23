@@ -28,14 +28,21 @@ public class HouseStatusLocalDataSource implements HouseStatusDataSource {
     @Override
     public List<HouseStatus> getHouseStatuses() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<HouseStatus> list = realm.copyFromRealm(
                 realm.where(HouseStatus.class).findAllSorted("title"));
+        realm.close();
+        return list;
     }
 
     @Override
     public HouseStatus getHouseStatus(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(HouseStatus.class).equalTo("uuid", uuid).findFirst());
+        HouseStatus list = realm.where(HouseStatus.class).equalTo("uuid", uuid).findFirst();
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

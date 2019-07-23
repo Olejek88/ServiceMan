@@ -5,6 +5,12 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class TaskTemplate extends RealmObject {
 
     @PrimaryKey
@@ -17,6 +23,22 @@ public class TaskTemplate extends RealmObject {
     private TaskType taskType;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<TaskTemplate> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(TaskTemplate.class));
+        Call<List<TaskTemplate>> call = SManApiFactory.getTaskTemplateService().getData(lastUpdate);
+        try {
+            Response<List<TaskTemplate>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;

@@ -30,45 +30,57 @@ public class UsersLocalDataSource implements UsersDataSource {
     @Override
     public RealmResults<User> getUsers() {
         Realm realm = Realm.getDefaultInstance();
-        return realm
-                .where(User.class)
+        RealmResults<User> list = realm.where(User.class)
                 .notEqualTo("uuid", User.SERVICE_USER_UUID)
                 .findAllSorted("name", Sort.ASCENDING);
+        realm.close();
+        return list;
     }
 
     @Override
     public RealmResults<User> getUsers(int type) {
         Realm realm = Realm.getDefaultInstance();
-        return realm
+        RealmResults<User> list = realm
                 .where(User.class)
                 .notEqualTo("uuid", User.SERVICE_USER_UUID)
                 .equalTo("type", type)
                 .findAllSorted("name", Sort.ASCENDING);
+        realm.close();
+        return list;
     }
 
     public User getLastUser() {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).findFirst();
-        if (user != null)
-            return realm.copyFromRealm(user);
-        else
-            return null;
+        if (user != null) {
+            user = realm.copyFromRealm(user);
+        }
+
+        realm.close();
+        return user;
     }
 
     @Override
     public User getUser(@NonNull String uuid) {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).equalTo("uuid", uuid).findFirst();
-        if (user != null)
-            return realm.copyFromRealm(user);
-        else
-            return null;
+        if (user != null) {
+            user = realm.copyFromRealm(user);
+        }
+
+        realm.close();
+        return user;
     }
 
     @Override
     public boolean checkUser(@NonNull String userUuid, @NonNull String pin) {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).equalTo("uuid", userUuid).findFirst();
+        if (user != null) {
+            user = realm.copyFromRealm(user);
+        }
+
+        realm.close();
         return user != null && user.getPin().equals(MainUtil.MD5(pin));
     }
 }

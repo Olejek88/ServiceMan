@@ -31,9 +31,11 @@ public class OperationLocalDataSource implements OperationDataSource {
     @Override
     public List<Operation> getOperationByTask(Task task) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Operation.class).equalTo("task.uuid", task.getUuid()).
-                        findAllSorted("createdAt", Sort.DESCENDING));
+        List<Operation> list = realm.where(Operation.class).equalTo("task.uuid", task.getUuid())
+                .findAllSorted("createdAt", Sort.DESCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override

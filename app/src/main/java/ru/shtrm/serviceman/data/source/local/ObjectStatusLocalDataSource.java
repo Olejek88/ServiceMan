@@ -28,15 +28,22 @@ public class ObjectStatusLocalDataSource implements ObjectStatusDataSource {
     @Override
     public List<ZhObjectStatus> getObjectStatuses() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<ZhObjectStatus> list = realm.copyFromRealm(
                 realm.where(ZhObjectStatus.class).findAllSorted("title"));
+        realm.close();
+        return list;
     }
 
     @Override
     public ZhObjectStatus getObjectStatus(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(ZhObjectStatus.class).equalTo("uuid", uuid).
-                        findFirst());
+        ZhObjectStatus list = realm.where(ZhObjectStatus.class).equalTo("uuid", uuid)
+                .findFirst();
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

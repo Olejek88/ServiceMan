@@ -29,18 +29,25 @@ public class DefectLocalDataSource implements DefectDataSource {
     @Override
     public List<Defect> getDefects() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Defect.class)
-                        .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
-                        .findAllSorted("title"));
+        List<Defect> list = realm.where(Defect.class)
+                .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
+                .findAllSorted("title");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public Defect getDefect(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Defect.class).equalTo("uuid", uuid)
-                        .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
-                        .findFirst());
+        Defect list = realm.where(Defect.class).equalTo("uuid", uuid)
+                .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
+                .findFirst();
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

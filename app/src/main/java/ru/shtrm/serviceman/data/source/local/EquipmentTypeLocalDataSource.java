@@ -29,18 +29,27 @@ public class EquipmentTypeLocalDataSource implements EquipmentTypeDataSource {
     @Override
     public List<EquipmentType> getEquipmentTypes() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(EquipmentType.class)
-                        .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
-                        .findAllSorted("title"));
+        List<EquipmentType> list = realm.where(EquipmentType.class)
+                .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
+                .findAllSorted("title");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public EquipmentType getEquipmentType(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(EquipmentType.class).equalTo("uuid", uuid)
-                        .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
-                        .findFirst());
+        EquipmentType list = realm.where(EquipmentType.class)
+                .equalTo("uuid", uuid)
+                .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
+                .findFirst();
+        list = realm.copyFromRealm(list);
+        if (list != null) {
+            list = realm.copyFromRealm(list);
+        }
+
+        realm.close();
+        return list;
     }
 }

@@ -32,16 +32,20 @@ public class MeasureLocalDataSource implements MeasureDataSource {
     @Override
     public List<Measure> getMeasuresByEquipment(Equipment equipment) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Measure.class).equalTo("equipment.uuid", equipment.getUuid()).
-                        findAllSorted("date"));
+        List<Measure> list = realm.where(Measure.class).equalTo("equipment.uuid", equipment.getUuid())
+                .findAllSorted("date");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public List<Measure> getMeasures() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Measure.class).findAllSorted("date"));
+        List<Measure> list = realm.where(Measure.class).findAllSorted("date");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
@@ -63,6 +67,7 @@ public class MeasureLocalDataSource implements MeasureDataSource {
         if (lastId == null) {
             lastId = 0;
         }
+
         realm.close();
         return lastId.longValue();
     }
@@ -70,19 +75,24 @@ public class MeasureLocalDataSource implements MeasureDataSource {
     @Override
     public Measure getLastMeasureByHouse(House house) {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Measure> measures  = realm.where(Measure.class).
+        RealmResults<Measure> measures = realm.where(Measure.class).
                 equalTo("equipment.flat.house.uuid", house.getUuid()).
                 findAllSorted("date");
-        if (measures.size()>0)
-            return realm.copyFromRealm(measures.first());
-        else
-            return null;
+        Measure list = null;
+        if (measures.size() > 0) {
+            list = realm.copyFromRealm(measures.first());
+        }
+
+        realm.close();
+        return list;
     }
 
     @Override
     public long getUnsentMeasuresCount() {
         Realm realm = Realm.getDefaultInstance();
         //TODO uncomment when ready
-        return realm.where(Measure.class).equalTo("sent",false).count();
+        long count = realm.where(Measure.class).equalTo("sent", false).count();
+        realm.close();
+        return count;
     }
 }

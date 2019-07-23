@@ -4,6 +4,12 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class User extends RealmObject {
     public static final String SERVICE_USER_UUID = "00000000-9BF0-4542-B127-F4ECEFCE49DA";
     public static final String SERVICE_USER_PIN = "PIN:qwerfvgtbsasljflasjflajsljdsa";
@@ -29,6 +35,22 @@ public class User extends RealmObject {
 
         realm.close();
         return lastId.longValue();
+    }
+
+    public static List<User> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(User.class));
+        Call<List<User>> call = SManApiFactory.getUsersService().getData(lastUpdate);
+        try {
+            Response<List<User>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public long get_id() {

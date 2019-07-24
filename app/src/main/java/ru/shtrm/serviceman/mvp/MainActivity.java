@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity
             AuthorizedUser aUser = AuthorizedUser.getInstance();
             User user = aUser.getUser();
             if (!isOff && !aUser.isValidToken() && user != null) {
-                new TokenTask(getApplicationContext(), User.SERVICE_USER_UUID, user.getPin()).execute();
+                new TokenTask(getApplicationContext(), user.getUuid(), user.getPin()).execute();
             }
         }
     };

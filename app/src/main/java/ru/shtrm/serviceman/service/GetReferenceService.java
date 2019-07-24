@@ -8,6 +8,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,7 @@ import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.TaskTemplate;
 import ru.shtrm.serviceman.data.TaskType;
 import ru.shtrm.serviceman.data.TaskVerdict;
+import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.ZhObject;
@@ -375,6 +378,8 @@ public class GetReferenceService extends Service {
 
     private boolean getNewTask(Realm realm) {
         List<Task> list;
+        List<UpdateQuery> changes = new ArrayList<>();
+
         Call<List<Task>> call = SManApiFactory.getTaskService().getByStatus(WorkStatus.Status.NEW);
         try {
             Response<List<Task>> response = call.execute();
@@ -383,16 +388,20 @@ public class GetReferenceService extends Service {
                 if (list.size() > 0) {
                     WorkStatus inWorkStatus = realm.where(WorkStatus.class)
                             .equalTo("uuid", WorkStatus.Status.IN_WORK).findFirst();
-                    final List<String> uuids = new ArrayList<>();
                     Date date = new Date();
 
                     // проставляем дату получения задач
-                    for (Task task : list) {
-                        task.setStartDate(date);
-                        if (task.getWorkStatus().getUuid().equals(WorkStatus.Status.NEW)) {
-                            uuids.add(task.getUuid());
+                    for (Task item : list) {
+                        item.setStartDate(date);
+                        if (item.getWorkStatus().getUuid().equals(WorkStatus.Status.NEW)) {
                             // устанавливаем статус "В работе"
-                            task.setWorkStatus(inWorkStatus);
+                            item.setWorkStatus(inWorkStatus);
+
+                            UpdateQuery changedAttr = new UpdateQuery(item.getClass().getSimpleName(),
+                                    item.getUuid(), "workStatusUuid", inWorkStatus.getUuid(),
+                                    item.getChangedAt());
+                            changedAttr.set_id(UpdateQuery.getLastId() + 1);
+                            changes.add(changedAttr);
                         }
                     }
 
@@ -401,21 +410,28 @@ public class GetReferenceService extends Service {
                     realm.commitTransaction();
 
                     // если есть новые задачи, отправляем подтверждение о получении
-                    if (!uuids.isEmpty()) {
-                        Runnable runnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                Call<ResponseBody> call = SManApiFactory.getTaskService().setInWork(uuids);
-                                try {
-                                    call.execute();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                    for (UpdateQuery item : changes) {
+                        boolean success;
+                        Call<ResponseBody> callUpdAttr = SManApiFactory.getTaskService().updateAttribute(item);
+                        try {
+                            Response<ResponseBody> responseUpdAttr = callUpdAttr.execute();
+                            if (responseUpdAttr.isSuccessful()) {
+                                JSONObject jObj = new JSONObject(responseUpdAttr.body().string());
+                                success = (boolean) jObj.get("success");
+                            } else {
+                                success = false;
                             }
-                        };
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            success = false;
+                        }
 
-                        Thread thread = new Thread(runnable);
-                        thread.start();
+                        // что-то пошло не так, сохраняем данные в очередь на отправку
+                        if (!success) {
+                            realm.beginTransaction();
+                            realm.copyToRealmOrUpdate(item);
+                            realm.commitTransaction();
+                        }
                     }
                 }
 

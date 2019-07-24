@@ -73,7 +73,9 @@ import ru.shtrm.serviceman.retrofit.iface.IJournalService;
 import ru.shtrm.serviceman.retrofit.iface.IMeasureService;
 import ru.shtrm.serviceman.retrofit.iface.IMeasureTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IMessageService;
+import ru.shtrm.serviceman.retrofit.iface.IOperationService;
 import ru.shtrm.serviceman.retrofit.iface.IOperationTemplateService;
+import ru.shtrm.serviceman.retrofit.iface.IPhotoService;
 import ru.shtrm.serviceman.retrofit.iface.IPingService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
 import ru.shtrm.serviceman.retrofit.iface.ITaskService;
@@ -195,6 +197,11 @@ public class SManApiFactory {
     }
 
     @NonNull
+    public static IPhotoService getPhotoService() {
+        return getRetrofit().create(IPhotoService.class);
+    }
+
+    @NonNull
     public static IStreetService getStreetService() {
         return getRetrofit().create(IStreetService.class);
     }
@@ -282,6 +289,11 @@ public class SManApiFactory {
     @NonNull
     public static IDocumentationService getDocumentationService() {
         return getRetrofit().create(IDocumentationService.class);
+    }
+
+    @NonNull
+    public static IOperationService getOperationService() {
+        return getRetrofit().create(IOperationService.class);
     }
 
     @NonNull

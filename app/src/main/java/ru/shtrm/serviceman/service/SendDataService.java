@@ -97,23 +97,45 @@ public class SendDataService extends Service {
                 switch (query.getModelClass()) {
                     case "Task":
                         call = SManApiFactory.getTaskService().updateAttribute(realm.copyFromRealm(query));
-                        try {
-                            response = call.execute();
-                            if (response.isSuccessful()) {
-                                JSONObject jObj = new JSONObject(response.body().string());
-                                // при сохранении данных на сервере произошли ошибки
-                                boolean success = (boolean) jObj.get("success");
-                                if (success) {
-                                    Integer jData = (Integer) jObj.get("data");
-                                    realm.beginTransaction();
-                                    realm.where(UpdateQuery.class).equalTo("_id", jData).findAll().deleteAllFromRealm();
-                                    realm.commitTransaction();
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                         break;
+                    case "Equipment":
+                        call = SManApiFactory.getEquipmentService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    case "Operation":
+                        call = SManApiFactory.getOperationService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    case "Photo":
+                        call = SManApiFactory.getPhotoService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    case "Message":
+                        call = SManApiFactory.getMessageService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    case "Measure":
+                        call = SManApiFactory.getMeasureService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    default:
+                        call = null;
+                        break;
+                }
+
+                if (call == null) {
+                    return;
+                }
+
+                try {
+                    response = call.execute();
+                    if (response.isSuccessful()) {
+                        JSONObject jObj = new JSONObject(response.body().string());
+                        boolean success = (boolean) jObj.get("success");
+                        if (success) {
+                            Integer jData = (Integer) jObj.get("data");
+                            realm.beginTransaction();
+                            realm.where(UpdateQuery.class).equalTo("_id", jData).findAll().deleteAllFromRealm();
+                            realm.commitTransaction();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }

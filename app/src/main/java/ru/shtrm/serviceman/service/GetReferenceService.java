@@ -396,14 +396,11 @@ public class GetReferenceService extends Service {
                         }
                     }
 
-
                     realm.beginTransaction();
                     realm.copyToRealmOrUpdate(list);
                     realm.commitTransaction();
 
                     // если есть новые задачи, отправляем подтверждение о получении
-                    // TODO: реализовать через отправку через очередь, т.е. здесь добавить запись которую нужно передать на сервер
-                    // а в отдельном сервисе, эту запись отправить на сервер.
                     if (!uuids.isEmpty()) {
                         Runnable runnable = new Runnable() {
                             @Override

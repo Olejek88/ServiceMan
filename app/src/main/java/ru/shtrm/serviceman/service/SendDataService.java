@@ -15,6 +15,7 @@ import java.io.File;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -26,6 +27,7 @@ import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
+import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class SendDataService extends Service {
@@ -77,11 +79,45 @@ public class SendDataService extends Service {
                 sendMessage(realm, messageIds);
             }
 
+            // отправка очереди изменённых атрибутов
+            sendUpdateQuery(realm);
+
             realm.close();
 
             // останавливаем сервис
             stopSelf();
         }
+
+        void sendUpdateQuery(Realm realm) {
+            RealmResults<UpdateQuery> queryList = realm.where(UpdateQuery.class).findAllSorted("createdAt", Sort.ASCENDING);
+            Call<ResponseBody> call;
+            Response<ResponseBody> response;
+
+            for (UpdateQuery query : queryList) {
+                switch (query.getModelClass()) {
+                    case "Task":
+                        call = SManApiFactory.getTaskService().updateAttribute(realm.copyFromRealm(query));
+                        try {
+                            response = call.execute();
+                            if (response.isSuccessful()) {
+                                JSONObject jObj = new JSONObject(response.body().string());
+                                // при сохранении данных на сервере произошли ошибки
+                                boolean success = (boolean) jObj.get("success");
+                                if (success) {
+                                    Integer jData = (Integer) jObj.get("data");
+                                    realm.beginTransaction();
+                                    realm.where(UpdateQuery.class).equalTo("_id", jData).findAll().deleteAllFromRealm();
+                                    realm.commitTransaction();
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                }
+            }
+        }
+
 
         void sendGpsTrack(Realm realm, long[] array) {
             int count = array.length;

@@ -9,6 +9,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.UpdateQuery;
 
 public interface ITaskService {
     @GET("/task")
@@ -40,4 +41,7 @@ public interface ITaskService {
 
     @POST("/task/un-complete")
     Call<ResponseBody> setUnComplete(@Body List<String> uuid);
+
+    @POST("/task/update-attribute")
+    Call<ResponseBody> updateAttribute(@Body UpdateQuery attribute);
 }

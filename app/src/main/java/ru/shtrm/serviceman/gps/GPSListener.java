@@ -5,11 +5,16 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Date;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.GpsTrack;
+import ru.shtrm.serviceman.data.Journal;
+import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 
 import static java.lang.Math.abs;
@@ -49,36 +54,41 @@ public class GPSListener implements LocationListener, GpsStatus.Listener {
     }
 
     private void RecordGPSData(Double Latitude, Double Longitude) {
-        final Realm realmDB = Realm.getDefaultInstance();
-        final Double latitude = Latitude;
-        final Double longitude = Longitude;
-
-        realmDB.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                User user = AuthorizedUser.getInstance().getUser();
-                String uuid;
-                if (user != null) {
-                    userUuid = user.getUuid();
-                    uuid = user.getUuid();
-                } else {
-                    if (userUuid != null) {
-                        uuid = userUuid;
-                    } else {
-                        // нет ни текущего, ни "предыдущего" пользователя,
-                        // координаты "привязать" не к кому.
-                        return;
-                    }
-                }
-
-                long next_id = GpsTrack.getLastId() + 1;
-                GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
-                gpstrack.setDate(new Date());
-                gpstrack.setUserUuid(uuid);
-                gpstrack.setLatitude(latitude);
-                gpstrack.setLongitude(longitude);
+        User user = AuthorizedUser.getInstance().getUser();
+        String uuid;
+        if (user != null) {
+            userUuid = user.getUuid();
+            uuid = user.getUuid();
+        } else {
+            if (userUuid != null) {
+                uuid = userUuid;
+            } else {
+                // нет ни текущего, ни "предыдущего" пользователя,
+                // координаты "привязать" не к кому.
+                return;
             }
-        });
+        }
+
+        Realm realmDB = Realm.getDefaultInstance();
+
+        long next_id = GpsTrack.getLastId() + 1;
+
+        realmDB.beginTransaction();
+//        GpsTrack gpstrack = realmDB.createObject(GpsTrack.class, next_id);
+        GpsTrack gpstrack = new GpsTrack();
+        gpstrack.set_id(next_id);
+        gpstrack.setDate(new Date());
+        gpstrack.setUserUuid(uuid);
+        gpstrack.setLatitude(Latitude);
+        gpstrack.setLongitude(Longitude);
+
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").serializeNulls().create();
+        UpdateQuery itemToSend = new UpdateQuery(Journal.class.getSimpleName(), null,
+                null, gson.toJson(gpstrack), gpstrack.getDate());
+
+//        realmDB.copyToRealmOrUpdate(gpstrack);
+        realmDB.copyToRealmOrUpdate(itemToSend);
+        realmDB.commitTransaction();
 
         realmDB.close();
     }

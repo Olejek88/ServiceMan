@@ -23,8 +23,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import ru.shtrm.serviceman.data.Alarm;
-import ru.shtrm.serviceman.data.GpsTrack;
-import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.UpdateQuery;
@@ -32,16 +30,12 @@ import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class SendDataService extends Service {
     public static final String ACTION = "ru.shtrm.serviceman.service.SEND_DATA";
-    public static final String GPS_IDS = "gpsIds";
-    public static final String LOG_IDS = "logIds";
     public static final String ALARM_IDS = "alramIds";
     public static final String MEASURE_IDS = "measureIds";
     public static final String MESSAGE_IDS = "messageIds";
     private static final String TAG = SendDataService.class.getSimpleName();
     private boolean isRunning;
 
-    private long gpsIds[];
-    private long logIds[];
     private long alarmIds[];
     private long measureIds[];
     private long messageIds[];
@@ -53,16 +47,6 @@ public class SendDataService extends Service {
         @Override
         public void run() {
             Realm realm = Realm.getDefaultInstance();
-
-            // отправка координат
-            if (gpsIds != null && gpsIds.length > 0) {
-                sendGpsTrack(realm, gpsIds);
-            }
-
-            // отправка журнала
-            if (logIds != null && logIds.length > 0) {
-                sendLog(realm, logIds);
-            }
 
             // отправка аварий
             if (alarmIds != null && alarmIds.length > 0) {
@@ -113,6 +97,18 @@ public class SendDataService extends Service {
                     case "Measure":
                         call = SManApiFactory.getMeasureService().updateAttribute(realm.copyFromRealm(query));
                         break;
+                    case "Journal":
+                        call = SManApiFactory.getJournalService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    case "GpsTrack":
+                        call = SManApiFactory.getGpsTrackService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    case "Defect":
+                        call = SManApiFactory.getDefectService().updateAttribute(realm.copyFromRealm(query));
+                        break;
+                    case "Alarm":
+                        call = SManApiFactory.getAlarmService().updateAttribute(realm.copyFromRealm(query));
+                        break;
                     default:
                         call = null;
                         break;
@@ -137,90 +133,6 @@ public class SendDataService extends Service {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        }
-
-
-        void sendGpsTrack(Realm realm, long[] array) {
-            int count = array.length;
-            Long[] data = new Long[count];
-            for (int i = 0; i < count; i++) {
-                data[i] = array[i];
-            }
-
-            RealmResults<GpsTrack> items = realm.where(GpsTrack.class)
-                    .in("_id", data)
-                    .findAll();
-            // отправляем данные с координатами
-            Call<ResponseBody> call = SManApiFactory.getGpsTrackService().sendData(realm.copyFromRealm(items));
-            try {
-                Response response = call.execute();
-                ResponseBody result = (ResponseBody) response.body();
-                if (response.isSuccessful()) {
-                    JSONObject jObj = new JSONObject(result.string());
-                    // при сохранении данных на сервере произошли ошибки
-                    // данный флаг пока не используем
-//                        boolean success = (boolean) jObj.get("success");
-                    JSONArray jData = (JSONArray) jObj.get("data");
-                    Long[] ids = new Long[jData.length()];
-                    for (int idx = 0; idx < jData.length(); idx++) {
-                        JSONObject item = (JSONObject) jData.get(idx);
-                        Long _id = Long.parseLong(item.get("_id").toString());
-                        ids[idx] = _id;
-                    }
-
-                    // так как на клиенте не используем эту информацию, удаляем
-                    // после успешной отправки и сохранения
-                    realm.beginTransaction();
-                    realm.where(GpsTrack.class).in("_id", ids)
-                            .findAll()
-                            .deleteAllFromRealm();
-                    realm.commitTransaction();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Ошибка при отправке GPS лога.");
-                e.printStackTrace();
-            }
-        }
-
-        void sendLog(Realm realm, long[] array) {
-            int count = array.length;
-            Long[] data = new Long[count];
-            for (int i = 0; i < count; i++) {
-                data[i] = array[i];
-            }
-
-            RealmResults<Journal> items = realm.where(Journal.class).in("_id", data)
-                    .findAll();
-            // отправляем данные с логами
-            Call<ResponseBody> call = SManApiFactory.getJournalService().sendData(realm.copyFromRealm(items));
-            try {
-                Response response = call.execute();
-                ResponseBody result = (ResponseBody) response.body();
-                if (response.isSuccessful()) {
-                    JSONObject jObj = new JSONObject(result.string());
-                    // при сохранении данных на сервере произошли ошибки
-                    // данный флаг пока не используем
-//                        boolean success = (boolean) jObj.get("success");
-                    JSONArray jData = (JSONArray) jObj.get("data");
-                    Long[] ids = new Long[jData.length()];
-                    for (int idx = 0; idx < jData.length(); idx++) {
-                        JSONObject item = (JSONObject) jData.get(idx);
-                        Long _id = Long.parseLong(item.get("_id").toString());
-                        ids[idx] = _id;
-                    }
-
-                    // так как на клиенте не используем эту информацию, удаляем
-                    // после успешной отправки и сохранения
-                    realm.beginTransaction();
-                    realm.where(Journal.class).in("_id", ids)
-                            .findAll()
-                            .deleteAllFromRealm();
-                    realm.commitTransaction();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "Ошибка при отправке журнала.");
             }
         }
 
@@ -357,8 +269,6 @@ public class SendDataService extends Service {
         if (!isRunning) {
             Log.d(TAG, "Запускаем поток отправки данных на сервер...");
             isRunning = true;
-            gpsIds = intent.getLongArrayExtra(GPS_IDS);
-            logIds = intent.getLongArrayExtra(LOG_IDS);
             alarmIds = intent.getLongArrayExtra(ALARM_IDS);
             measureIds = intent.getLongArrayExtra(MEASURE_IDS);
             messageIds = intent.getLongArrayExtra(MESSAGE_IDS);

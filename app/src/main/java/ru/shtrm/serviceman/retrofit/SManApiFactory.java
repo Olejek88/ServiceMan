@@ -366,7 +366,7 @@ public class SManApiFactory {
         builder.registerTypeAdapter(Message.class, new MessageSerializer());
 
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        Gson gson = builder.create();
+        Gson gson = builder.serializeNulls().create();
         return new Retrofit.Builder()
                 .baseUrl(Api.API_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))

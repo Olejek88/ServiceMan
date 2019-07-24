@@ -131,24 +131,6 @@ public class ForegroundService extends Service {
                 Realm realm = Realm.getDefaultInstance();
                 Long[] limitIds;
 
-                // получаем данные для отправки координат
-                RealmResults<GpsTrack> gpsItems = realm.where(GpsTrack.class).findAll().sort("_id");
-                if (gpsItems.size() > 0) {
-                    limitIds = getLimitElements(gpsItems);
-                    gpsItems = realm.where(GpsTrack.class).in("_id", limitIds).findAll();
-                    ids = getIds(gpsItems);
-                    bundle.putLongArray(SendDataService.GPS_IDS, ids);
-                }
-
-                // получаем данные для отправки журнала
-                RealmResults<Journal> logItems = realm.where(Journal.class).findAll().sort("_id");
-                if (logItems.size() > 0) {
-                    limitIds = getLimitElements(logItems);
-                    logItems = realm.where(Journal.class).in("_id", limitIds).findAll();
-                    ids = getIds(logItems);
-                    bundle.putLongArray(SendDataService.LOG_IDS, ids);
-                }
-
                 // получаем данные для отправки аварий
                 RealmResults<Alarm> alarmItems = realm.where(Alarm.class)
                         .equalTo("sent", false)

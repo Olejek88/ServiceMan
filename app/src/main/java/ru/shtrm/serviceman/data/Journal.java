@@ -1,5 +1,8 @@
 package ru.shtrm.serviceman.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Date;
 
 import io.realm.Realm;
@@ -51,12 +54,17 @@ public class Journal extends RealmObject implements ISend, IBaseRecord {
         journal.setDate(new Date());
         journal.setSent(false);
 
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").serializeNulls().create();
+        UpdateQuery itemToSend = new UpdateQuery(Journal.class.getSimpleName(), null,
+                null, gson.toJson(journal), journal.date);
+
         boolean isTransaction = realm.isInTransaction();
         if (!isTransaction) {
             realm.beginTransaction();
         }
 
-        realm.copyToRealmOrUpdate(journal);
+//        realm.copyToRealmOrUpdate(journal);
+        realm.copyToRealmOrUpdate(itemToSend);
 
         if (!isTransaction) {
             realm.commitTransaction();

@@ -41,8 +41,10 @@ import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
@@ -89,9 +91,7 @@ public class MapFragment extends Fragment implements MapContract.View {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_map, container, false);
-
         initViews(contentView);
-
         setHasOptionsMenu(true);
         return contentView;
     }
@@ -140,7 +140,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         mapController = mapView.getController();
         mapController.setZoom(17.0);
         aOverlayItemArray = new ArrayList<>();
-        addAlarmsOverlay();
+        addTasksOverlay();
         addHouseOverlay();
         // Добавляем несколько слоев
         CompassOverlay compassOverlay = new CompassOverlay(mainActivityConnector, mapView);
@@ -225,24 +225,26 @@ public class MapFragment extends Fragment implements MapContract.View {
         }
     }
 
-    private void addAlarmsOverlay() {
+    private void addTasksOverlay() {
         double curLatitude, curLongitude;
-        final ArrayList<OverlayItem> alarmOverlayItemArray = new ArrayList<>();
-        List<Alarm> alarms = AlarmLocalDataSource.getInstance().getAlarms();
-        for (int i = 0; i < alarms.size(); i++) {
-            Alarm alarm = alarms.get(i);
-            curLatitude = alarm.getLatitude();
-            curLongitude = alarm.getLongitude();
+        final ArrayList<OverlayItem> taskOverlayItemArray = new ArrayList<>();
+        List<Task> tasks = TaskLocalDataSource.getInstance().getNewTasks();
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            curLatitude = task.getEquipment().getObject().getHouse().getLatitude();
+            curLongitude = task.getEquipment().getObject().getHouse().getLongitude();
 
-            OverlayItem olItem = new OverlayItem(alarm.getComment(),
+            OverlayItem olItem = new OverlayItem(task.getTaskTemplate().getTitle()
+                    .concat(" / ")
+                    .concat(task.getEquipment().getObject().getFullTitle()),
                     "Alarm", new GeoPoint(curLatitude, curLongitude));
             Drawable newMarker;
-            newMarker = this.getResources().getDrawable(R.drawable.baseline_add_location_black_24dp);
+            newMarker = this.getResources().getDrawable(R.drawable.ic_home_black_24dp);
             olItem.setMarker(newMarker);
-            alarmOverlayItemArray.add(olItem);
+            taskOverlayItemArray.add(olItem);
         }
         ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(
-                mainActivityConnector, alarmOverlayItemArray, null);
+                mainActivityConnector, taskOverlayItemArray, null);
         mapView.getOverlays().add(aIconOverlay);
     }
 

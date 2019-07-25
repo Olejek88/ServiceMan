@@ -10,6 +10,8 @@ public interface TaskDataSource {
 
     List<Task> getTaskByEquipment(Equipment equipment, String status);
 
+    List<Task> getNewTasks();
+
     boolean checkAllOperationsComplete(Task task);
 
     void setTaskStatus(Task task, WorkStatus status);

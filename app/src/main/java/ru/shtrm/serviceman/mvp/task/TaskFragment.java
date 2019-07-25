@@ -5,12 +5,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -20,12 +26,17 @@ import ru.shtrm.serviceman.data.Task;
 public class TaskFragment extends Fragment implements TaskContract.View {
     private Activity mainActivityConnector = null;
 
-    private TaskContract.Presenter presenter;
-    private View view;
-    private List<Task> tasks;
+    // View references
+    private BottomNavigationView bottomNavigationView;
+    private FloatingActionButton fab;
+    private RecyclerView recyclerView;
+    private LinearLayout emptyView;
 
-    public TaskFragment() {
-    }
+    private TaskAdapter TaskAdapter;
+    private TaskContract.Presenter presenter;
+
+    // As a fragment, default constructor is needed.
+    public TaskFragment() {}
 
     public static TaskFragment newInstance() {
         return new TaskFragment();
@@ -39,48 +50,119 @@ public class TaskFragment extends Fragment implements TaskContract.View {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_tasks, container, false);
+                             @Nullable Bundle savedInstanceState) {
+        View contentView = inflater.inflate(R.layout.fragment_work, container, false);
+
+        initViews(contentView);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_checkin:
+                        break;
+                    case R.id.nav_users:
+                        break;
+                    case R.id.nav_map:
+                        break;
+                    case R.id.nav_tasks:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        // Set true to inflate the options menu.
         setHasOptionsMenu(true);
-        return view;
+        return contentView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (presenter != null) {
-            presenter.subscribe();
-        }
+        presenter.subscribe();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (presenter != null) {
-            presenter.unsubscribe();
-        }
+        presenter.unsubscribe();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            mainActivityConnector.onBackPressed();
-        }
-
         return true;
     }
 
     @Override
-    public void initViews(View view) {
-        ListView listView = view.findViewById(R.id.list_view);
-        if (this.tasks != null) {
-            listView.setAdapter(null);
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item == null) {
+            return false;
         }
+        switch (item.getItemId()) {
+            default:
+                break;
+        }
+        return true;
     }
 
+    /**
+     * Init the views by findViewById.
+     * @param view The container view.
+     */
+    @Override
+    public void initViews(View view) {
+        fab =  view.findViewById(R.id.fab);
+        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
+        emptyView =  view.findViewById(R.id.emptyView);
+        recyclerView =  view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    /**
+     * Set a presenter for this fragment(View),
+     * @param presenter The presenter.
+     */
     @Override
     public void setPresenter(@NonNull TaskContract.Presenter presenter) {
         this.presenter = presenter;
+    }
+
+    /**
+     * Hide a RecyclerView when it is empty and show a empty view
+     * to tell the uses that there is no data currently.
+     * @param toShow Hide or show.
+     */
+    @Override
+    public void showEmptyView(boolean toShow) {
+        if (toShow) {
+            recyclerView.setVisibility(View.INVISIBLE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * Show flats with recycler view.
+     * @param list The data.
+     */
+    @Override
+    public void showTaskList(@NonNull final List<Task> list) {
+        if (TaskAdapter == null) {
+            TaskAdapter = new TaskAdapter(mainActivityConnector, list);
+            recyclerView.setAdapter(TaskAdapter);
+        } else {
+            TaskAdapter.updateData(list);
+            recyclerView.setAdapter(TaskAdapter);
+        }
+        showEmptyView(list.isEmpty());
     }
 
     @Override
@@ -88,14 +170,7 @@ public class TaskFragment extends Fragment implements TaskContract.View {
         super.onAttach(context);
         mainActivityConnector = getActivity();
         // TODO решить что делать если контекст не приехал
-        if (mainActivityConnector == null) {
+        if (mainActivityConnector==null)
             onDestroyView();
-        }
-    }
-
-    @Override
-    public void showTaskList(@NonNull List<Task> tasks) {
-        this.tasks = tasks;
-        initViews(view);
     }
 }

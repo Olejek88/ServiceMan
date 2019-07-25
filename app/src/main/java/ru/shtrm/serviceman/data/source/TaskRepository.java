@@ -35,6 +35,11 @@ public class TaskRepository implements TaskDataSource {
     }
 
     @Override
+    public List<Task> getNewTasks() {
+        return localDataSource.getNewTasks();
+    }
+
+    @Override
     public boolean checkAllOperationsComplete(Task task) {
         return localDataSource.checkAllOperationsComplete(task);
     }

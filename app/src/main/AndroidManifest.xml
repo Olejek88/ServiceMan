@@ -102,6 +102,7 @@
         <activity
             android:name=".ui.PrefsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".mvp.task.TaskInfoActivity" />
 
         <!--
                 <receiver android:name=".appwidget.AppWidgetProvider">

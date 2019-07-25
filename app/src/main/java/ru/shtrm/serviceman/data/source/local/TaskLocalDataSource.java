@@ -39,6 +39,17 @@ public class TaskLocalDataSource implements TaskDataSource {
     }
 
     @Override
+    public List<Task> getNewTasks() {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.copyFromRealm(
+                realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
+                        equalTo("workStatus.uuid", WorkStatus.Status.NEW).
+                        or().
+                        equalTo("workStatus.uuid", WorkStatus.Status.IN_WORK).
+                        findAllSorted("createdAt", Sort.ASCENDING));
+    }
+
+    @Override
     public boolean checkAllOperationsComplete(Task task) {
         Realm realm = Realm.getDefaultInstance();
         long unCompleteOperations = realm.where(Operation.class).

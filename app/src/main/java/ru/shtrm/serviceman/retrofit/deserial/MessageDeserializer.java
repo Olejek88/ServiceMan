@@ -108,8 +108,6 @@ public class MessageDeserializer extends BaseDeserialzer implements JsonDeserial
 
         item.setSent(true);
 
-        super.close();
-
         return item;
     }
 

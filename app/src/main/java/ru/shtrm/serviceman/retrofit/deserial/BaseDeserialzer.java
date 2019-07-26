@@ -12,16 +12,9 @@ import io.realm.RealmObject;
 
 public class BaseDeserialzer {
 
-    protected Realm realm;
-
-    BaseDeserialzer() {
-        realm = Realm.getDefaultInstance();
-    }
-
     public double getDouble(JsonObject object, String field) throws JsonParseException {
         JsonElement element = object.get(field);
         if (element == null || element.isJsonNull()) {
-            realm.close();
             throw new JsonParseException("Unparseable data: " + field);
         }
 
@@ -38,7 +31,6 @@ public class BaseDeserialzer {
             if (isNullable) {
                 return -1;
             } else {
-                realm.close();
                 throw new JsonParseException("Unparseable data: " + field);
             }
         }
@@ -49,7 +41,6 @@ public class BaseDeserialzer {
     public long getLong(JsonObject object, String field) throws JsonParseException {
         JsonElement element = object.get(field);
         if (element == null || element.isJsonNull()) {
-            realm.close();
             throw new JsonParseException("Unparseable data: " + field);
         }
 
@@ -66,7 +57,6 @@ public class BaseDeserialzer {
             if (isNullable) {
                 return null;
             } else {
-                realm.close();
                 throw new JsonParseException("Unparseable data: " + field);
             }
         }
@@ -88,18 +78,19 @@ public class BaseDeserialzer {
             if (isNullable) {
                 return null;
             } else {
-                realm.close();
                 throw new JsonParseException("Unparseable data: " + field);
             }
         }
 
         String refUuid = element.getAsString();
+        Realm realm = Realm.getDefaultInstance();
         RealmObject refItem = realm.where(realmObject).equalTo(key, refUuid).findFirst();
         if (refItem == null) {
             realm.close();
             throw new JsonParseException("Unparseable data: " + field);
         }
 
+        realm.close();
         return refItem;
     }
 
@@ -113,7 +104,6 @@ public class BaseDeserialzer {
             if (isNullable) {
                 return null;
             } else {
-                realm.close();
                 throw new JsonParseException("Unparseable data: " + field);
             }
         }
@@ -122,12 +112,7 @@ public class BaseDeserialzer {
             return deserializer.deserialize(element, null, null);
         } catch (JsonParseException e) {
             e.printStackTrace();
-            realm.close();
             throw new JsonParseException("Unparseable data: " + field);
         }
-    }
-
-    void close() {
-        realm.close();
     }
 }

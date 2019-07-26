@@ -1,9 +1,12 @@
 package ru.shtrm.serviceman.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -12,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -25,6 +30,7 @@ import retrofit2.Response;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
+import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
@@ -76,8 +82,11 @@ public class SendDataService extends Service {
             RealmResults<UpdateQuery> queryList = realm.where(UpdateQuery.class).findAllSorted("createdAt", Sort.ASCENDING);
             Call<ResponseBody> call;
             Response<ResponseBody> response;
+            File photoFile;
 
             for (UpdateQuery query : queryList) {
+                photoFile = null;
+                call = null;
                 switch (query.getModelClass()) {
                     case "Task":
                         call = SManApiFactory.getTaskService().updateAttribute(realm.copyFromRealm(query));
@@ -89,7 +98,38 @@ public class SendDataService extends Service {
                         call = SManApiFactory.getOperationService().updateAttribute(realm.copyFromRealm(query));
                         break;
                     case "Photo":
-                        call = SManApiFactory.getPhotoService().updateAttribute(realm.copyFromRealm(query));
+                        Context context = getApplicationContext();
+                        File extDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                        if (extDir != null) {
+                            List<MultipartBody.Part> files = new ArrayList<>();
+                            try {
+                                photoFile = new File(extDir.getAbsolutePath(), query.getModelUuid() + ".jpg");
+                                Uri uri = Uri.fromFile(photoFile);
+                                String formId = "file";
+                                files.add(prepareFilePart(formId, uri));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                continue;
+                            }
+
+                            RequestBody rb_id = RequestBody.create(MultipartBody.FORM, "" + query.get_id());
+                            RequestBody rbModelClass = RequestBody.create(MultipartBody.FORM, query.getModelClass());
+                            RequestBody rbModelUuid = RequestBody.create(MultipartBody.FORM, query.getModelUuid());
+                            RequestBody rbAttribute = RequestBody.create(MultipartBody.FORM, "");
+                            RequestBody rbValue = RequestBody.create(MultipartBody.FORM, query.getValue());
+                            RequestBody rbCreatedAt = RequestBody.create(MultipartBody.FORM, query.getCreatedAt().toString());
+                            RequestBody rbChangedAt = RequestBody.create(MultipartBody.FORM, query.getChangedAt().toString());
+                            call = SManApiFactory.getPhotoService().updateAttribute(
+                                    rb_id,
+                                    rbModelClass,
+                                    rbModelUuid,
+                                    rbAttribute,
+                                    rbValue,
+                                    rbCreatedAt,
+                                    rbChangedAt,
+                                    files);
+                        }
+
                         break;
                     case "Message":
                         call = SManApiFactory.getMessageService().updateAttribute(realm.copyFromRealm(query));
@@ -122,9 +162,15 @@ public class SendDataService extends Service {
                     response = call.execute();
                     if (response.isSuccessful()) {
                         JSONObject jObj = new JSONObject(response.body().string());
-                        boolean success = (boolean) jObj.get("success");
+                        boolean success = jObj.getBoolean("success");
                         if (success) {
-                            Integer jData = (Integer) jObj.get("data");
+                            if (query.getModelClass().equals(Photo.class.getSimpleName())) {
+                                if (photoFile != null && !photoFile.delete()) {
+                                    Log.e(TAG, "Can`t delete " + photoFile.getAbsolutePath());
+                                }
+                            }
+
+                            long jData = jObj.getLong("data");
                             realm.beginTransaction();
                             realm.where(UpdateQuery.class).equalTo("_id", jData).findAll().deleteAllFromRealm();
                             realm.commitTransaction();
@@ -290,6 +336,7 @@ public class SendDataService extends Service {
         return null;
     }
 
+    @NonNull
     private MultipartBody.Part prepareFilePart(String partName, Uri fileUri) {
         File file = new File(fileUri.getPath());
         String type = null;

@@ -35,8 +35,6 @@ public class HouseDeserializer extends BaseDeserialzer implements JsonDeserializ
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 
-        super.close();
-
         return item;
     }
 }

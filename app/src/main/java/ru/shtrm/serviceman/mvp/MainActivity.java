@@ -1,6 +1,7 @@
 package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,11 +9,15 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -21,6 +26,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -37,9 +43,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Journal;
+import ru.shtrm.serviceman.data.Photo;
+import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
@@ -54,20 +71,26 @@ import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.retrofit.TokenTask;
+import ru.shtrm.serviceman.retrofit.serial.PhotoSerializer;
 import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.service.GetReferenceService;
+import ru.shtrm.serviceman.service.SendDataService;
 import ru.shtrm.serviceman.ui.PrefsActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static final int PHOTO_RESULT = 666;
     private static final int REQUEST_WRITE_STORAGE = 2;
     private static final int REQUEST_FINE_LOCATION = 3;
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 4;
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOGIN = 0;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
+    public static String photoFile;
+    public static String objectUuid;
+    public static String photoUuid;
     public Toolbar toolbar;
     public boolean isLogged = false;
     private NavigationView navigationView;
@@ -77,7 +100,6 @@ public class MainActivity extends AppCompatActivity
     private AlarmFragment alarmsFragment;
     private WorkFragment workFragment;
     private int selectedNavItem = 0;
-
     private LocationManager _locationManager;
     private GPSListener _gpsListener;
     private Thread checkGPSThread;
@@ -131,6 +153,14 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+//        realm.where(Journal.class).findAll().deleteAllFromRealm();
+//        realm.where(UpdateQuery.class).findAll().deleteAllFromRealm();
+        realm.commitTransaction();
+        realm.close();
+//        Journal.add("Тестовая запись в журнале для проверки сохранения модели через updateAttribute.");
+
 //        if (savedInstanceState != null) {
 //            isLogged = savedInstanceState.getBoolean("isLogged");
 //        } else {
@@ -158,10 +188,41 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LOGIN) {
-            if (resultCode == RESULT_OK) {
-                isLogged = true;
-            }
+        switch (requestCode) {
+            case LOGIN:
+                isLogged = resultCode == RESULT_OK;
+                break;
+            case PHOTO_RESULT:
+                if (resultCode == Activity.RESULT_OK) {
+                    Gson gson = new GsonBuilder()
+                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                            .registerTypeAdapter(Photo.class, new PhotoSerializer())
+                            .serializeNulls()
+                            .create();
+                    Photo photo = new Photo();
+                    photo.setUuid(photoUuid);
+                    photo.setObjectUuid(objectUuid);
+                    // TODO: брать из текущих координат, либо из моделей которые содержат координаты
+                    // не все модели содержат координаты, нужно как-то решить этот вопрос.
+                    photo.setLatitude(0.0);
+                    photo.setLongitude(0.0);
+                    UpdateQuery query = new UpdateQuery(
+                            Photo.class.getSimpleName(),
+                            photoUuid,
+                            null,
+                            gson.toJson(photo),
+                            photo.getChangedAt()
+                    );
+                    query.set_id(UpdateQuery.getLastId() + 1);
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(query);
+                    realm.commitTransaction();
+                    realm.close();
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -198,6 +259,11 @@ public class MainActivity extends AppCompatActivity
             serviceIntent.setAction(GetReferenceService.ACTION);
             context.startService(serviceIntent);
 
+            // стартуем сервис отправки данных
+            Log.d(TAG, "startSendData()");
+            serviceIntent = new Intent(context, SendDataService.class);
+            serviceIntent.setAction(SendDataService.ACTION);
+            context.startService(serviceIntent);
         }
         //if (_gpsListener==null)
         CheckRunGPSListener();
@@ -240,12 +306,18 @@ public class MainActivity extends AppCompatActivity
                 showMapFragment();
                 break;
             case R.id.nav_users:
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                this.startActivityForResult(intent, 666);
                 showMessagesFragment();
                 break;
             case R.id.nav_alarms:
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                this.startActivityForResult(intent, 666);
                 showTasksFragment();
                 break;
             case R.id.nav_checkin:
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                this.startActivityForResult(intent, 666);
                 showObjectsFragment();
                 break;
             case R.id.nav_switch_theme:

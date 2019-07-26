@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -49,7 +48,6 @@ import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentTypeLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentFragment.ACTIVITY_PHOTO;
@@ -266,32 +264,5 @@ public class AddEquipmentFragment extends Fragment {
         if (equipmentTypeRepository == null)
             equipmentTypeRepository = EquipmentTypeRepository.getInstance
                     (EquipmentTypeLocalDataSource.getInstance());
-    }
-
-    /**
-     * Сохраняем фото
-     *
-     * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode  The result code.
-     * @param data        The result.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 4; // половина изображения
-                    Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                    if (bitmap != null) {
-                        storeBitmap = bitmap;
-                        imageView.setImageBitmap(bitmap);
-                        if (photoFile!=null)
-                            photoFile.delete();
-                    }
-                    break;
-                }
-        }
     }
 }

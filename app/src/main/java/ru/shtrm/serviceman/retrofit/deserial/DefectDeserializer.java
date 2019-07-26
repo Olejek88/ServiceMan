@@ -77,8 +77,6 @@ public class DefectDeserializer extends BaseDeserialzer implements JsonDeseriali
             }
         }
 
-        super.close();
-
         return item;
     }
 

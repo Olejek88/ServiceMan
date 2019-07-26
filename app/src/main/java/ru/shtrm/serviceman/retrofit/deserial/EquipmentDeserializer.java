@@ -41,8 +41,6 @@ public class EquipmentDeserializer extends BaseDeserialzer implements JsonDeseri
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 
-        super.close();
-
         return item;
     }
 }

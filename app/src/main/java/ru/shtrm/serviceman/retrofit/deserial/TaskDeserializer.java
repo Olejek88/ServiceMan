@@ -103,8 +103,6 @@ public class TaskDeserializer extends BaseDeserialzer implements JsonDeserialize
 
         item.setOperations(opList);
 
-        super.close();
-
         return item;
     }
 

@@ -13,7 +13,6 @@ import java.util.Date;
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.GpsTrack;
-import ru.shtrm.serviceman.data.Journal;
 import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 
@@ -83,8 +82,9 @@ public class GPSListener implements LocationListener, GpsStatus.Listener {
         gpstrack.setLongitude(Longitude);
 
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").serializeNulls().create();
-        UpdateQuery itemToSend = new UpdateQuery(Journal.class.getSimpleName(), null,
+        UpdateQuery itemToSend = new UpdateQuery(GpsTrack.class.getSimpleName(), null,
                 null, gson.toJson(gpstrack), gpstrack.getDate());
+        itemToSend.set_id(UpdateQuery.getLastId() + 1);
 
 //        realmDB.copyToRealmOrUpdate(gpstrack);
         realmDB.copyToRealmOrUpdate(itemToSend);

@@ -30,8 +30,6 @@ public class TaskTemplateDeserializer extends BaseDeserialzer implements JsonDes
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 
-        super.close();
-
         return item;
     }
 }

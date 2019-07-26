@@ -3,18 +3,24 @@ package ru.shtrm.serviceman.mvp.map;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +36,7 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -42,6 +49,7 @@ import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -90,6 +98,44 @@ public class MapFragment extends Fragment implements MapContract.View {
         initViews(contentView);
 
         setHasOptionsMenu(true);
+
+        contentView.findViewById(R.id.testButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                Context context = getContext();
+                Activity activity = getActivity();
+                if (context == null || activity == null) {
+                    return;
+                }
+
+                File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
+                if (!photoFile.getParentFile().exists()) {
+                    if (!photoFile.getParentFile().mkdirs()) {
+                        Log.e("XXX", "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
+                        return;
+                    }
+                }
+
+                // запоминаем данные необходимые для создания записи Photo в onActivityResult
+                MainActivity.photoFile = photoFile.getAbsolutePath();
+                // пока ни к чему реальному фотки не привязываются
+                MainActivity.objectUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                ;
+                MainActivity.photoUuid = photoUuid;
+
+                try {
+                    Uri photoURI = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", photoFile);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    activity.startActivityForResult(intent, MainActivity.PHOTO_RESULT);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
         return contentView;
     }
 
@@ -289,7 +335,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         if (location != null) {
             GeoPoint point2 = new GeoPoint(location.getLatitude(), location.getLongitude());
             if (mapController != null && mapView != null && aOverlayItemArray != null) {
-                if (mainActivityConnector.getPreferences(Context.MODE_PRIVATE).getBoolean("gps_center",true))
+                if (mainActivityConnector.getPreferences(Context.MODE_PRIVATE).getBoolean("gps_center", true))
                     mapController.setCenter(point2);
                 OverlayItem overlayItem = new OverlayItem("Вы здесь", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));

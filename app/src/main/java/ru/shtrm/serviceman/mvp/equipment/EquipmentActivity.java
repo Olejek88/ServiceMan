@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -37,7 +36,6 @@ import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MessageLocalDataSource;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.util.MainUtil.ACTIVITY_PHOTO_MESSAGE;
@@ -190,31 +188,5 @@ public class EquipmentActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return true;
-    }
-
-    /**
-     * Сохраняем фото
-     *
-     * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode  The result code.
-     * @param data        The result.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_PHOTO_MESSAGE:
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2; // половина изображения
-                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                if (bitmap != null) {
-                    storeBitmap = bitmap;
-                    if (add_photo != null)
-                        add_photo.setImageBitmap(bitmap);
-                    if (photoFile != null)
-                        photoFile.delete();
-                }
-                break;
-        }
     }
 }

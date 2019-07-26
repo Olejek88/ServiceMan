@@ -34,8 +34,6 @@ public class DocumentationDeserializer extends BaseDeserialzer
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 
-        super.close();
-
         return item;
     }
 

@@ -376,50 +376,6 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
         }
     }
 
-    /**
-     * Сохраняем фото
-     *
-     * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode  The result code.
-     * @param data        The result.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    switch (currentLevel) {
-                        case LEVEL_FLAT:
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inSampleSize = 2; // половина изображения
-                            Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                            if (bitmap != null) {
-                                String uuid = java.util.UUID.randomUUID().toString();
-                                MainUtil.storeNewImage(bitmap, getContext(),
-                                        800, uuid.concat(".jpg"));
-                                MainUtil.storePhotoHouse(currentHouse, uuid);
-                                if (!photoFile.delete()) {
-                                    Log.e(TAG, "Файл не удалён! path: " + photoFile.getAbsolutePath());
-                                }
-
-                                //objectIcon.setImageBitmap(bitmap);
-                                mImage.setImageBitmap(bitmap);
-                                String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
-                                        format(new Date());
-                                mObjectDate.setText(sDate);
-                            }
-                            break;
-                        case LEVEL_INFO:
-                            break;
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);

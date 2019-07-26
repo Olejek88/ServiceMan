@@ -35,8 +35,6 @@ public class ObjectDeserializer extends BaseDeserialzer implements JsonDeseriali
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 
-        super.close();
-
         return item;
     }
 }

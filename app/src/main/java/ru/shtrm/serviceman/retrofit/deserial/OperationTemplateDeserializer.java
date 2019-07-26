@@ -27,8 +27,6 @@ public class OperationTemplateDeserializer extends BaseDeserialzer implements Js
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 
-        super.close();
-
         return item;
     }
 

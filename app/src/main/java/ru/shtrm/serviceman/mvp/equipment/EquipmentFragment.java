@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -64,7 +62,6 @@ import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.OperationLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.operations.OperationAdapter;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -426,40 +423,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         BarData data = new BarData(set1);
         data.setValueTextSize(10f);
         mChart.setData(data);
-    }
-
-    /**
-     * Сохраняем фото
-     *
-     * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode  The result code.
-     * @param data        The result.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 2; // половина изображения
-                    Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                    if (bitmap != null) {
-                        String uuid = java.util.UUID.randomUUID().toString();
-                        MainUtil.storeNewImage(bitmap, getContext(),
-                                800, uuid.concat(".jpg"));
-                        MainUtil.storePhotoEquipment(equipment, uuid);
-                        photoFile.delete();
-                        circleImageView.setImageBitmap(bitmap);
-                        String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
-                                format(new Date());
-                        textViewPhotoDate.setText(sDate);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
     }
 
     // Operations----------------------------------------------------------------------------------------

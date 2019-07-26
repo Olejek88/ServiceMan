@@ -57,6 +57,7 @@ public class Journal extends RealmObject implements ISend, IBaseRecord {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").serializeNulls().create();
         UpdateQuery itemToSend = new UpdateQuery(Journal.class.getSimpleName(), null,
                 null, gson.toJson(journal), journal.date);
+        itemToSend.set_id(UpdateQuery.getLastId() + 1);
 
         boolean isTransaction = realm.isInTransaction();
         if (!isTransaction) {

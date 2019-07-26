@@ -30,6 +30,16 @@ public class TaskLocalDataSource implements TaskDataSource {
     }
 
     @Override
+    public Task getTask(String uuid) {
+        Realm realm = Realm.getDefaultInstance();
+        Task task = realm.where(Task.class).equalTo("uuid", uuid).findFirst();
+        if (task!=null)
+            return realm.copyFromRealm(task);
+        else
+            return null;
+    }
+
+    @Override
     public List<Task> getTaskByEquipment(Equipment equipment, String  status) {
         Realm realm = Realm.getDefaultInstance();
         return realm.copyFromRealm(

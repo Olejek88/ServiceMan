@@ -10,6 +10,7 @@ import ru.shtrm.serviceman.util.MainUtil;
 
 public class TaskInfoActivity extends AppCompatActivity {
     private TaskInfoFragment fragment;
+    public static final String TASK_UUID = "TASK_UUID";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,7 +27,9 @@ public class TaskInfoActivity extends AppCompatActivity {
         }
 
         if (!fragment.isAdded()) {
+            String task_id = getIntent().getStringExtra("TASK_UUID");
             Bundle b = new Bundle();
+            b.putString(TASK_UUID, task_id);
             fragment.setArguments(b);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.view_pager, fragment, "TaskInfoFragment")

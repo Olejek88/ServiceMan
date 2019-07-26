@@ -35,6 +35,11 @@ public class TaskRepository implements TaskDataSource {
     }
 
     @Override
+    public Task getTask(String uuid) {
+        return localDataSource.getTask(uuid);
+    }
+
+    @Override
     public List<Task> getNewTasks() {
         return localDataSource.getNewTasks();
     }

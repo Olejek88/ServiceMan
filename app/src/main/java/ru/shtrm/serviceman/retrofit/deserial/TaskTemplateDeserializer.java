@@ -25,7 +25,7 @@ public class TaskTemplateDeserializer extends BaseDeserialzer implements JsonDes
         item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
         item.setTitle(getString(object, "title"));
         item.setDescription(getString(object, "description"));
-        item.setNormative(getInt(object, "normative"));
+        item.setNormative((int)getDouble(object, "normative"));
         item.setTaskType((TaskType) getReference(object, TaskType.class, "taskTypeUuid"));
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));

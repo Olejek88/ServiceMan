@@ -13,7 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="5dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -31,6 +31,7 @@
                     android:id="@+id/circleTaskStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="3dp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -53,7 +54,7 @@
                 android:id="@+id/textViewTaskTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:textColor="@color/colorPrimaryText" />

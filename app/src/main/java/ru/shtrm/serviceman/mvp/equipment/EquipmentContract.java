@@ -13,7 +13,6 @@ public interface EquipmentContract {
     }
 
     interface Presenter extends BasePresenter {
-        void addEquipment(Equipment equipment);
         void updateEquipmentStatus(Equipment equipment, EquipmentStatus equipmentStatus);
         List<EquipmentStatus> loadEquipmentStatuses();
     }

@@ -40,16 +40,29 @@ import android.widget.Toast;
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
+import ru.shtrm.serviceman.data.source.EquipmentRepository;
+import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
+import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
+import ru.shtrm.serviceman.data.source.ObjectRepository;
+import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.TaskRepository;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.gps.GPSListener;
+import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.alarm.AlarmPresenter;
+import ru.shtrm.serviceman.mvp.equipment.EquipmentPresenter;
 import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
@@ -71,7 +84,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOGIN = 0;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
-    public Toolbar toolbar;
+    public static Toolbar toolbar;
     public boolean isLogged = false;
     private NavigationView navigationView;
     private DrawerLayout drawer;
@@ -133,7 +146,11 @@ public class MainActivity extends AppCompatActivity
         if (!initDB()) {
             finish();
         }
-
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.where(ReferenceUpdate.class).findAll().deleteAllFromRealm();
+        realm.commitTransaction();
+        realm.close();
 //        if (savedInstanceState != null) {
 //            isLogged = savedInstanceState.getBoolean("isLogged");
 //        } else {
@@ -409,6 +426,12 @@ public class MainActivity extends AppCompatActivity
         new TaskPresenter(taskFragment,
                 TaskRepository.getInstance(TaskLocalDataSource.getInstance()));
 
+        new AbonentsPresenter(
+                workFragment,
+                StreetRepository.getInstance(StreetLocalDataSource.getInstance()),
+                HouseRepository.getInstance(HouseLocalDataSource.getInstance()),
+                ObjectRepository.getInstance(ObjectLocalDataSource.getInstance()));
+
         // Show the default fragment.
         if (selectedNavItem == 0) {
             showMapFragment();
@@ -457,9 +480,6 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case R.id.nav_tasks:
                         showTasksFragment();
-                        break;
-                    case R.id.nav_messages:
-                        showMessagesFragment();
                         break;
                 }
                 return true;

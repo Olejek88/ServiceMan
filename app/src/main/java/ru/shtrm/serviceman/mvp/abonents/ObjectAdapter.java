@@ -10,45 +10,55 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 
-public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ObjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    @NonNull
+    private final Context context;
 
     @NonNull
     private final LayoutInflater inflater;
 
     @NonNull
-    private List<Street> list;
+    private List<ZhObject> list;
 
     @Nullable
     private OnRecyclerViewItemClickListener listener;
-    
-    StreetAdapter(@NonNull Context context, @NonNull List<Street> list) {
+
+    ObjectAdapter(@NonNull Context context, @NonNull List<ZhObject> list) {
+        this.context = context;
         inflater = LayoutInflater.from(context);
         this.list = list;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new StreetsViewHolder(inflater.inflate(R.layout.item_street,
+        return new FlatsViewHolder(inflater.inflate(R.layout.item_abonent,
                 parent, false), listener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Street item = list.get(position);
-        StreetsViewHolder pvh = (StreetsViewHolder) holder;
+        ZhObject item = list.get(position);
+        FlatsViewHolder pvh = (FlatsViewHolder) holder;
+        pvh.textViewType.setText(item.getObjectType().getTitle());
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
-        if (item.getCity()!=null)
-            pvh.textViewTitle.setText(item.getCity().getTitle().concat(", ул.").concat(item.getTitle()));
-        if (item.getTitle()!=null)
-            pvh.textViewImage.setText(item.getTitle().substring(0,1));
+        pvh.textViewTitle.setText(item.getHouse().getStreet().getTitle().concat(", ").
+                concat(item.getHouse().getNumber()).concat(", ").concat(item.getTitle()));
+        pvh.textViewImage.setText(item.getTitle().substring(0, 1));
+        //Task completeTaskCount = realm
+        // TODO выдергивать последнее фото из фото?
     }
 
     @Override
@@ -62,9 +72,10 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     /**
      * Update the data. Keep the data is the latest.
+     *
      * @param list The data.
      */
-    public void updateData(@NonNull List<Street> list) {
+    public void updateData(@NonNull List<ZhObject> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
@@ -73,34 +84,28 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     /**
      * The view holder of package in home list.
      */
-    public class StreetsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class FlatsViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
 
         AppCompatTextView textViewTitle;
+        AppCompatTextView textViewType;
         AppCompatTextView textViewImage;
         CircleImageView circleImageView;
-        AppCompatTextView textCompleteTask;
-        AppCompatTextView textUnCompleteTask;
-        FrameLayout circleUnCompletedTaskView;
-        FrameLayout circleCompletedTaskView;
+        LinearLayout layoutObjectItem;
 
         private OnRecyclerViewItemClickListener listener;
 
-        StreetsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+        FlatsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
+            textViewType= itemView.findViewById(R.id.textObjectType);
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
-/*
-            circleUnCompletedTaskView = itemView.findViewById(R.id.circleUnCompletedTaskView);
-            circleCompletedTaskView = itemView.findViewById(R.id.circleCompletedTaskView);
-            if (circleUnCompletedTaskView!=null)
-                circleUnCompletedTaskView.setVisibility(View.INVISIBLE);
-            if (circleCompletedTaskView!=null)
-                circleCompletedTaskView.setVisibility(View.INVISIBLE);
-*/
+            layoutObjectItem = itemView.findViewById(R.id.layoutObjectItem);
 
             this.listener = listener;
             itemView.setOnClickListener(this);
+            //itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override

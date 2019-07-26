@@ -18,11 +18,6 @@ public class EquipmentPresenter implements EquipmentContract.Presenter {
     @NonNull
     private EquipmentStatusRepository equipmentStatusRepository;
 
-    @NonNull
-    private GpsTrackRepository gpsTrackRepository;
-
-    @NonNull
-    private EquipmentRepository equipmentRepository;
 
     public EquipmentPresenter(@NonNull EquipmentContract.View view,
                                 @NonNull EquipmentRepository equipmentRepository,
@@ -30,9 +25,7 @@ public class EquipmentPresenter implements EquipmentContract.Presenter {
                               @NonNull GpsTrackRepository gpsTrackRepository,
                               @NonNull String flatId) {
         this.view = view;
-        this.equipmentRepository = equipmentRepository;
         this.equipmentStatusRepository = equipmentStatusRepository;
-        this.gpsTrackRepository = gpsTrackRepository;
         this.view.setPresenter(this);
     }
 
@@ -45,13 +38,8 @@ public class EquipmentPresenter implements EquipmentContract.Presenter {
     }
 
     @Override
-    public void addEquipment(Equipment equipment) {
-        equipmentRepository.addEquipment(equipment);
-    }
-
-    @Override
     public void updateEquipmentStatus(Equipment equipment, EquipmentStatus equipmentStatus) {
-        equipmentRepository.updateEquipmentStatus(equipment, equipmentStatus);
+        //equipmentRepository.updateEquipmentStatus(equipment, equipmentStatus);
     }
 
     @Override

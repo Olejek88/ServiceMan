@@ -2,11 +2,11 @@ package ru.shtrm.serviceman.mvp.task;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,17 +22,17 @@ import java.util.List;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 
 public class TaskFragment extends Fragment implements TaskContract.View {
     private Activity mainActivityConnector = null;
 
     // View references
     private BottomNavigationView bottomNavigationView;
-    private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
 
-    private TaskAdapter TaskAdapter;
+    private TaskAdapter taskAdapter;
     private TaskContract.Presenter presenter;
 
     // As a fragment, default constructor is needed.
@@ -117,7 +117,6 @@ public class TaskFragment extends Fragment implements TaskContract.View {
      */
     @Override
     public void initViews(View view) {
-        fab =  view.findViewById(R.id.fab);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         emptyView =  view.findViewById(R.id.emptyView);
         recyclerView =  view.findViewById(R.id.recyclerView);
@@ -155,12 +154,21 @@ public class TaskFragment extends Fragment implements TaskContract.View {
      */
     @Override
     public void showTaskList(@NonNull final List<Task> list) {
-        if (TaskAdapter == null) {
-            TaskAdapter = new TaskAdapter(mainActivityConnector, list);
-            recyclerView.setAdapter(TaskAdapter);
+        if (taskAdapter == null) {
+            taskAdapter = new TaskAdapter(mainActivityConnector, list);
+            taskAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
+                @Override
+                public void OnItemClick(View v, int position) {
+                    Task task = list.get(position);
+                    Intent intent = new Intent(getActivity(), TaskInfoActivity.class);
+                    intent.putExtra("TASK_UUID", String.valueOf(task.getUuid()));
+                    startActivity(intent);
+                }
+            });
+            recyclerView.setAdapter(taskAdapter);
         } else {
-            TaskAdapter.updateData(list);
-            recyclerView.setAdapter(TaskAdapter);
+            taskAdapter.updateData(list);
+            recyclerView.setAdapter(taskAdapter);
         }
         showEmptyView(list.isEmpty());
     }

@@ -57,10 +57,10 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         lDate = item.getDeadlineDate();
         if (lDate != null && lDate.after(new Date(100000))) {
-            sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(lDate);
+            eDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(lDate);
         }
         pvh.textTaskDate.setText("Назначен: "+sDate+" | "+"Срок: "+eDate);
-        pvh.statusTaskImage.setColorFilter(Color.argb(255, 0,255,0), PorterDuff.Mode.ADD);
+        pvh.statusTaskImage.setColorFilter(Color.argb(0, 0,255,0), PorterDuff.Mode.ADD);
         pvh.textTaskTitle.setTypeface(null, Typeface.BOLD);
     }
 

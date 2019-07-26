@@ -57,12 +57,7 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         House item = list.get(position);
         HousesViewHolder pvh = (HousesViewHolder) holder;
-        pvh.textViewStatus.setText("");
-        if (item.getChangedAt()!=null) {
-            String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
-            pvh.textViewDate.setText(sDate);
-        }
-        else pvh.textViewDate.setText(R.string.no_last_time);
+        pvh.textObjectType.setText(item.getHouseType().getTitle());
         pvh.textViewTitle.setTypeface(null, Typeface.BOLD);
         if (item.getStreet()!=null)
             pvh.textViewTitle.setText(item.getStreet().getTitle().concat(", ").concat(item.getNumber()));
@@ -132,30 +127,20 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public class HousesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         AppCompatTextView textViewTitle;
-        AppCompatTextView textViewDate;
-        AppCompatTextView textViewStatus;
+        AppCompatTextView textObjectType;
         AppCompatTextView textViewImage;
         CircleImageView circleImageView;
         LinearLayout layoutObjectItem;
-        FrameLayout circleUnCompletedTaskView;
-        FrameLayout circleCompletedTaskView;
 
         private OnRecyclerViewItemClickListener listener;
 
         HousesViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
-            textViewStatus = itemView.findViewById(R.id.textObjectStatus);
-            textViewDate = itemView.findViewById(R.id.textObjectTime);
+            textObjectType = itemView.findViewById(R.id.textObjectType);
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
             layoutObjectItem = itemView.findViewById(R.id.layoutObjectItem);
-            circleUnCompletedTaskView = itemView.findViewById(R.id.circleUnCompletedTaskView);
-            circleCompletedTaskView = itemView.findViewById(R.id.circleCompletedTaskView);
-            if (circleUnCompletedTaskView!=null)
-                circleUnCompletedTaskView.setVisibility(View.INVISIBLE);
-            if (circleCompletedTaskView!=null)
-                circleCompletedTaskView.setVisibility(View.INVISIBLE);
 
             this.listener = listener;
             itemView.setOnClickListener(this);

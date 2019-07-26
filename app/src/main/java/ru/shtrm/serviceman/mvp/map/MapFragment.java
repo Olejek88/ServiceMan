@@ -141,7 +141,6 @@ public class MapFragment extends Fragment implements MapContract.View {
         mapController.setZoom(17.0);
         aOverlayItemArray = new ArrayList<>();
         addTasksOverlay();
-        addHouseOverlay();
         // Добавляем несколько слоев
         CompassOverlay compassOverlay = new CompassOverlay(mainActivityConnector, mapView);
         compassOverlay.enableCompass();
@@ -237,52 +236,21 @@ public class MapFragment extends Fragment implements MapContract.View {
             OverlayItem olItem = new OverlayItem(task.getTaskTemplate().getTitle()
                     .concat(" / ")
                     .concat(task.getEquipment().getObject().getFullTitle()),
-                    "Alarm", new GeoPoint(curLatitude, curLongitude));
+                    "Задача", new GeoPoint(curLatitude, curLongitude));
             Drawable newMarker;
-            newMarker = this.getResources().getDrawable(R.drawable.ic_home_black_24dp);
+            newMarker = this.getResources().getDrawable(R.drawable.ic_info_black_24dp);
             olItem.setMarker(newMarker);
             taskOverlayItemArray.add(olItem);
         }
         ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(
                 mainActivityConnector, taskOverlayItemArray, null);
         mapView.getOverlays().add(aIconOverlay);
-    }
 
-
-    private void addHouseOverlay() {
-        final ArrayList<OverlayItem> houseOverlayItemArray = new ArrayList<>();
-        // TODO выбирать только для текущего пользователя
-        //List<House> houses = HouseLocalDataSource.getInstance().getHousesByUser();
-        List<House> houses = HouseLocalDataSource.getInstance().getHouses();
-        for (House house : houses) {
-//            PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
-//            if (photoHouse != null) {
-//                HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
-//                        "Дом", new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude()));
-//                houseItem.house = house;
-//                Drawable newMarker;
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    Resources.Theme theme = mainActivityConnector.getTheme();
-//                    newMarker = this.getResources().getDrawable(R.drawable.marker_house, theme);
-//                } else {
-//                    newMarker = this.getResources().getDrawable(R.drawable.marker_house);
-//                }
-//                houseItem.setMarker(newMarker);
-//                houseOverlayItemArray.add(houseItem);
-//            }
-        }
-
-        ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(
-                mainActivityConnector, houseOverlayItemArray, null);
-        mapView.getOverlays().add(aIconOverlay);
-
-        TaskItemizedOverlay overlay = new TaskItemizedOverlay(mainActivityConnector, houseOverlayItemArray) {
+        TaskItemizedOverlay overlay = new TaskItemizedOverlay(mainActivityConnector, taskOverlayItemArray) {
             @Override
             protected boolean onLongPressHelper(int index, OverlayItem item) {
-                House house = ((HouseOverlayItem) item).house;
-                String markerText = house.getFullTitle();
-                if (house.getHouseType() != null)
-                    markerText = markerText.concat(" - ").concat(house.getHouseType().getTitle());
+                Task task = ((TaskOverlayItem) item).task;
+                String markerText = task.getEquipment().getObject().getFullTitle();
                 Toast.makeText(mainActivityConnector, markerText, Toast.LENGTH_SHORT).show();
                 return super.onLongPressHelper(index, item);
             }
@@ -310,10 +278,9 @@ public class MapFragment extends Fragment implements MapContract.View {
         }
     }
 
-    private class HouseOverlayItem extends OverlayItem {
-        public House house;
-
-        HouseOverlayItem(String a, String b, GeoPoint p) {
+    private class TaskOverlayItem extends OverlayItem {
+        public Task task;
+        TaskOverlayItem(String a, String b, GeoPoint p) {
             super(a, b, p);
         }
     }

@@ -8,6 +8,8 @@ import ru.shtrm.serviceman.data.WorkStatus;
 
 public interface TaskDataSource {
 
+    Task getTask(String uuid);
+
     List<Task> getTaskByEquipment(Equipment equipment, String status);
 
     List<Task> getNewTasks();

@@ -1,5 +1,4 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,36 +6,18 @@
     android:layout_marginBottom="56dp"
     tools:ignore="RtlHardcoded">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/main.toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        app:layout_anchor="@id/main.framelayout.title"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark"
-        app:title="">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Space
-                android:layout_width="@dimen/image_final_width"
-                android:layout_height="@dimen/image_final_width" />
-
-            <TextView
-                android:id="@+id/main.textview.title"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:gravity="center_vertical"
-                android:text="@string/service_app_name"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-        </LinearLayout>
-    </android.support.v7.widget.Toolbar>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/main.appbar"
@@ -44,64 +25,44 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/main.collapsing"
+        <FrameLayout
+            android:id="@+id/main.framelayout.title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+            android:layout_height="60dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:addStatesFromChildren="false"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/main.imageview.placeholder"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/city"
-                android:tint="#11000000"
-                android:contentDescription="@string/service_app_name"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.9" />
-
-            <FrameLayout
-                android:id="@+id/main.framelayout.title"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="bottom|center_horizontal"
-                android:addStatesFromChildren="false"
-                android:background="@color/colorPrimary"
+            <LinearLayout
+                android:id="@+id/main.linearlayout.title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="vertical"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.3">
+                android:textSize="18sp">
 
-                <LinearLayout
-                    android:id="@+id/main.linearlayout.title"
+                <TextView
+                    android:id="@+id/object_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="vertical"
-                    android:textSize="18sp">
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="bottom|center"
+                    android:text="@string/service_app_name"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:id="@+id/object_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:gravity="bottom|center"
-                        android:text="@string/service_app_name"
-                        android:textColor="@android:color/white"
-                        android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/object_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/service_app_name"
+                    android:textColor="@android:color/white" />
 
-                    <TextView
-                        android:id="@+id/object_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/service_app_name"
-                        android:textColor="@android:color/white" />
-
-                </LinearLayout>
-            </FrameLayout>
-        </android.support.design.widget.CollapsingToolbarLayout>
+            </LinearLayout>
+        </FrameLayout>
     </android.support.design.widget.AppBarLayout>
 
 
@@ -143,10 +104,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
-        android:layout_marginTop="100dp"
         android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginTop="0dp"
         android:src="@drawable/ic_chevron_left_white_24dp"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/colorPrimaryDark"
         app:fabSize="normal" />
 
     <android.support.design.widget.FloatingActionButton
@@ -154,21 +115,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="@dimen/fab_margin"
         android:src="@drawable/baseline_camera_enhance_white_24dp"
         app:backgroundTint="@color/colorPrimary"
-        app:fabSize="normal" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_comment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@drawable/baseline_create_white_24dp"
-        app:backgroundTint="@color/light_blue_500"
         app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>

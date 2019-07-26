@@ -137,7 +137,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (equipment != null) {
             initViews(view);
         } else {
-            equipmentRepository.deleteEmptyEquipment();
             if (getActivity() != null)
                 getActivity().finishActivity(0);
         }
@@ -295,15 +294,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             }
         });
 
-        fab_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                equipmentRepository.deleteEquipment(equipment);
-                if (getActivity() != null)
-                    getActivity().finishActivity(0);
-            }
-        });
-
         // TODO когда определимся с фото здесь будет грид с последними фото
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
         //gridView.invalidateViews();
@@ -344,17 +334,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (equipmentRepository == null)
             equipmentRepository = EquipmentRepository.getInstance
                     (EquipmentLocalDataSource.getInstance());
-    }
-
-    void storeEditEquipment(String serial, EquipmentStatus equipmentStatus) {
-        equipment.setChangedAt(new Date());
-        if (myCalendar.getTime() != null)
-            equipment.setTestDate(myCalendar.getTime());
-        else
-            equipment.setTestDate(new Date());
-        equipment.setSerial(serial);
-        equipment.setEquipmentStatus(equipmentStatus);
-        equipmentRepository.addEquipment(equipment);
     }
 
     @Override

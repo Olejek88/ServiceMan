@@ -1,62 +1,28 @@
 package ru.shtrm.serviceman.mvp.task;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.DatePicker;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.EquipmentStatus;
-import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Task;
-import ru.shtrm.serviceman.data.source.EquipmentRepository;
-import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
-import ru.shtrm.serviceman.data.source.EquipmentTypeRepository;
-import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.TaskRepository;
-import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.EquipmentTypeLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.equipment.EquipmentStatusListAdapter;
-import ru.shtrm.serviceman.mvp.equipment.EquipmentTypeListAdapter;
-import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.mvp.equipment.EquipmentFragment.ACTIVITY_PHOTO;
+import static ru.shtrm.serviceman.mvp.task.TaskInfoActivity.TASK_UUID;
 
 public class TaskInfoFragment extends Fragment {
     Calendar myCalendar;
@@ -91,8 +57,17 @@ public class TaskInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_task_info, container, false);
         Bundle b = getArguments();
         if (b != null) {
-
+            String taskUuid = b.getString(TASK_UUID);
+            if (taskUuid != null)
+                task = TaskLocalDataSource.getInstance().getTask(taskUuid);
+            if (task != null) {
+                initViews(view);
+                setHasOptionsMenu(true);
+                return view;
+            }
         }
+        if (getFragmentManager() != null)
+            getFragmentManager().popBackStack();
 
         if (task == null) {
             if (getFragmentManager() != null) {

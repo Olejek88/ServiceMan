@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,51 +37,59 @@ import java.util.Locale;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Street;
+import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
+import ru.shtrm.serviceman.mvp.object.ObjectActivity;
+import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
-public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChangedListener {
-    public final static int ACTIVITY_PHOTO = 100;
-    private static final String TAG;
+public class WorkFragment extends Fragment implements AbonentsContract.View {
+    private Activity mainActivityConnector = null;
+
     private static final int LEVEL_CITY = 0;
     private static final int LEVEL_STREET = 1;
     private static final int LEVEL_HOUSE = 2;
     private static final int LEVEL_FLAT = 3;
     private static final int LEVEL_INFO = 4;
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
-    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
-    private static final int ALPHA_ANIMATIONS_DURATION = 200;
 
-    static {
-        TAG = "WorkFragment";
-    }
+    public final static int ACTIVITY_PHOTO = 100;
 
-    private Activity mainActivityConnector = null;
     private FloatingActionButton make_photo;
-    private FloatingActionButton add_comment;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
+
+    private ObjectAdapter flatAdapter;
     private StreetAdapter streetAdapter;
     private HouseAdapter houseAdapter;
     private File photoFile;
     private String photoUuid;
-    private GpsTrackRepository gpsTrackRepository;
+
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
     private Street currentStreet;
+
+/*
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
+    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
+    private static final int ALPHA_ANIMATIONS_DURATION = 200;
+
     private boolean mIsTheTitleVisible = false;
     private boolean mIsTheTitleContainerVisible = true;
+
     private LinearLayout mTitleContainer;
-    private TextView mTitle;
+    */
+    //private TextView mTitle;
+
     private TextView mObjectTitle;
     private TextView mObjectDate;
-    private ImageView mImage;
+    //private ImageView mImage;
     //private ImageView objectIcon;
-    private AppBarLayout mAppBarLayout;
+    //private AppBarLayout mAppBarLayout;
+
+    private AbonentsContract.Presenter presenter;
 
     // As a fragment, default constructor is needed.
     public WorkFragment() {
@@ -90,16 +97,6 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
 
     public static WorkFragment newInstance() {
         return new WorkFragment();
-    }
-
-    public static void startAlphaAnimation(View v, long duration, int visibility) {
-        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
-                ? new AlphaAnimation(0f, 1f)
-                : new AlphaAnimation(1f, 0f);
-
-        alphaAnimation.setDuration(duration);
-        alphaAnimation.setFillAfter(true);
-        v.startAnimation(alphaAnimation);
     }
 
     @Override
@@ -119,13 +116,13 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
             public void onClick(View v) {
                 switch (currentLevel) {
                     case LEVEL_INFO:
-//                        presenter.loadFlats(currentHouse);
+                        presenter.loadObjects(currentHouse);
                         break;
                     case LEVEL_FLAT:
-//                        presenter.loadHouses(currentStreet);
+                        presenter.loadHouses(currentStreet);
                         break;
                     case LEVEL_HOUSE:
-//                        presenter.loadStreets();
+                        presenter.loadStreets();
                         break;
                     case LEVEL_STREET:
                         break;
@@ -149,31 +146,29 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(intent, ACTIVITY_PHOTO);
                     }
-                } catch (IOException e1) {
+                }
+                catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
         });
 
-        mAppBarLayout.addOnOffsetChangedListener(this);
-        startAlphaAnimation(mTitle, 0, View.INVISIBLE);
-//        presenter.loadStreets();
+        //mAppBarLayout.addOnOffsetChangedListener(this);
+        //startAlphaAnimation(mTitle, 0, View.INVISIBLE);
+        presenter.loadStreets();
         return contentView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-//        presenter.subscribe();
-        if (gpsTrackRepository == null)
-            gpsTrackRepository = GpsTrackRepository.getInstance
-                    (GpsTrackLocalDataSource.getInstance());
+        presenter.subscribe();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        presenter.unsubscribe();
+        presenter.unsubscribe();
     }
 
     /**
@@ -181,29 +176,20 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
      *
      * @param view The container view.
      */
-//    @Override
+    @Override
     public void initViews(View view) {
-        add_comment = view.findViewById(R.id.fab_comment);
         make_photo = view.findViewById(R.id.fab_photo);
         back = view.findViewById(R.id.back);
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //objectIcon = view.findViewById(R.id.object_icon);
-        mTitle = view.findViewById(R.id.main_textview_title);
-        mImage = view.findViewById(R.id.main_imageview_placeholder);
-        mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
+        //mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
         mObjectTitle = view.findViewById(R.id.object_name);
         mObjectDate = view.findViewById(R.id.object_date);
-        mAppBarLayout = view.findViewById(R.id.main_appbar);
-        handleToolbarTitleVisibility(0);
-
-        add_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //FlatActivity.createAddMessageDialog(mainActivityConnector, flat);
-            }
-        });
+        //mTitle = view.findViewById(R.id.object_name);
+        //mAppBarLayout = view.findViewById(R.id.main_appbar);
+        //handleToolbarTitleVisibility(0);
 
         make_photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,15 +212,15 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
         });
     }
 
-//    /**
-//     * Set a presenter for this fragment(View),
-//     *
-//     * @param presenter The presenter.
-//     */
-//    @Override
-//    public void setPresenter(@NonNull AbonentsContract.Presenter presenter) {
-//        this.presenter = presenter;
-//    }
+    /**
+     * Set a presenter for this fragment(View),
+     *
+     * @param presenter The presenter.
+     */
+    @Override
+    public void setPresenter(@NonNull AbonentsContract.Presenter presenter) {
+        this.presenter = presenter;
+    }
 
     /**
      * Hide a RecyclerView when it is empty and show a empty view
@@ -242,7 +228,7 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
      *
      * @param toShow Hide or show.
      */
-//    @Override
+    @Override
     public void showEmptyView(boolean toShow) {
         if (toShow) {
             recyclerView.setVisibility(View.INVISIBLE);
@@ -253,11 +239,53 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
         }
     }
 
+    /**
+     * Show flats with recycler view.
+     *
+     * @param list The data.
+     */
+    @Override
+    public void showObjects(@NonNull final List<ZhObject> list) {
+        currentLevel = LEVEL_FLAT;
+        setHasOptionsMenu(true);
+        if (flatAdapter == null) {
+            flatAdapter = new ObjectAdapter(mainActivityConnector, list);
+            flatAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
+                @Override
+                public void OnItemClick(View v, int position) {
+                    ZhObject flat = list.get(position);
+                    Intent intent = new Intent(getActivity(), ObjectActivity.class);
+                    intent.putExtra("OBJECT_UUID", String.valueOf(flat.getUuid()));
+                    startActivity(intent);
+                }
+            });
+            recyclerView.setAdapter(flatAdapter);
+        } else {
+            flatAdapter.updateData(list);
+            recyclerView.setAdapter(flatAdapter);
+        }
+        if (currentHouse.getHouseType() != null) {
+            if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
+                MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
+            else
+                MainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
+        }
+        mObjectDate.setText("фото не было");
+
+        //mTitle.setText(currentHouse.getFullTitle());
+        mObjectTitle.setText(currentHouse.getFullTitle());
+        //MainActivity.toolbar.setSubtitle(null);
+        mObjectDate.setVisibility(View.VISIBLE);
+
+        make_photo.setVisibility(View.VISIBLE);
+        back.setVisibility(View.VISIBLE);
+        //showEmptyView(list.isEmpty());
+
+    }
+
     public void showStreets(@NonNull final List<Street> list) {
-        MainActivity mainActivity = ((MainActivity) getActivity());
         currentLevel = LEVEL_STREET;
         setHasOptionsMenu(false);
-
         if (streetAdapter == null) {
             streetAdapter = new StreetAdapter(mainActivityConnector, list);
             streetAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
@@ -265,7 +293,7 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
                 public void OnItemClick(View v, int position) {
                     Street street = list.get(position);
                     currentStreet = street;
-//                    presenter.loadHouses(street);
+                    presenter.loadHouses(street);
                 }
             });
             recyclerView.setAdapter(streetAdapter);
@@ -273,27 +301,25 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
             streetAdapter.updateData(list);
             recyclerView.setAdapter(streetAdapter);
         }
-
         if (streetAdapter.getItemCount() > 0) {
-            if (list.get(0) != null && list.get(0).getCity() != null) {
-                mTitle.setText(list.get(0).getCity().getTitle());
+            if (list.get(0)!=null && list.get(0).getCity()!=null) {
+                //mTitle.setText(list.get(0).getCity().getTitle());
                 mObjectTitle.setText(list.get(0).getCity().getTitle());
                 mObjectDate.setVisibility(View.GONE);
             }
         }
-
+/*
         mImage.setImageResource(R.drawable.city);
-        if (currentStreet != null && mainActivity != null) {
-            mainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
-            mainActivity.toolbar.setSubtitle(null);
+        if (currentStreet != null) {
+            MainActivity.toolbar.setTitle(currentStreet.getCity().getTitle());
+            MainActivity.toolbar.setSubtitle(null);
         }
+*/
         make_photo.setVisibility(View.GONE);
-        add_comment.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
     }
 
     public void showHouses(@NonNull final List<House> list) {
-        MainActivity mainActivity = ((MainActivity) getActivity());
         currentLevel = LEVEL_HOUSE;
         setHasOptionsMenu(false);
         if (houseAdapter == null) {
@@ -303,7 +329,7 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
                 public void OnItemClick(View v, int position) {
                     House house = list.get(position);
                     currentHouse = house;
-//                    presenter.loadFlats(house);
+                    presenter.loadObjects(house);
                 }
             });
             recyclerView.setAdapter(houseAdapter);
@@ -312,16 +338,12 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
             houseAdapter.updateData(list);
             recyclerView.setAdapter(houseAdapter);
         }
-        mTitle.setText(currentStreet.getFullTitle());
+        //mTitle.setText(currentStreet.getFullTitle());
         mObjectTitle.setText(currentStreet.getFullTitle());
-        mImage.setImageResource(R.drawable.street);
-        if (mainActivity != null) {
-            mainActivity.toolbar.setTitle(currentStreet.getTitle());
-            mainActivity.toolbar.setSubtitle(null);
-        }
-
+        //mImage.setImageResource(R.drawable.street);
+        MainActivity.toolbar.setTitle(currentStreet.getTitle());
+        MainActivity.toolbar.setSubtitle(null);
         make_photo.setVisibility(View.GONE);
-        add_comment.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }
 
@@ -333,6 +355,7 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
         if (mainActivityConnector == null)
             onDestroyView();
     }
+/*
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
@@ -376,6 +399,17 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
         }
     }
 
+    public static void startAlphaAnimation(View v, long duration, int visibility) {
+        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
+                ? new AlphaAnimation(0f, 1f)
+                : new AlphaAnimation(1f, 0f);
+
+        alphaAnimation.setDuration(duration);
+        alphaAnimation.setFillAfter(true);
+        v.startAnimation(alphaAnimation);
+    }
+*/
+
     /**
      * Сохраняем фото
      *
@@ -398,13 +432,10 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
                                 String uuid = java.util.UUID.randomUUID().toString();
                                 MainUtil.storeNewImage(bitmap, getContext(),
                                         800, uuid.concat(".jpg"));
-                                MainUtil.storePhotoHouse(currentHouse, uuid);
-                                if (!photoFile.delete()) {
-                                    Log.e(TAG, "Файл не удалён! path: " + photoFile.getAbsolutePath());
-                                }
-
+                                MainUtil.storePhotoHouse (currentHouse,uuid);
+                                photoFile.delete();
                                 //objectIcon.setImageBitmap(bitmap);
-                                mImage.setImageBitmap(bitmap);
+                                //mImage.setImageBitmap(bitmap);
                                 String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
                                         format(new Date());
                                 mObjectDate.setText(sDate);
@@ -423,7 +454,7 @@ public class WorkFragment extends Fragment implements AppBarLayout.OnOffsetChang
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu,inflater);
     }
 
     private void onActionAddAttribute() {

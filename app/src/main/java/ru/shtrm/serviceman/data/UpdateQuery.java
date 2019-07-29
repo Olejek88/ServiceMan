@@ -42,6 +42,15 @@ public class UpdateQuery extends RealmObject {
         return lastId.longValue();
     }
 
+    public static void addToQuery(UpdateQuery updateQuery) {
+        Realm realm = Realm.getDefaultInstance();
+        updateQuery.set_id(getLastId() + 1);
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(updateQuery);
+        realm.commitTransaction();
+        realm.close();
+    }
+
     public long get_id() {
         return _id;
     }
@@ -97,5 +106,4 @@ public class UpdateQuery extends RealmObject {
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
     }
-
 }

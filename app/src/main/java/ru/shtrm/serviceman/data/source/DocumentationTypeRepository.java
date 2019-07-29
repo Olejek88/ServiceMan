@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.DefectType;
 import ru.shtrm.serviceman.data.DocumentationType;
 
 public class DocumentationTypeRepository implements DocumentationTypeDataSource {

@@ -9,11 +9,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,7 +23,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -46,21 +42,18 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Journal;
+import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
@@ -88,8 +81,11 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOGIN = 0;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
+    // контейнер для пути по которому сохраним файл фотографии, полученой через штатное приложение телефона
     public static String photoFile;
+    // контейнер для хранения uuid модели к которой привяжем фотографию
     public static String objectUuid;
+    // контейнер для хранения uuid модели фотографии
     public static String photoUuid;
     public Toolbar toolbar;
     public boolean isLogged = false;
@@ -153,14 +149,6 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-//        realm.where(Journal.class).findAll().deleteAllFromRealm();
-//        realm.where(UpdateQuery.class).findAll().deleteAllFromRealm();
-        realm.commitTransaction();
-        realm.close();
-//        Journal.add("Тестовая запись в журнале для проверки сохранения модели через updateAttribute.");
-
 //        if (savedInstanceState != null) {
 //            isLogged = savedInstanceState.getBoolean("isLogged");
 //        } else {
@@ -199,13 +187,21 @@ public class MainActivity extends AppCompatActivity
                             .registerTypeAdapter(Photo.class, new PhotoSerializer())
                             .serializeNulls()
                             .create();
+
+                    GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
+                    GpsTrack lastPosition = gpsTrackRepository.getLastTrack();
+
                     Photo photo = new Photo();
                     photo.setUuid(photoUuid);
                     photo.setObjectUuid(objectUuid);
-                    // TODO: брать из текущих координат, либо из моделей которые содержат координаты
-                    // не все модели содержат координаты, нужно как-то решить этот вопрос.
-                    photo.setLatitude(0.0);
-                    photo.setLongitude(0.0);
+                    if (lastPosition != null) {
+                        photo.setLatitude(lastPosition.getLatitude());
+                        photo.setLongitude(lastPosition.getLongitude());
+                    } else {
+                        photo.setLatitude(App.defaultLatitude);
+                        photo.setLongitude(App.defaultLongitude);
+                    }
+
                     UpdateQuery query = new UpdateQuery(
                             Photo.class.getSimpleName(),
                             photoUuid,

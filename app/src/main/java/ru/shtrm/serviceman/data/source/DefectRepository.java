@@ -36,4 +36,14 @@ public class DefectRepository implements DefectDataSource {
     public Defect getDefect(String uuid) {
         return localDataSource.getDefect(uuid);
     }
+
+    @Override
+    public void addDefect(@NonNull final Defect defect) {
+        localDataSource.addDefect(defect);
+    }
+
+    @Override
+    public long getLastId() {
+        return localDataSource.getLastId();
+    }
 }

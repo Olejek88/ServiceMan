@@ -46,7 +46,6 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
@@ -55,6 +54,7 @@ import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 import static android.content.Context.LOCATION_SERVICE;
 
 public class MapFragment extends Fragment implements MapContract.View {
+    private static final String TAG = MapFragment.class.getSimpleName();
     ArrayList<OverlayItem> aOverlayItemArray;
     ItemizedIconOverlay<OverlayItem> positionItemizedIconOverlay;
     private Activity mainActivityConnector = null;
@@ -63,7 +63,6 @@ public class MapFragment extends Fragment implements MapContract.View {
     private MapContract.Presenter presenter;
     private IMapController mapController;
     private MapView mapView;
-
     private Timer timer;
     private Handler mTimerHandler = new Handler();
 
@@ -91,7 +90,7 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_map, container, false);
 
@@ -99,9 +98,11 @@ public class MapFragment extends Fragment implements MapContract.View {
 
         setHasOptionsMenu(true);
 
-        contentView.findViewById(R.id.testButton).setOnClickListener(new View.OnClickListener() {
+        // пример запуска штатного приложения для получения фотографии привязанной к какой-то модели
+        new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // пример запуска активити для получения фотографии
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
                 Context context = getContext();
@@ -113,7 +114,7 @@ public class MapFragment extends Fragment implements MapContract.View {
                 File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
                 if (!photoFile.getParentFile().exists()) {
                     if (!photoFile.getParentFile().mkdirs()) {
-                        Log.e("XXX", "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
+                        Log.e(TAG, "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
                         return;
                     }
                 }
@@ -122,7 +123,6 @@ public class MapFragment extends Fragment implements MapContract.View {
                 MainActivity.photoFile = photoFile.getAbsolutePath();
                 // пока ни к чему реальному фотки не привязываются
                 MainActivity.objectUuid = java.util.UUID.randomUUID().toString().toUpperCase();
-                ;
                 MainActivity.photoUuid = photoUuid;
 
                 try {
@@ -132,9 +132,8 @@ public class MapFragment extends Fragment implements MapContract.View {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
-        });
+        };
 
         return contentView;
     }
@@ -228,15 +227,15 @@ public class MapFragment extends Fragment implements MapContract.View {
             houseAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
                 @Override
                 public void OnItemClick(View v, int position) {
-                    House house = list.get(position);
-                    if (house != null) {
+//                    House house = list.get(position);
+//                    if (house != null) {
 //                        PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
 //                                getLastPhotoByHouse(house);
 //                        if (photoHouse != null) {
 //                            GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
 //                            mapController.setCenter(point2);
 //                        }
-                    }
+//                    }
                 }
             });
             recyclerView.setAdapter(houseAdapter);
@@ -293,8 +292,8 @@ public class MapFragment extends Fragment implements MapContract.View {
         final ArrayList<OverlayItem> houseOverlayItemArray = new ArrayList<>();
         // TODO выбирать только для текущего пользователя
         //List<House> houses = HouseLocalDataSource.getInstance().getHousesByUser();
-        List<House> houses = HouseLocalDataSource.getInstance().getHouses();
-        for (House house : houses) {
+//        List<House> houses = HouseLocalDataSource.getInstance().getHouses();
+//        for (House house : houses) {
 //            PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
 //            if (photoHouse != null) {
 //                HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
@@ -310,7 +309,7 @@ public class MapFragment extends Fragment implements MapContract.View {
 //                houseItem.setMarker(newMarker);
 //                houseOverlayItemArray.add(houseItem);
 //            }
-        }
+//        }
 
         ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(
                 mainActivityConnector, houseOverlayItemArray, null);

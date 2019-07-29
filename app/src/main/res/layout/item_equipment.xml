@@ -47,7 +47,7 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textViewEquipmentSerial"
+            android:id="@+id/textViewEquipmentType"
             android:layout_marginTop="3dp"
             android:gravity="start|center_vertical"
             android:textColor="@color/colorPrimaryText"

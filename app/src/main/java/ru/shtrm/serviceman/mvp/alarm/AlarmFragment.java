@@ -51,7 +51,7 @@ public class AlarmFragment extends Fragment implements AlarmContract.View {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.fragment_alarms, container, false);
+        View contentView = inflater.inflate(R.layout.fragment_work, container, false);
 
         initViews(contentView);
 

@@ -52,18 +52,12 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             pvh.textViewEquipmentTitle.setText(item.getEquipmentType().getTitle());
         else
             pvh.textViewEquipmentTitle.setText(R.string.equipment_unknown);
-        pvh.textViewEquipmentSerial.setText(item.getSerial());
+        pvh.textViewEquipmentType.setText(item.getEquipmentType().getTitle());
         // это работает если один счетчик на хату, иначе добавить метод
 //        Measure lastMeasure = MeasureLocalDataSource.getInstance().getLastMeasureByFlat(item.getFlat());
-        if (item.getChangedAt() != null) {
-            // TODO добавить вывод последнего измерения
+        if (item.getInputDate() != null) {
             String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(item.getChangedAt());
-//            if (lastMeasure != null) {
-//                pvh.textViewEquipmentLastMeasure.setText(sDate.concat(" [").
-//                        concat(String.valueOf(lastMeasure.getValue())).concat("]"));
-//            } else {
             pvh.textViewEquipmentLastMeasure.setText(sDate);
-//            }
         } else {
             pvh.textViewEquipmentLastMeasure.setText(R.string.no_last_time);
         }
@@ -101,7 +95,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public class EquipmentsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         AppCompatTextView textViewEquipmentTitle;
-        AppCompatTextView textViewEquipmentSerial;
+        AppCompatTextView textViewEquipmentType;
         AppCompatTextView textViewEquipmentLastMeasure;
         AppCompatTextView textViewImage;
         CircleImageView circleImageView;
@@ -111,7 +105,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         EquipmentsViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
             super(itemView);
             textViewEquipmentTitle = itemView.findViewById(R.id.textViewEquipmentTitle);
-            textViewEquipmentSerial = itemView.findViewById(R.id.textViewEquipmentSerial);
+            textViewEquipmentType = itemView.findViewById(R.id.textViewEquipmentType);
             textViewEquipmentLastMeasure = itemView.findViewById(R.id.textViewEquipmentLastMeasure);
             textViewImage = itemView.findViewById(R.id.textViewEquipment);
             circleImageView = itemView.findViewById(R.id.imageViewEquipment);

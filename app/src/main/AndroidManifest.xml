@@ -62,6 +62,16 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".mvp.task.TaskInfoActivity"
+            android:label="@string/service_app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".mvp.object.ObjectActivity"
+            android:label="@string/service_app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".mvp.equipment.AddEquipmentActivity"
             android:label="@string/service_app_name"
             android:screenOrientation="portrait"

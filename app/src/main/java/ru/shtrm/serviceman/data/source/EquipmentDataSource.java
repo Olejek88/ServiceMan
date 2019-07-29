@@ -6,6 +6,7 @@ import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.ZhObject;
 
 public interface EquipmentDataSource {
 
@@ -13,17 +14,9 @@ public interface EquipmentDataSource {
 
     List<Equipment> getAllEquipment();
 
-    List<Equipment> getEquipmentByHouse(House house);
+    List<Equipment> getEquipmentByObject(ZhObject object);
 
     List<Equipment> getEquipmentByType(EquipmentType equipmentType);
-
-    void deleteEquipment(Equipment equipment);
-
-    void deleteEmptyEquipment();
-
-    int addEquipment(Equipment equipment);
-
-    void updateEquipmentStatus (Equipment equipment, EquipmentStatus equipmentStatus);
 
     long getLastId();
 }

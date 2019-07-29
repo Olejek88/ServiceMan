@@ -32,6 +32,8 @@ public class HouseDeserializer extends BaseDeserialzer implements JsonDeserializ
         item.setStreet((Street) getReference(object, Street.class, "streetUuid"));
         item.setHouseStatus((HouseStatus) getReference(object, HouseStatus.class, "houseStatusUuid"));
         item.setHouseType((HouseType) getReference(object, HouseType.class, "houseTypeUuid"));
+        item.setLatitude(getDouble(object, "latitude"));
+        item.setLongitude(getDouble(object, "longitude"));
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 

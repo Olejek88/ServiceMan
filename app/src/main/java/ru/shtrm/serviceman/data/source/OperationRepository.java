@@ -30,11 +30,6 @@ public class OperationRepository implements OperationDataSource {
     }
 
     @Override
-    public List<Operation> getOperationByTask(Task task) {
-        return localDataSource.getOperationByTask(task);
-    }
-
-    @Override
     public void setOperationStatus(Operation operation, WorkStatus status) {
         localDataSource.setOperationStatus(operation, status);
     }

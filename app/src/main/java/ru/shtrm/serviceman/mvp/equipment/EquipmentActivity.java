@@ -31,11 +31,12 @@ import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
-import ru.shtrm.serviceman.data.source.GpsTrackRepository;
+import ru.shtrm.serviceman.data.source.TaskRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MessageLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
+import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.util.MainUtil.ACTIVITY_PHOTO_MESSAGE;
@@ -47,6 +48,7 @@ public class EquipmentActivity extends AppCompatActivity
     private static String photoUuid;
     private static Bitmap storeBitmap=null;
     private static File photoFile;
+    private String equipment_uuid;
     private EquipmentFragment fragment;
 
     public static void createAddMessageDialog(final Activity activity) {
@@ -152,9 +154,9 @@ public class EquipmentActivity extends AppCompatActivity
         }
 
         if (!fragment.isAdded()) {
-            String equipment_id = getIntent().getStringExtra("EQUIPMENT_UUID");
+            equipment_uuid = getIntent().getStringExtra("EQUIPMENT_UUID");
             Bundle b = new Bundle();
-            b.putString(EQUIPMENT_UUID, equipment_id);
+            b.putString(EQUIPMENT_UUID, equipment_uuid);
             fragment.setArguments(b);
 
             getSupportFragmentManager().beginTransaction()
@@ -166,8 +168,8 @@ public class EquipmentActivity extends AppCompatActivity
                 fragment,
                 EquipmentRepository.getInstance(EquipmentLocalDataSource.getInstance()),
                 EquipmentStatusRepository.getInstance(EquipmentStatusLocalDataSource.getInstance()),
-                GpsTrackRepository.getInstance(GpsTrackLocalDataSource.getInstance()),
-                getIntent().getStringExtra(EQUIPMENT_UUID));
+                TaskRepository.getInstance(TaskLocalDataSource.getInstance()),
+                equipment_uuid);
     }
 
     @Override

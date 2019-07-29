@@ -11,6 +11,7 @@ import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.data.source.EquipmentDataSource;
 
 public class EquipmentLocalDataSource implements EquipmentDataSource {
@@ -52,13 +53,11 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     }
 
     @Override
-    public List<Equipment> getEquipmentByHouse(House house) {
+    public List<Equipment> getEquipmentByObject(ZhObject object) {
         Realm realm = Realm.getDefaultInstance();
-        List<Equipment> list = realm.where(Equipment.class)
-                .equalTo("house", house.getUuid()).findAll();
-        list = realm.copyFromRealm(list);
-        realm.close();
-        return list;
+        return realm.copyFromRealm(
+                realm.where(Equipment.class).
+                        equalTo("object.uuid", object.getUuid()).findAll());
     }
 
     @Override
@@ -72,49 +71,6 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     }
 
     @Override
-    public int addEquipment(final Equipment equipment) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-//                equipment.setSent(false);
-                realm.copyToRealmOrUpdate(equipment);
-            }
-        });
-        realm.close();
-        return 0;
-    }
-
-    @Override
-    public void deleteEquipment(final Equipment equipment) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmResults<Equipment> equipments =
-                        realm.where(Equipment.class).equalTo("uuid", equipment.getUuid()).
-                                findAll();
-                equipments.deleteAllFromRealm();
-            }
-        });
-        realm.close();
-    }
-
-    @Override
-    public void updateEquipmentStatus(final Equipment equipment, final EquipmentStatus equipmentStatus) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-//                equipment.setSent(false);
-                equipment.setEquipmentStatus(equipmentStatus);
-                realm.copyToRealmOrUpdate(equipment);
-            }
-        });
-        realm.close();
-    }
-
-    @Override
     public long getLastId() {
         Realm realm = Realm.getDefaultInstance();
         Number lastId = realm.where(Equipment.class).max("_id");
@@ -123,29 +79,5 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         }
         realm.close();
         return lastId.longValue();
-    }
-
-    @Override
-    public void deleteEmptyEquipment() {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmResults<Equipment> equipments =
-                        realm.where(Equipment.class).equalTo("uuid", "").findAll();
-                equipments.deleteAllFromRealm();
-            }
-        });
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmResults<Equipment> equipments = realm.where(Equipment.class).findAll();
-                for (Equipment equipment : equipments) {
-                    if (equipment.getUuid() == null)
-                        equipment.deleteFromRealm();
-                }
-            }
-        });
-        realm.close();
     }
 }

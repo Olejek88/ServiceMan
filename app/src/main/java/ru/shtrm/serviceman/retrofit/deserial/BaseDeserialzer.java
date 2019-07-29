@@ -83,6 +83,7 @@ public class BaseDeserialzer {
         }
 
         String refUuid = element.getAsString();
+        Realm realm = Realm.getDefaultInstance();
         RealmObject refItem = realm.where(realmObject).equalTo(key, refUuid).findFirst();
         if (refItem == null) {
             realm.close();

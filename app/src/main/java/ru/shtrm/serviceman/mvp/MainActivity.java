@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity
     public static String objectUuid;
     // контейнер для хранения uuid модели фотографии
     public static String photoUuid;
-    public Toolbar toolbar;
     public boolean isLogged = false;
     private NavigationView navigationView;
     private DrawerLayout drawer;

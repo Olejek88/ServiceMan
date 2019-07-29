@@ -16,6 +16,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,20 +54,20 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Measure;
-import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
-import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.OperationLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
+import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.operations.OperationAdapter;
+import ru.shtrm.serviceman.mvp.task.TaskAdapter;
+import ru.shtrm.serviceman.mvp.task.TaskContract;
+import ru.shtrm.serviceman.mvp.task.TaskInfoActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_UUID;
@@ -80,8 +82,10 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private GpsTrackRepository gpsTrackRepository;
     private MeasureRepository measureRepository;
     private EquipmentRepository equipmentRepository;
-    private ListView listView;
-    private ListView listView_archive;
+    private RecyclerView recyclerView;
+    private LinearLayout emptyView;
+    private TaskAdapter taskAdapter;
+
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
     private TextView textViewPhotoDate;
@@ -169,25 +173,23 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
-        FloatingActionButton fab_delete = view.findViewById(R.id.fab_delete);
         FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
 
         myCalendar = Calendar.getInstance();
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         textInputMeasure = view.findViewById(R.id.addMeasureValue);
         circleImageView = view.findViewById(R.id.imageViewEquipment);
+        emptyView =  view.findViewById(R.id.emptyView);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         initChart(view);
 
-        //editTextSerial.setText(equipment.getSerial());
-        //textViewType.setText(equipment.getEquipmentType().getTitle());
-        //textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
         SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
         if (equipment.getTestDate() != null)
             textViewDate.setText(sDf.format(equipment.getTestDate()));
         else
             textViewDate.setText(R.string.no_last_time);
-        //textViewEquipment.setText(equipment.getEquipmentType().getTitle().substring(0, 1));
 
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
 
@@ -298,14 +300,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
         //gridView.invalidateViews();
         //gridView.setVisibility(View.INVISIBLE);
-        listView = view.findViewById(R.id.list_view);
-        listView_archive = view.findViewById(R.id.list_view_archive);
-/*
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-*/
-        fillListViewOperations(equipment, 0);
-        fillListViewOperations(equipment, 1);
+        //listView = view.findViewById(R.id.list_view);
+        //fillListViewOperations(equipment);
     }
 
     void createMeasure() {
@@ -442,27 +438,21 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     // Operations----------------------------------------------------------------------------------------
-    private void fillListViewOperations(Equipment equipment, int type) {
+    private void fillListViewOperations(Equipment equipment) {
         Activity activity = getActivity();
         List<Task> tasks;
         if (activity == null) {
             return;
         }
-        if (type == 0)
-            tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.UN_COMPLETE);
-        else
-            tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.COMPLETE);
+        tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, null);
         if (tasks.size() > 0) {
-            List<Operation> operations = OperationLocalDataSource.getInstance().getOperationByTask(tasks.get(0));
-            OperationAdapter operationAdapter = new OperationAdapter(activity, operations);
-            if (type == 0) {
-                listView.setAdapter(operationAdapter);
-                //setListViewHeightBasedOnChildren(listView);
-            }
-            else {
-                listView_archive.setAdapter(operationAdapter);
-                setListViewHeightBasedOnChildren(listView_archive);
-            }
+            showTaskList(tasks);
+/*
+            TaskAdapter taskAdapter = new TaskAdapter(mainActivityConnector, tasks);
+            recyclerView.setAdapter(taskAdapter);
+            emptyView.setVisibility(View.VISIBLE);
+*/
+            //setListViewHeightBasedOnChildren(listView);
         }
     }
 
@@ -476,6 +466,47 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             return mValues.get((int) value);
+        }
+    }
+
+    /**
+     * Show flats with recycler view.
+     * @param list The data.
+     */
+    @Override
+    public void showTaskList(@NonNull final List<Task> list) {
+        if (taskAdapter == null) {
+            taskAdapter = new TaskAdapter(mainActivityConnector, list);
+            taskAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
+                @Override
+                public void OnItemClick(View v, int position) {
+                    Task task = list.get(position);
+                    Intent intent = new Intent(getActivity(), TaskInfoActivity.class);
+                    intent.putExtra("TASK_UUID", String.valueOf(task.getUuid()));
+                    startActivity(intent);
+                }
+            });
+            recyclerView.setAdapter(taskAdapter);
+        } else {
+            taskAdapter.updateData(list);
+            recyclerView.setAdapter(taskAdapter);
+        }
+        showEmptyView(list.isEmpty());
+    }
+
+    /**
+     * Hide a RecyclerView when it is empty and show a empty view
+     * to tell the uses that there is no data currently.
+     * @param toShow Hide or show.
+     */
+    @Override
+    public void showEmptyView(boolean toShow) {
+        if (toShow) {
+            recyclerView.setVisibility(View.INVISIBLE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.INVISIBLE);
         }
     }
 }

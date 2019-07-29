@@ -20,6 +20,7 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 
 public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -33,7 +34,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Nullable
     private OnRecyclerViewItemClickListener listener;
 
-    TaskAdapter(@NonNull Context context, @NonNull List<Task> list) {
+    public TaskAdapter(@NonNull Context context, @NonNull List<Task> list) {
         inflater = LayoutInflater.from(context);
         this.list = list;
     }
@@ -60,7 +61,10 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             eDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(lDate);
         }
         pvh.textTaskDate.setText("Назначен: "+sDate+" | "+"Срок: "+eDate);
-        pvh.statusTaskImage.setColorFilter(Color.argb(0, 0,255,0), PorterDuff.Mode.ADD);
+        if (item.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE))
+            pvh.statusTaskImage.setImageResource(R.drawable.circle_green);
+        else
+            pvh.statusTaskImage.setImageResource(R.drawable.circle_red);
         pvh.textTaskTitle.setTypeface(null, Typeface.BOLD);
     }
 

@@ -13,28 +13,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.TaskRepository;
-import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.WorkStatusLocalDataSource;
 
 import static ru.shtrm.serviceman.mvp.task.TaskInfoActivity.TASK_UUID;
 
 public class TaskInfoFragment extends Fragment {
-    Calendar myCalendar;
     private Activity mainActivityConnector = null;
     private TaskRepository taskRepository;
     private Task task;
-    private AppCompatTextView textViewTaskTitle;
-    private AppCompatTextView textViewTaskAddress;
-    private AppCompatTextView textTaskDate;
-    private AppCompatTextView textDeadlineDate;
-    private AppCompatTextView textAuthor;
-    private AppCompatTextView textComment;
 
     private FloatingActionButton fab_complete;
     private FloatingActionButton fab_cancel;
@@ -74,18 +70,7 @@ public class TaskInfoFragment extends Fragment {
                 getFragmentManager().popBackStack();
             }
         }
-
         initViews(view);
-        fab_complete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-        fab_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
 
         setHasOptionsMenu(true);
         return view;
@@ -103,29 +88,75 @@ public class TaskInfoFragment extends Fragment {
     }
 
     public void initViews(View view) {
+        AppCompatTextView textAuthor = view.findViewById(R.id.textAuthor);
+        AppCompatTextView textViewTaskTitle;
+        AppCompatTextView textViewTaskAddress;
+        AppCompatTextView textViewTaskEquipment;
+        AppCompatTextView textTaskDate;
+        AppCompatTextView textEndDate;
+        AppCompatTextView textDeadlineDate;
+        AppCompatTextView textComment;
+        LinearLayout endLayout;
+
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
         if (mToolbar !=null) {
             mToolbar.setTitle("Информация о задаче");
         }
 
         textViewTaskTitle = view.findViewById(R.id.textViewTaskTitle);
+        textViewTaskEquipment = view.findViewById(R.id.textViewTaskEquipment);
         textViewTaskAddress = view.findViewById(R.id.textViewTaskAddress);
         textTaskDate = view.findViewById(R.id.textTaskDate);
+        textEndDate = view.findViewById(R.id.textEndDate);
         textDeadlineDate = view.findViewById(R.id.textDeadlineDate);
-        textAuthor = view.findViewById(R.id.textAuthor);
         textComment = view.findViewById(R.id.textComment);
+        endLayout = view.findViewById(R.id.endLayout);
 
-        fab_cancel = view.findViewById(R.id.task_complete);
-        fab_complete = view.findViewById(R.id.task_verdict);
+        fab_cancel = view.findViewById(R.id.task_verdict);
+        fab_complete = view.findViewById(R.id.task_complete);
 
         if (this.task!=null) {
             textViewTaskTitle.setText(task.getTaskTemplate().getTitle());
             textViewTaskAddress.setText(task.getEquipment().getObject().getFullTitle());
-            textTaskDate.setText(task.getTaskDate().toString());
             textDeadlineDate.setText(task.getDeadlineDate().toString());
+            textViewTaskEquipment.setText(task.getEquipment().getTitle());
+            if (task.getTaskDate()!=null) {
+                String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(task.getTaskDate());
+                textTaskDate.setText(sDate);
+            }
+            else textTaskDate.setText("не задано");
+            if (task.getDeadlineDate()!=null) {
+                String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(task.getDeadlineDate());
+                textDeadlineDate.setText(sDate);
+            }
+            else textDeadlineDate.setText("не задано");
+            if (task.getEndDate()!=null) {
+                String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).format(task.getEndDate());
+                textEndDate.setText(sDate);
+                endLayout.setVisibility(View.VISIBLE);
+            }
+            else endLayout.setVisibility(View.GONE);
+
             textAuthor.setText(task.getAuthor().getName());
             textComment.setText(task.getComment());
         }
+
+        fab_complete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WorkStatus ws = WorkStatusLocalDataSource.getInstance().getWorkStatusByUuid(WorkStatus.Status.COMPLETE);
+                TaskLocalDataSource.getInstance().setTaskStatus(task, ws);
+                TaskLocalDataSource.getInstance().setEndDate(task);
+                mainActivityConnector.onBackPressed();
+            }
+        });
+        fab_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO set Verdict & status
+                mainActivityConnector.onBackPressed();
+            }
+        });
     }
 
     /**

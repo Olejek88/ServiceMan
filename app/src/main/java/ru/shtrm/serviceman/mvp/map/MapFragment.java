@@ -24,7 +24,6 @@ import android.widget.Toast;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
@@ -39,11 +38,8 @@ import java.util.TimerTask;
 
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Task;
-import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
@@ -187,15 +183,12 @@ public class MapFragment extends Fragment implements MapContract.View {
                 public void OnItemClick(View v, int position) {
                     House house = list.get(position);
                     if (house != null) {
-//                        PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
-//                                getLastPhotoByHouse(house);
-//                        if (photoHouse != null) {
-//                            GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
-//                            mapController.setCenter(point2);
-//                        }
+                        GeoPoint point = new GeoPoint(house.getLatitude(), house.getLongitude());
+                        mapView.getController().animateTo(point);
                     }
                 }
             });
+
             recyclerView.setAdapter(houseAdapter);
         } else {
             houseAdapter.updateData(list);
@@ -220,7 +213,7 @@ public class MapFragment extends Fragment implements MapContract.View {
                     });
                 }
             };
-            timer.schedule(mTimerTask, 1, 3000);
+            timer.schedule(mTimerTask, 1, 20000);
         }
     }
 
@@ -238,7 +231,7 @@ public class MapFragment extends Fragment implements MapContract.View {
                     .concat(task.getEquipment().getObject().getFullTitle()),
                     "Задача", new GeoPoint(curLatitude, curLongitude));
             Drawable newMarker;
-            newMarker = this.getResources().getDrawable(R.drawable.ic_info_black_24dp);
+            newMarker = this.getResources().getDrawable(R.drawable.task_marker_orange);
             olItem.setMarker(newMarker);
             taskOverlayItemArray.add(olItem);
         }
@@ -263,10 +256,14 @@ public class MapFragment extends Fragment implements MapContract.View {
         if (location != null) {
             GeoPoint point2 = new GeoPoint(location.getLatitude(), location.getLongitude());
             if (mapController != null && mapView != null && aOverlayItemArray != null) {
+                Drawable newMarker;
+                newMarker = this.getResources().getDrawable(R.drawable.worker_marker_green);
+
                 if (mainActivityConnector.getPreferences(Context.MODE_PRIVATE).getBoolean("gps_center", true))
                     mapController.setCenter(point2);
                 OverlayItem overlayItem = new OverlayItem("Вы здесь", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));
+                overlayItem.setMarker(newMarker);
                 if (positionItemizedIconOverlay == null)
                     positionItemizedIconOverlay = new ItemizedIconOverlay<>(
                             mainActivityConnector, aOverlayItemArray, null);

@@ -42,6 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:layout_marginStart="5dp"
                     android:gravity="start|center_vertical"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="@color/mdtp_white"
@@ -52,6 +53,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
+                    android:layout_marginStart="5dp"
+                    android:maxLines="2"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/mdtp_white"
+                    android:textSize="16sp" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/textViewTaskEquipment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginStart="5dp"
                     android:maxLines="2"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@color/mdtp_white"
@@ -61,6 +74,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
                 android:background="@color/gray_200"
                 android:orientation="vertical">
 
@@ -75,6 +90,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
+                        android:layout_marginEnd="5dp"
                         android:background="@drawable/round_corner"
                         android:gravity="start|center_vertical"
                         android:text="@string/task_date"
@@ -89,7 +105,7 @@
                         android:layout_marginTop="3dp"
                         android:gravity="start|center_vertical"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="@color/mdtp_white"
+                        android:textColor="@color/colorPrimaryDark"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -104,6 +120,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginEnd="5dp"
                         android:background="@drawable/round_corner"
                         android:gravity="start|center_vertical"
                         android:text="@string/task_deadline"
@@ -125,7 +143,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/gray_200"
+                    android:background="@color/mdtp_white"
                     android:orientation="horizontal">
 
                     <android.support.v7.widget.AppCompatTextView
@@ -133,6 +151,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginEnd="5dp"
                         android:background="@drawable/round_corner"
                         android:gravity="start|center_vertical"
                         android:text="@string/task_author"
@@ -142,6 +162,38 @@
 
                     <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/textAuthor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:gravity="start|center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/endLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/mdtp_white"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/labelDateEnd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginEnd="5dp"
+                        android:background="@drawable/round_corner"
+                        android:gravity="start|center_vertical"
+                        android:text="@string/task_end"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/mdtp_white"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/textEndDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"

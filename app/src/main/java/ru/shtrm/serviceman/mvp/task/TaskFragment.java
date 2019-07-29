@@ -35,7 +35,6 @@ public class TaskFragment extends Fragment implements TaskContract.View {
     private TaskAdapter taskAdapter;
     private TaskContract.Presenter presenter;
 
-    // As a fragment, default constructor is needed.
     public TaskFragment() {}
 
     public static TaskFragment newInstance() {

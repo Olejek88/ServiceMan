@@ -90,7 +90,6 @@ public class AddEquipmentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_equipment, container, false);
         Bundle b = getArguments();
         if (b != null) {
-
         }
 
         if (house == null) {
@@ -100,7 +99,6 @@ public class AddEquipmentFragment extends Fragment {
         }
 
         initViews(view);
-
         setHasOptionsMenu(true);
         return view;
     }

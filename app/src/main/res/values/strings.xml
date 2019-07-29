@@ -84,6 +84,7 @@
     <string name="task_date">Назначена:</string>
     <string name="task_deadline">Срок:</string>
     <string name="task_author">Автор:</string>
+    <string name="task_end">Выполнена:</string>
 
     <!--navigation drawer-->
     <string name="nav_profile">Профиль</string>

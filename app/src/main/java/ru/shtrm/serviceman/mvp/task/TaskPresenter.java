@@ -33,7 +33,7 @@ public class TaskPresenter implements TaskContract.Presenter {
 
     @Override
     public List<Task> loadTasks() {
-        List<Task> tasks = TaskRepository.getNewTasks();
+        List<Task> tasks = TaskRepository.getTasks();
         view.showTaskList(tasks);
         return tasks;
     }

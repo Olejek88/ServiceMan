@@ -5,24 +5,50 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
 public class House extends RealmObject {
 
     @PrimaryKey
     private long _id;
     private String uuid;
+    private Organization organization;
+    private String gisId;
     private String number;
     private Street street;
     private HouseStatus houseStatus;
     private HouseType houseType;
+    private double latitude;
+    private double longitude;
     private Date createdAt;
     private Date changedAt;
 
-    public void setHouseType(HouseType houseType) {
-        this.houseType = houseType;
+    public static List<House> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(House.class));
+        Call<List<House>> call = SManApiFactory.getHouseService().getData(lastUpdate);
+        try {
+            Response<List<House>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public HouseType getHouseType() {
         return houseType;
+    }
+
+    public void setHouseType(HouseType houseType) {
+        this.houseType = houseType;
     }
 
     public Street getStreet() {
@@ -83,5 +109,37 @@ public class House extends RealmObject {
 
     public String getFullTitle() {
         return getStreet().getTitle().concat(", ").concat(getNumber());
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public String getGisId() {
+        return gisId;
+    }
+
+    public void setGisId(String gisId) {
+        this.gisId = gisId;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

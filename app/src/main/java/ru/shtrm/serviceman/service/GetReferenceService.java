@@ -8,32 +8,48 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmModel;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import ru.shtrm.serviceman.data.AlarmStatus;
 import ru.shtrm.serviceman.data.AlarmType;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.City;
+import ru.shtrm.serviceman.data.Defect;
+import ru.shtrm.serviceman.data.DefectType;
+import ru.shtrm.serviceman.data.Documentation;
+import ru.shtrm.serviceman.data.DocumentationType;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
+import ru.shtrm.serviceman.data.EquipmentSystem;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.FlatStatus;
-import ru.shtrm.serviceman.data.FlatType;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.HouseType;
 import ru.shtrm.serviceman.data.Journal;
+import ru.shtrm.serviceman.data.MeasureType;
+import ru.shtrm.serviceman.data.Message;
+import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
-import ru.shtrm.serviceman.data.Resident;
 import ru.shtrm.serviceman.data.Street;
-import ru.shtrm.serviceman.data.Subject;
+import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskTemplate;
+import ru.shtrm.serviceman.data.TaskType;
+import ru.shtrm.serviceman.data.TaskVerdict;
+import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.UserHouse;
+import ru.shtrm.serviceman.data.WorkStatus;
+import ru.shtrm.serviceman.data.ZhObject;
+import ru.shtrm.serviceman.data.ZhObjectStatus;
+import ru.shtrm.serviceman.data.ZhObjectType;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 import ru.shtrm.serviceman.retrofit.ServiceApiFactory;
 
@@ -63,44 +79,133 @@ public class GetReferenceService extends Service {
             // обновляем справочники
             Realm realm = Realm.getDefaultInstance();
 
-            if (!updateCity(realm)) {
-                Journal.add("City not updated.");
-            }
+            Date updateDate = new Date();
+            List<? extends RealmModel> list;
 
-            if (!updateAlarmType(realm)) {
-                Journal.add("AlarmType not updated.");
-            }
-
-            if (!updateAlarmStatus(realm)) {
+            list = AlarmStatus.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
                 Journal.add("AlarmStatus not updated.");
             }
 
-            if (!updateHouseType(realm)) {
-                Journal.add("HouseType not updated.");
+            list = AlarmType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("AlarmType not updated.");
             }
 
-            if (!updateHouseStatus(realm)) {
-                Journal.add("HouseStatus not updated.");
+            list = DefectType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("DefectType not updated.");
             }
 
-            if (!updateFlatType(realm)) {
-                Journal.add("FlatType not updated.");
+            list = DocumentationType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("DocumentationType not updated.");
             }
 
-            if (!updateFlatStatus(realm)) {
-                Journal.add("FlatStatus not updated.");
-            }
-
-            if (!updateEquipmentType(realm)) {
-                Journal.add("EquipmentType not updated.");
-            }
-
-            if (!updateEquipmentStatus(realm)) {
+            list = EquipmentStatus.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
                 Journal.add("EquipmentStatus not updated.");
             }
 
+            list = HouseStatus.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("HouseStatus not updated.");
+            }
+
+            list = MeasureType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("MeasureType not updated.");
+            }
+
+            list = ZhObjectStatus.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("ObjectStatus not updated.");
+            }
+
+            list = ZhObjectType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("ObjectType not updated.");
+            }
+
+            list = TaskType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("TaskType not updated.");
+            }
+
+            list = TaskVerdict.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("TaskVerdict not updated.");
+            }
+
+            list = WorkStatus.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("WorkStatus not updated.");
+            }
+
+            list = EquipmentSystem.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("EquipmentSystem not updated.");
+            }
+
             if (AuthorizedUser.getInstance().isValidToken()) {
-                if (!updateUser(realm)) {
+                list = User.getData();
+                if (list != null) {
+                    if (list.size() > 0) {
+                        saveData(list, updateDate, realm);
+                    }
+                } else {
                     Journal.add("User not updated.");
                 }
             } else {
@@ -109,32 +214,117 @@ public class GetReferenceService extends Service {
                 }
             }
 
-            if (!updateStreet(realm)) {
+            // --------
+            list = City.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("City not updated.");
+            }
+
+            list = Street.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
                 Journal.add("Street not updated.");
             }
 
-            if (!updateHouse(realm)) {
+            list = HouseType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("HouseType not updated.");
+            }
+
+            list = House.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
                 Journal.add("House not updated.");
             }
 
-            if (!updateFlat(realm)) {
-                Journal.add("Flat not updated.");
+            list = ZhObject.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("Object not updated.");
             }
 
-            if (!updateEquipment(realm)) {
+            list = EquipmentType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("EquipmentType not updated.");
+            }
+
+            list = Equipment.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
                 Journal.add("Equipment not updated.");
             }
 
-            if (!updateUserHouse(realm)) {
-                Journal.add("UserHouse not updated.");
+            list = Defect.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("Defect not updated.");
             }
 
-            if (!updateSubject(realm)) {
-                Journal.add("Subject not updated.");
+            list = Documentation.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("Documentation not updated.");
             }
 
-            if (!updateResident(realm)) {
-                Journal.add("Resident not updated.");
+            list = Message.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("Message not updated.");
+            }
+
+            list = OperationTemplate.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("OperationTemplate not updated.");
+            }
+
+            list = TaskTemplate.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("TaskTemplate not updated.");
+            }
+
+            if (!getNewTask(realm)) {
+                Journal.add("Task not received.");
             }
 
             realm.close();
@@ -144,392 +334,11 @@ public class GetReferenceService extends Service {
         }
     };
 
-    private boolean updateAlarmStatus(Realm realm) {
-        String lastUpdate;
-        String rName = AlarmStatus.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<AlarmStatus>> call = SManApiFactory.getAlarmStatusService().getData(lastUpdate);
-        try {
-            Response<List<AlarmStatus>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<AlarmStatus> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateAlarmType(Realm realm) {
-        String lastUpdate;
-        String rName = AlarmType.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<AlarmType>> call = SManApiFactory.getAlarmTypeService().getData(lastUpdate);
-        try {
-            Response<List<AlarmType>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<AlarmType> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateCity(Realm realm) {
-        String lastUpdate;
-        String rName = City.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<City>> call = SManApiFactory.getCityService().getData(lastUpdate);
-        try {
-            Response<List<City>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<City> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateStreet(Realm realm) {
-        String lastUpdate;
-        String rName = Street.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Street>> call = SManApiFactory.getStreetService().getData(lastUpdate);
-        try {
-            Response<List<Street>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Street> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateHouseStatus(Realm realm) {
-        String lastUpdate;
-        String rName = HouseStatus.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<HouseStatus>> call = SManApiFactory.getHouseStatusService().getData(lastUpdate);
-        try {
-            Response<List<HouseStatus>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<HouseStatus> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateHouse(Realm realm) {
-        String lastUpdate;
-        String rName = House.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<House>> call = SManApiFactory.getHouseService().getData(lastUpdate);
-        try {
-            Response<List<House>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<House> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateFlatStatus(Realm realm) {
-        String lastUpdate;
-        String rName = FlatStatus.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<FlatStatus>> call = SManApiFactory.getFlatStatusService().getData(lastUpdate);
-        try {
-            Response<List<FlatStatus>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<FlatStatus> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateFlat(Realm realm) {
-        String lastUpdate;
-        String rName = Flat.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Flat>> call = SManApiFactory.getFlatService().getData(lastUpdate);
-        try {
-            Response<List<Flat>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Flat> list = response.body();
-                if (list.size() > 0) {
-                    // для предотвращения отправки только что полученых данных на сервер
-                    for (Flat flat : list) {
-                        flat.setSent(true);
-                    }
-
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateEquipmentStatus(Realm realm) {
-        String lastUpdate;
-        String rName = EquipmentStatus.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<EquipmentStatus>> call = SManApiFactory.getEquipmentStatusService().getData(lastUpdate);
-        try {
-            Response<List<EquipmentStatus>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<EquipmentStatus> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateEquipmentType(Realm realm) {
-        String lastUpdate;
-        String rName = EquipmentType.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<EquipmentType>> call = SManApiFactory.getEquipmentTypeService().getData(lastUpdate);
-        try {
-            Response<List<EquipmentType>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<EquipmentType> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateEquipment(Realm realm) {
-        String lastUpdate;
-        String rName = Equipment.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Equipment>> call = SManApiFactory.getEquipmentService().getData(lastUpdate);
-        try {
-            Response<List<Equipment>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Equipment> list = response.body();
-                if (list.size() > 0) {
-                    // для предотвращения отправки только что полученых данных на сервер
-                    for (Equipment equipment : list) {
-                        equipment.setSent(true);
-                    }
-
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateSubject(Realm realm) {
-        String lastUpdate;
-        String rName = Subject.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Subject>> call = SManApiFactory.getSubjectService().getData(lastUpdate);
-        try {
-            Response<List<Subject>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Subject> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateResident(Realm realm) {
-        String lastUpdate;
-        String rName = Resident.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<Resident>> call = SManApiFactory.getResidentService().getData(lastUpdate);
-        try {
-            Response<List<Resident>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<Resident> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateUser(Realm realm) {
-        String lastUpdate;
-        String rName = User.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<User>> call = SManApiFactory.getUsersService().getData(lastUpdate);
-        try {
-            Response<List<User>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<User> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    private void saveData(List<? extends RealmModel> list, Date updateDate, Realm realm) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(list);
+        realm.commitTransaction();
+        ReferenceUpdate.saveReferenceData(list.get(0).getClass().getSimpleName() + ":" + userUuid, updateDate, realm);
     }
 
     private boolean updateUserByService(Realm realm) {
@@ -567,75 +376,63 @@ public class GetReferenceService extends Service {
         }
     }
 
-    private boolean updateFlatType(Realm realm) {
-        String lastUpdate;
-        String rName = FlatType.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<FlatType>> call = SManApiFactory.getFlatTypeService().getData(lastUpdate);
+    private boolean getNewTask(Realm realm) {
+        List<Task> list;
+        List<UpdateQuery> changes = new ArrayList<>();
+
+        Call<List<Task>> call = SManApiFactory.getTaskService().getByStatus(WorkStatus.Status.NEW);
         try {
-            Response<List<FlatType>> response = call.execute();
+            Response<List<Task>> response = call.execute();
             if (response.isSuccessful()) {
-                List<FlatType> list = response.body();
+                list = response.body();
                 if (list.size() > 0) {
+                    WorkStatus inWorkStatus = realm.where(WorkStatus.class)
+                            .equalTo("uuid", WorkStatus.Status.IN_WORK).findFirst();
+                    Date date = new Date();
+
+                    // проставляем дату получения задач
+                    for (Task item : list) {
+                        item.setStartDate(date);
+                        if (item.getWorkStatus().getUuid().equals(WorkStatus.Status.NEW)) {
+                            // устанавливаем статус "В работе"
+                            item.setWorkStatus(inWorkStatus);
+
+                            UpdateQuery changedAttr = new UpdateQuery(item.getClass().getSimpleName(),
+                                    item.getUuid(), "workStatusUuid", inWorkStatus.getUuid(),
+                                    item.getChangedAt());
+                            changedAttr.set_id(UpdateQuery.getLastId() + 1);
+                            changes.add(changedAttr);
+                        }
+                    }
+
                     realm.beginTransaction();
                     realm.copyToRealmOrUpdate(list);
                     realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
 
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+                    // если есть новые задачи, отправляем подтверждение о получении
+                    for (UpdateQuery item : changes) {
+                        boolean success;
+                        Call<ResponseBody> callUpdAttr = SManApiFactory.getTaskService().updateAttribute(item);
+                        try {
+                            Response<ResponseBody> responseUpdAttr = callUpdAttr.execute();
+                            if (responseUpdAttr.isSuccessful()) {
+                                JSONObject jObj = new JSONObject(responseUpdAttr.body().string());
+                                success = (boolean) jObj.get("success");
+                            } else {
+                                success = false;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            success = false;
+                        }
 
-    private boolean updateHouseType(Realm realm) {
-        String lastUpdate;
-        String rName = HouseType.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<HouseType>> call = SManApiFactory.getHouseTypeService().getData(lastUpdate);
-        try {
-            Response<List<HouseType>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<HouseType> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean updateUserHouse(Realm realm) {
-        String lastUpdate;
-        String rName = UserHouse.class.getSimpleName() + ":" + userUuid;
-        Date updateDate = new Date();
-        lastUpdate = ReferenceUpdate.lastChangedAsStr(rName);
-        Call<List<UserHouse>> call = SManApiFactory.getUserHouseService().getData(lastUpdate);
-        try {
-            Response<List<UserHouse>> response = call.execute();
-            if (response.isSuccessful()) {
-                List<UserHouse> list = response.body();
-                if (list.size() > 0) {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(list);
-                    realm.commitTransaction();
-                    ReferenceUpdate.saveReferenceData(rName, updateDate, realm);
+                        // что-то пошло не так, сохраняем данные в очередь на отправку
+                        if (!success) {
+                            realm.beginTransaction();
+                            realm.copyToRealmOrUpdate(item);
+                            realm.commitTransaction();
+                        }
+                    }
                 }
 
                 return true;

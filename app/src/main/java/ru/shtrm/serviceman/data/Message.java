@@ -1,23 +1,70 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.UUID;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class Message extends RealmObject implements ISend, IBaseRecord {
     @Index
     private long _id;
     @PrimaryKey
     private String uuid;
-    private User user;
-    private Flat flat;
+    private Organization organization;
+    private User fromUser;
+    private User toUser;
     private Date date;
-    private String message;
+    private String text;
+    private int status;
     private Date createdAt;
     private Date changedAt;
     private boolean sent;
+
+    public Message() {
+        uuid = UUID.randomUUID().toString().toUpperCase();
+        Date createDate = new Date();
+        date = createDate;
+        sent = false;
+        createdAt = createDate;
+        changedAt = createDate;
+    }
+
+    public static long getLastId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        Number lastId = realm.where(Message.class).max("_id");
+        if (lastId == null) {
+            lastId = 0;
+        }
+
+        realm.close();
+        return lastId.longValue();
+    }
+
+    public static List<Message> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Message.class));
+        Call<List<Message>> call = SManApiFactory.getMessageService().getData(lastUpdate);
+        try {
+            Response<List<Message>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;
@@ -35,20 +82,12 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
         this.uuid = uuid;
     }
 
-    public User getUser() {
-        return user;
+    public User getFromUser() {
+        return fromUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
+    public void setFromUser(User user) {
+        this.fromUser = user;
     }
 
     public Date getDate() {
@@ -59,12 +98,12 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
         this.date = date;
     }
 
-    public String getMessage() {
-        return message;
+    public String getText() {
+        return text;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setText(String message) {
+        this.text = message;
     }
 
     public Date getCreatedAt() {
@@ -89,5 +128,35 @@ public class Message extends RealmObject implements ISend, IBaseRecord {
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public User getToUser() {
+        return toUser;
+    }
+
+    public void setToUser(User toUser) {
+        this.toUser = toUser;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public class Status {
+        public static final int MESSAGE_NEW = 0;
+        public static final int MESSAGE_READ = 1;
+        public static final int MESSAGE_DELETED = 2;
     }
 }

@@ -2,11 +2,9 @@ package ru.shtrm.serviceman.mvp.equipment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,19 +18,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
@@ -42,102 +36,20 @@ import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MessageLocalDataSource;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.mvp.equipment.EquipmentFragment.ACTIVITY_PHOTO;
 import static ru.shtrm.serviceman.util.MainUtil.ACTIVITY_PHOTO_MESSAGE;
 
 public class EquipmentActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
-    private EquipmentFragment fragment;
+    public static final String EQUIPMENT_UUID = "EQUIPMENT_UUID";
     private static ImageView add_photo;
     private static String photoUuid;
     private static Bitmap storeBitmap=null;
     private static File photoFile;
+    private EquipmentFragment fragment;
 
-    public static final String EQUIPMENT_UUID = "EQUIPMENT_UUID";
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.container);
-
-        MainUtil.setToolBarColor(this, this);
-
-        if (savedInstanceState != null) {
-            fragment = (EquipmentFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "EquipmentFragment");
-        } else {
-            fragment = EquipmentFragment.newInstance();
-        }
-
-        if (!fragment.isAdded()) {
-            String equipment_id = getIntent().getStringExtra("EQUIPMENT_UUID");
-            Bundle b = new Bundle();
-            b.putString(EQUIPMENT_UUID, equipment_id);
-            fragment.setArguments(b);
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.view_pager, fragment, "EquipmentFragment")
-                    .commit();
-        }
-
-        new EquipmentPresenter(
-                fragment,
-                EquipmentRepository.getInstance(EquipmentLocalDataSource.getInstance()),
-                EquipmentStatusRepository.getInstance(EquipmentStatusLocalDataSource.getInstance()),
-                GpsTrackRepository.getInstance(GpsTrackLocalDataSource.getInstance()),
-                getIntent().getStringExtra(EQUIPMENT_UUID));
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (fragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "EquipmentFragment", fragment);
-        }
-    }
-
-    /**
-     * Handle different items of the navigation drawer
-     *
-     * @param item The selected item.
-     * @return Selected or not.
-     */
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return true;
-    }
-
-    /**
-     * Сохраняем фото
-     *
-     * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode  The result code.
-     * @param data        The result.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_PHOTO_MESSAGE:
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2; // половина изображения
-                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                if (bitmap != null) {
-                    storeBitmap = bitmap;
-                    if (add_photo != null)
-                        add_photo.setImageBitmap(bitmap);
-                    if (photoFile!=null)
-                        photoFile.delete();
-                }
-                break;
-        }
-    }
-
-    public static void createAddMessageDialog(final Activity activity, final Flat flat) {
+    public static void createAddMessageDialog(final Activity activity) {
         final View mView = LayoutInflater.from(activity).inflate(R.layout.message_add_dialog, null);
         add_photo = mView.findViewById(R.id.imageAddMessage);
         final EditText userEditText = mView.findViewById(R.id.userMessage);
@@ -202,9 +114,10 @@ public class EquipmentActivity extends AppCompatActivity
                     String uuid = java.util.UUID.randomUUID().toString();
                     message.set_id(messageRepository.getLastId() + 1);
                     message.setUuid(uuid);
-                    message.setUser(user);
-                    message.setMessage(userEditText.getText().toString());
-                    message.setFlat(flat);
+                    message.setFromUser(user);
+                    // TODO: видимо нужно реализовать выше выбор пользователя которому отправляется сообщение
+                    message.setToUser(null);
+                    message.setText(userEditText.getText().toString());
                     message.setDate(new Date());
                     message.setCreatedAt(new Date());
                     message.setChangedAt(new Date());
@@ -222,5 +135,58 @@ public class EquipmentActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.container);
+
+        MainUtil.setToolBarColor(this, this);
+
+        if (savedInstanceState != null) {
+            fragment = (EquipmentFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, "EquipmentFragment");
+        } else {
+            fragment = EquipmentFragment.newInstance();
+        }
+
+        if (!fragment.isAdded()) {
+            String equipment_id = getIntent().getStringExtra("EQUIPMENT_UUID");
+            Bundle b = new Bundle();
+            b.putString(EQUIPMENT_UUID, equipment_id);
+            fragment.setArguments(b);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.view_pager, fragment, "EquipmentFragment")
+                    .commit();
+        }
+
+        new EquipmentPresenter(
+                fragment,
+                EquipmentRepository.getInstance(EquipmentLocalDataSource.getInstance()),
+                EquipmentStatusRepository.getInstance(EquipmentStatusLocalDataSource.getInstance()),
+                GpsTrackRepository.getInstance(GpsTrackLocalDataSource.getInstance()),
+                getIntent().getStringExtra(EQUIPMENT_UUID));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (fragment.isAdded()) {
+            getSupportFragmentManager().putFragment(outState, "EquipmentFragment", fragment);
+        }
+    }
+
+    /**
+     * Handle different items of the navigation drawer
+     *
+     * @param item The selected item.
+     * @return Selected or not.
+     */
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return true;
     }
 }

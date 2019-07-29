@@ -7,7 +7,6 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
@@ -31,21 +30,14 @@ public class TaskLocalDataSource implements TaskDataSource {
     }
 
     @Override
-    public List<Task> getTaskByEquipment(Equipment equipment, String  status) {
+    public List<Task> getTaskByEquipment(Equipment equipment, String status) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
-                        equalTo("workStatus.uuid", status).
-                        findAllSorted("createdAt", Sort.ASCENDING));
-    }
-
-    @Override
-    public List<Task> getTaskByFlat(Flat flat, String status) {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Task.class).equalTo("flat.uuid", flat.getUuid()).
-                        equalTo("workStatus.uuid", status).
-                        findAllSorted("createdAt", Sort.ASCENDING));
+        List<Task> list = realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
+                equalTo("workStatus.uuid", status).
+                findAllSorted("createdAt", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
@@ -55,6 +47,7 @@ public class TaskLocalDataSource implements TaskDataSource {
                 equalTo("task.uuid", task.getUuid()).
                 equalTo("workStatus.uuid", WorkStatus.Status.UN_COMPLETE).
                 count();
+        realm.close();
         return unCompleteOperations <= 0;
     }
 

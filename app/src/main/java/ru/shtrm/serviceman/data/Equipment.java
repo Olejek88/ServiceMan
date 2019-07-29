@@ -1,47 +1,48 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
-import java.util.UUID;
 
-import io.realm.Realm;
 import io.realm.RealmObject;
-import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class Equipment extends RealmObject implements ISend, IBaseRecord {
-    @Index
-    private long _id;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
+
+public class Equipment extends RealmObject implements IBaseRecord {
     @PrimaryKey
+    private long _id;
     private String uuid;
-    private House house;
-    private Flat flat;
+    private Organization organization;
+    private String title;
     private EquipmentType equipmentType;
-    private EquipmentStatus equipmentStatus;
     private String serial;
     private String tag;
+    private EquipmentStatus equipmentStatus;
+    private Date inputDate;
     private Date testDate;
+    private int period;
+    private Date replaceDate;
+    private ZhObject object;
     private Date createdAt;
     private Date changedAt;
-    private boolean sent;
 
-    public Equipment() {
-        uuid = UUID.randomUUID().toString().toUpperCase();
-        sent = false;
-        Date createDate = new Date();
-        createdAt = createDate;
-        changedAt = createDate;
-    }
-
-    public static long getLastId() {
-        Realm realm = Realm.getDefaultInstance();
-
-        Number lastId = realm.where(Equipment.class).max("_id");
-        if (lastId == null) {
-            lastId = 0;
+    public static List<Equipment> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Equipment.class));
+        Call<List<Equipment>> call = SManApiFactory.getEquipmentService().getData(lastUpdate);
+        try {
+            Response<List<Equipment>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        realm.close();
-        return lastId.longValue();
     }
 
     public String getTag() {
@@ -66,22 +67,6 @@ public class Equipment extends RealmObject implements ISend, IBaseRecord {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public House getHouse() {
-        return house;
-    }
-
-    public void setHouse(House house) {
-        this.house = house;
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
     }
 
     public EquipmentType getEquipmentType() {
@@ -132,11 +117,51 @@ public class Equipment extends RealmObject implements ISend, IBaseRecord {
         this.changedAt = changedAt;
     }
 
-    public boolean isSent() {
-        return sent;
+    public Organization getOrganization() {
+        return organization;
     }
 
-    public void setSent(boolean sent) {
-        this.sent = sent;
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Date getInputDate() {
+        return inputDate;
+    }
+
+    public void setInputDate(Date inputDate) {
+        this.inputDate = inputDate;
+    }
+
+    public int getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(int period) {
+        this.period = period;
+    }
+
+    public Date getReplaceDate() {
+        return replaceDate;
+    }
+
+    public void setReplaceDate(Date replaceDate) {
+        this.replaceDate = replaceDate;
+    }
+
+    public ZhObject getObject() {
+        return object;
+    }
+
+    public void setObject(ZhObject object) {
+        this.object = object;
     }
 }

@@ -32,9 +32,4 @@ public class StreetRepository implements StreetDataSource {
         return localDataSource.getStreets();
     }
 
-    @Override
-    public List<Street> getStreetsByCurrentUser() {
-        return localDataSource.getStreetsByCurrentUser();
-    }
-
 }

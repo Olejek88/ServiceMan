@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,14 +14,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
-import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -55,63 +49,68 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Operation;
-import ru.shtrm.serviceman.data.PhotoEquipment;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
-import ru.shtrm.serviceman.data.source.PhotoEquipmentRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.OperationLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.mvp.operations.OperationAdapter;
-import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_UUID;
 
 public class EquipmentFragment extends Fragment implements EquipmentContract.View {
-    private Activity mainActivityConnector = null;
     public final static int ACTIVITY_PHOTO = 100;
-
+    protected BarChart mChart;
+    Calendar myCalendar;
+    private Activity mainActivityConnector = null;
     private EquipmentContract.Presenter presenter;
     private Equipment equipment;
-    private PhotoEquipment photoEquipment;
-
     private GpsTrackRepository gpsTrackRepository;
-    private PhotoEquipmentRepository photoEquipmentRepository;
     private MeasureRepository measureRepository;
     private EquipmentRepository equipmentRepository;
-    private RecyclerView recyclerView;
     private ListView listView;
     private ListView listView_archive;
-
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
     private TextView textViewPhotoDate;
-
     private File photoFile;
     private String photoUuid;
     private boolean firstMeasureClick = false;
-
-    protected BarChart mChart;
-    Calendar myCalendar;
 
     public EquipmentFragment() {
     }
 
     public static EquipmentFragment newInstance() {
         return new EquipmentFragment();
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
     @Override
@@ -133,7 +132,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         }
         view = inflater.inflate(R.layout.fragment_equipment, container, false);
         if (equipment != null) {
-            photoEquipment = PhotoEquipmentLocalDataSource.getInstance().getLastPhotoByEquipment(equipment);
             initViews(view);
         } else {
             equipmentRepository.deleteEmptyEquipment();
@@ -192,28 +190,26 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
 
         if (mToolbar != null) {
-            Flat flat = equipment.getFlat();
-            if (flat != null) {
-                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
-                    mToolbar.setSubtitle(flat.getFullTitle());
-                if (equipment.getEquipmentType() != null)
-                    mToolbar.setTitle(equipment.getEquipmentType().getTitle());
-                else
-                    mToolbar.setTitle(R.string.equipment_unknown);
-                mToolbar.setLogo(R.drawable.baseline_settings_white_24dp);
-                mToolbar.setTitleMarginStart(1);
+            if (equipment.getEquipmentType() != null) {
+                mToolbar.setTitle(equipment.getEquipmentType().getTitle());
+            } else {
+                mToolbar.setTitle(R.string.equipment_unknown);
             }
+
+            mToolbar.setLogo(R.drawable.baseline_settings_white_24dp);
+            mToolbar.setTitleMarginStart(1);
         }
-        if (photoEquipment != null) {
-            textViewPhotoDate.setText(sDf.format(photoEquipment.getCreatedAt()));
-            // TODO заменить на ?
-            circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-                    MainUtil.getPicturesDirectory(mainActivityConnector),
-                    photoEquipment.getUuid().concat(".jpg")));
-        } else {
+
+//        if (photoEquipment != null) {
+//            textViewPhotoDate.setText(sDf.format(photoEquipment.getCreatedAt()));
+//            // TODO заменить на ?
+//            circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
+//                    MainUtil.getPicturesDirectory(mainActivityConnector),
+//                    photoEquipment.getUuid().concat(".jpg")));
+//        } else {
             circleImageView.setImageResource(R.drawable.counter);
             textViewPhotoDate.setText("нет фото");
-        }
+//        }
 
         final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
         EquipmentStatusListAdapter adapter = new EquipmentStatusListAdapter(mainActivityConnector,
@@ -292,7 +288,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         add_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EquipmentActivity.createAddMessageDialog(mainActivityConnector, equipment.getFlat());
+                EquipmentActivity.createAddMessageDialog(mainActivityConnector);
             }
         });
 
@@ -336,9 +332,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     void checkRepository() {
-        if (photoEquipmentRepository == null)
-            photoEquipmentRepository = PhotoEquipmentRepository.getInstance
-                    (PhotoEquipmentLocalDataSource.getInstance());
         if (gpsTrackRepository == null)
             gpsTrackRepository = GpsTrackRepository.getInstance
                     (GpsTrackLocalDataSource.getInstance());
@@ -432,53 +425,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         mChart.setData(data);
     }
 
-    public class MyXAxisValueFormatter implements IAxisValueFormatter {
-        private ArrayList<String> mValues;
-
-        MyXAxisValueFormatter(ArrayList<String> values) {
-            this.mValues = values;
-        }
-
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            return mValues.get((int) value);
-        }
-    }
-
-    /**
-     * Сохраняем фото
-     *
-     * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode  The result code.
-     * @param data        The result.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 2; // половина изображения
-                    Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                    if (bitmap != null) {
-                        String uuid = java.util.UUID.randomUUID().toString();
-                        MainUtil.storeNewImage(bitmap, getContext(),
-                                800, uuid.concat(".jpg"));
-                        MainUtil.storePhotoEquipment(equipment, uuid);
-                        photoFile.delete();
-                        circleImageView.setImageBitmap(bitmap);
-                        String sDate = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.US).
-                                format(new Date());
-                        textViewPhotoDate.setText(sDate);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
     // Operations----------------------------------------------------------------------------------------
     private void fillListViewOperations(Equipment equipment, int type) {
         Activity activity = getActivity();
@@ -504,23 +450,16 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         }
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            // pre-condition
-            return;
+    public class MyXAxisValueFormatter implements IAxisValueFormatter {
+        private ArrayList<String> mValues;
+
+        MyXAxisValueFormatter(ArrayList<String> values) {
+            this.mValues = values;
         }
 
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(0, View.MeasureSpec.UNSPECIFIED);
-            totalHeight += listItem.getMeasuredHeight();
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return mValues.get((int) value);
         }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-        listView.requestLayout();
     }
 }

@@ -11,6 +11,7 @@ import java.util.Date;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Organization;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.UserHouse;
 
@@ -41,6 +42,20 @@ public class UserHouseDeserializer implements JsonDeserializer<UserHouse> {
             fail(field, realm);
         } else {
             item.setUuid(element.getAsString());
+        }
+
+        field = "oid";
+        element = object.get(field);
+        if (element == null) {
+            fail(field, realm);
+        } else {
+            String refUuid = element.getAsString();
+            Organization refItem = realm.where(Organization.class).equalTo("uuid", refUuid).findFirst();
+            if (refItem == null) {
+                fail(field, realm);
+            } else {
+                item.setOrganization(refItem);
+            }
         }
 
         field = "houseUuid";

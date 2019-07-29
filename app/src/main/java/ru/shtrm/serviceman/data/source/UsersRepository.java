@@ -32,6 +32,11 @@ public class UsersRepository implements UsersDataSource {
     }
 
     @Override
+    public RealmResults<User> getUsers(int type) {
+        return localDataSource.getUsers(type);
+    }
+
+    @Override
     public User getUser(@NonNull String userUuid) {
         return localDataSource.getUser(userUuid);
     }

@@ -28,7 +28,13 @@ import ru.shtrm.serviceman.db.migration.Migration15;
 import ru.shtrm.serviceman.db.migration.Migration16;
 import ru.shtrm.serviceman.db.migration.Migration17;
 import ru.shtrm.serviceman.db.migration.Migration18;
+import ru.shtrm.serviceman.db.migration.Migration19;
 import ru.shtrm.serviceman.db.migration.Migration2;
+import ru.shtrm.serviceman.db.migration.Migration20;
+import ru.shtrm.serviceman.db.migration.Migration21;
+import ru.shtrm.serviceman.db.migration.Migration22;
+import ru.shtrm.serviceman.db.migration.Migration23;
+import ru.shtrm.serviceman.db.migration.Migration24;
 import ru.shtrm.serviceman.db.migration.Migration3;
 import ru.shtrm.serviceman.db.migration.Migration4;
 import ru.shtrm.serviceman.db.migration.Migration5;
@@ -146,6 +152,36 @@ class AppRealmMigration implements RealmMigration {
 
         if (oldVersion == 17) {
             new Migration18().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 18) {
+            new Migration19().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 19) {
+            new Migration20().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 20) {
+            new Migration21().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 21) {
+            new Migration22().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 22) {
+            new Migration23().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 23) {
+            new Migration24().migration(realm);
             oldVersion++;
         }
 

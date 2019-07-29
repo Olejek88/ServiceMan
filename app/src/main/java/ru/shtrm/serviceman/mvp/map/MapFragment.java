@@ -3,20 +3,24 @@ package ru.shtrm.serviceman.mvp.map;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +36,7 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -40,28 +45,24 @@ import java.util.TimerTask;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.PhotoHouse;
 import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
 import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 
 import static android.content.Context.LOCATION_SERVICE;
 
 public class MapFragment extends Fragment implements MapContract.View {
-    private Activity mainActivityConnector = null;
-
+    private static final String TAG = MapFragment.class.getSimpleName();
     ArrayList<OverlayItem> aOverlayItemArray;
     ItemizedIconOverlay<OverlayItem> positionItemizedIconOverlay;
-
+    private Activity mainActivityConnector = null;
     private RecyclerView recyclerView;
     private HouseAdapter houseAdapter;
     private MapContract.Presenter presenter;
     private IMapController mapController;
     private MapView mapView;
-
     private Timer timer;
     private Handler mTimerHandler = new Handler();
 
@@ -89,13 +90,51 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_map, container, false);
 
         initViews(contentView);
 
         setHasOptionsMenu(true);
+
+        // пример запуска штатного приложения для получения фотографии привязанной к какой-то модели
+        new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // пример запуска активити для получения фотографии
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                Context context = getContext();
+                Activity activity = getActivity();
+                if (context == null || activity == null) {
+                    return;
+                }
+
+                File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
+                if (!photoFile.getParentFile().exists()) {
+                    if (!photoFile.getParentFile().mkdirs()) {
+                        Log.e(TAG, "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
+                        return;
+                    }
+                }
+
+                // запоминаем данные необходимые для создания записи Photo в onActivityResult
+                MainActivity.photoFile = photoFile.getAbsolutePath();
+                // пока ни к чему реальному фотки не привязываются
+                MainActivity.objectUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                MainActivity.photoUuid = photoUuid;
+
+                try {
+                    Uri photoURI = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", photoFile);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    activity.startActivityForResult(intent, MainActivity.PHOTO_RESULT);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
         return contentView;
     }
 
@@ -188,15 +227,15 @@ public class MapFragment extends Fragment implements MapContract.View {
             houseAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
                 @Override
                 public void OnItemClick(View v, int position) {
-                    House house = list.get(position);
-                    if (house != null) {
-                        PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
-                                getLastPhotoByHouse(house);
-                        if (photoHouse != null) {
-                            GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
-                            mapController.setCenter(point2);
-                        }
-                    }
+//                    House house = list.get(position);
+//                    if (house != null) {
+//                        PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().
+//                                getLastPhotoByHouse(house);
+//                        if (photoHouse != null) {
+//                            GeoPoint point2 = new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude());
+//                            mapController.setCenter(point2);
+//                        }
+//                    }
                 }
             });
             recyclerView.setAdapter(houseAdapter);
@@ -253,24 +292,24 @@ public class MapFragment extends Fragment implements MapContract.View {
         final ArrayList<OverlayItem> houseOverlayItemArray = new ArrayList<>();
         // TODO выбирать только для текущего пользователя
         //List<House> houses = HouseLocalDataSource.getInstance().getHousesByUser();
-        List<House> houses = HouseLocalDataSource.getInstance().getHouses();
-        for (House house : houses) {
-            PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
-            if (photoHouse != null) {
-                HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
-                        "Дом", new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude()));
-                houseItem.house = house;
-                Drawable newMarker;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Resources.Theme theme = mainActivityConnector.getTheme();
-                    newMarker = this.getResources().getDrawable(R.drawable.marker_house, theme);
-                } else {
-                    newMarker = this.getResources().getDrawable(R.drawable.marker_house);
-                }
-                houseItem.setMarker(newMarker);
-                houseOverlayItemArray.add(houseItem);
-            }
-        }
+//        List<House> houses = HouseLocalDataSource.getInstance().getHouses();
+//        for (House house : houses) {
+//            PhotoHouse photoHouse = PhotoHouseLocalDataSource.getInstance().getLastPhotoByHouse(house);
+//            if (photoHouse != null) {
+//                HouseOverlayItem houseItem = new HouseOverlayItem(house.getFullTitle(),
+//                        "Дом", new GeoPoint(photoHouse.getLattitude(), photoHouse.getLongitude()));
+//                houseItem.house = house;
+//                Drawable newMarker;
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Resources.Theme theme = mainActivityConnector.getTheme();
+//                    newMarker = this.getResources().getDrawable(R.drawable.marker_house, theme);
+//                } else {
+//                    newMarker = this.getResources().getDrawable(R.drawable.marker_house);
+//                }
+//                houseItem.setMarker(newMarker);
+//                houseOverlayItemArray.add(houseItem);
+//            }
+//        }
 
         ItemizedIconOverlay<OverlayItem> aIconOverlay = new ItemizedIconOverlay<>(
                 mainActivityConnector, houseOverlayItemArray, null);
@@ -295,7 +334,7 @@ public class MapFragment extends Fragment implements MapContract.View {
         if (location != null) {
             GeoPoint point2 = new GeoPoint(location.getLatitude(), location.getLongitude());
             if (mapController != null && mapView != null && aOverlayItemArray != null) {
-                if (mainActivityConnector.getPreferences(Context.MODE_PRIVATE).getBoolean("gps_center",true))
+                if (mainActivityConnector.getPreferences(Context.MODE_PRIVATE).getBoolean("gps_center", true))
                     mapController.setCenter(point2);
                 OverlayItem overlayItem = new OverlayItem("Вы здесь", "WAH",
                         new GeoPoint(location.getLatitude(), location.getLongitude()));

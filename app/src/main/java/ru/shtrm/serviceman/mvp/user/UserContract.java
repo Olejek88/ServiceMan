@@ -17,5 +17,7 @@ public interface UserContract {
 
     interface Presenter extends BasePresenter {
         RealmResults<User> loadUsers();
+
+        RealmResults<User> loadUsers(int type);
     }
 }

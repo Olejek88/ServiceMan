@@ -5,12 +5,9 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.shtrm.serviceman.data.Flat;
-import ru.shtrm.serviceman.data.FlatStatus;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.HouseStatus;
 import ru.shtrm.serviceman.data.Street;
-import ru.shtrm.serviceman.data.User;
 
 public class HouseRepository implements HouseDataSource {
 
@@ -40,16 +37,6 @@ public class HouseRepository implements HouseDataSource {
     @Override
     public List<House> getHouses() {
         return localDataSource.getHouses();
-    }
-
-    @Override
-    public List<House> getHousesByStreetForCurrentUser(Street street) {
-        return localDataSource.getHousesByStreetForCurrentUser(street);
-    }
-
-    @Override
-    public List<House> getHousesForUser(User user) {
-        return localDataSource.getHousesForUser(user);
     }
 
     @Override

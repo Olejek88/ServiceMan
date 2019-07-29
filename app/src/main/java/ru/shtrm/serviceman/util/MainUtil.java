@@ -29,20 +29,11 @@ import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.Message;
-import ru.shtrm.serviceman.data.PhotoEquipment;
-import ru.shtrm.serviceman.data.PhotoFlat;
-import ru.shtrm.serviceman.data.PhotoHouse;
-import ru.shtrm.serviceman.data.PhotoMessage;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoEquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoFlatLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoHouseLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.PhotoMessageLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 
 public class MainUtil {
@@ -137,85 +128,64 @@ public class MainUtil {
     }
 
     public static void storePhotoEquipment (Equipment equipment, String uuid) {
-        PhotoEquipment photoEquipment = new PhotoEquipment();
-        PhotoEquipmentLocalDataSource photoEquipmentRepository = PhotoEquipmentLocalDataSource.getInstance();
-        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
-        photoEquipment.set_id(photoEquipmentRepository.getLastId()+1);
-        photoEquipment.setEquipment(equipment);
-        photoEquipment.setUuid(uuid);
-        photoEquipment.setCreatedAt(new Date());
-        photoEquipment.setChangedAt(new Date());
-        photoEquipment.setUser(user);
-        if (gpsTrackRepository.getLastTrack() != null) {
-            photoEquipment.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
-            photoEquipment.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-        } else {
-            photoEquipment.setLattitude(App.defaultLatitude);
-            photoEquipment.setLongitude(App.defaultLongitude);
-        }
-        photoEquipmentRepository.savePhotoEquipment(photoEquipment);
+//        PhotoEquipment photoEquipment = new PhotoEquipment();
+//        PhotoEquipmentLocalDataSource photoEquipmentRepository = PhotoEquipmentLocalDataSource.getInstance();
+//        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
+//        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
+//        photoEquipment.set_id(photoEquipmentRepository.getLastId()+1);
+//        photoEquipment.setEquipment(equipment);
+//        photoEquipment.setUuid(uuid);
+//        photoEquipment.setCreatedAt(new Date());
+//        photoEquipment.setChangedAt(new Date());
+//        photoEquipment.setUser(user);
+//        if (gpsTrackRepository.getLastTrack() != null) {
+//            photoEquipment.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
+//            photoEquipment.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
+//        } else {
+//            photoEquipment.setLattitude(App.defaultLatitude);
+//            photoEquipment.setLongitude(App.defaultLongitude);
+//        }
+//        photoEquipmentRepository.savePhotoEquipment(photoEquipment);
     }
 
     public static void storePhotoHouse (House house, String uuid) {
-        PhotoHouse photoHouse = new PhotoHouse();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
-        PhotoHouseLocalDataSource photoHouseRepository = PhotoHouseLocalDataSource.getInstance();
-        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        photoHouse.set_id(photoHouseRepository.getLastId()+1);
-        photoHouse.setHouse(house);
-        photoHouse.setUuid(uuid);
-        photoHouse.setCreatedAt(new Date());
-        photoHouse.setChangedAt(new Date());
-        photoHouse.setUser(user);
-        if (gpsTrackRepository.getLastTrack() != null) {
-            photoHouse.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
-            photoHouse.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-        } else {
-            photoHouse.setLattitude(App.defaultLatitude);
-            photoHouse.setLongitude(App.defaultLongitude);
-        }
-        photoHouseRepository.savePhotoHouse(photoHouse);
-    }
-
-    public static void storePhotoFlat (Flat flat, String uuid) {
-        PhotoFlat photoFlat = new PhotoFlat();
-        PhotoFlatLocalDataSource photoFlatRepository = PhotoFlatLocalDataSource.getInstance();
-        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
-        photoFlat.set_id(photoFlatRepository.getLastId()+1);
-        photoFlat.setFlat(flat);
-        photoFlat.setUuid(uuid);
-        photoFlat.setCreatedAt(new Date());
-        photoFlat.setChangedAt(new Date());
-        photoFlat.setUser(user);
-        if (gpsTrackRepository.getLastTrack() != null) {
-            photoFlat.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
-            photoFlat.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-        } else {
-            photoFlat.setLattitude(App.defaultLatitude);
-            photoFlat.setLongitude(App.defaultLongitude);
-        }
-        photoFlatRepository.savePhotoFlat(photoFlat);
+//        PhotoHouse photoHouse = new PhotoHouse();
+//        User user = UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid());
+//        PhotoHouseLocalDataSource photoHouseRepository = PhotoHouseLocalDataSource.getInstance();
+//        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
+//        photoHouse.set_id(photoHouseRepository.getLastId()+1);
+//        photoHouse.setHouse(house);
+//        photoHouse.setUuid(uuid);
+//        photoHouse.setCreatedAt(new Date());
+//        photoHouse.setChangedAt(new Date());
+//        photoHouse.setUser(user);
+//        if (gpsTrackRepository.getLastTrack() != null) {
+//            photoHouse.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
+//            photoHouse.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
+//        } else {
+//            photoHouse.setLattitude(App.defaultLatitude);
+//            photoHouse.setLongitude(App.defaultLongitude);
+//        }
+//        photoHouseRepository.savePhotoHouse(photoHouse);
     }
 
     public static void storePhotoMessage (Message message, String uuid) {
-        PhotoMessage photoMessage = new PhotoMessage();
-        PhotoMessageLocalDataSource photoMessageRepository = PhotoMessageLocalDataSource.getInstance();
-        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-        photoMessage.set_id(photoMessageRepository.getLastId()+1);
-        photoMessage.setMessage(message);
-        photoMessage.setUuid(uuid);
-        photoMessage.setCreatedAt(new Date());
-        photoMessage.setChangedAt(new Date());
-        if (gpsTrackRepository.getLastTrack() != null) {
-            photoMessage.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
-            photoMessage.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
-        } else {
-            photoMessage.setLattitude(App.defaultLatitude);
-            photoMessage.setLongitude(App.defaultLongitude);
-        }
-        photoMessageRepository.savePhotoMessage(photoMessage);
+//        PhotoMessage photoMessage = new PhotoMessage();
+//        PhotoMessageLocalDataSource photoMessageRepository = PhotoMessageLocalDataSource.getInstance();
+//        GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
+//        photoMessage.set_id(photoMessageRepository.getLastId()+1);
+//        photoMessage.setMessage(message);
+//        photoMessage.setUuid(uuid);
+//        photoMessage.setCreatedAt(new Date());
+//        photoMessage.setChangedAt(new Date());
+//        if (gpsTrackRepository.getLastTrack() != null) {
+//            photoMessage.setLattitude(gpsTrackRepository.getLastTrack().getLatitude());
+//            photoMessage.setLongitude(gpsTrackRepository.getLastTrack().getLongitude());
+//        } else {
+//            photoMessage.setLattitude(App.defaultLatitude);
+//            photoMessage.setLongitude(App.defaultLongitude);
+//        }
+//        photoMessageRepository.savePhotoMessage(photoMessage);
     }
 
     public static void setBadges(Context context) {

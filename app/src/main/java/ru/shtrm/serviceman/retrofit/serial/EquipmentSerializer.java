@@ -18,8 +18,6 @@ public class EquipmentSerializer implements JsonSerializer<Equipment> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         object.addProperty("uuid", src.getUuid());
-        object.addProperty("houseUuid", src.getHouse().getUuid());
-        object.addProperty("flatUuid", src.getFlat().getUuid());
         object.addProperty("equipmentTypeUuid", src.getEquipmentType().getUuid());
         object.addProperty("equipmentStatusUuid", src.getEquipmentStatus().getUuid());
         object.addProperty("serial", src.getSerial());

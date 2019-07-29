@@ -29,7 +29,10 @@ public class AlarmTypeLocalDataSource implements AlarmTypeDataSource {
     @Override
     public List<AlarmType> getAllAlarmTypes() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(AlarmType.class).findAllSorted("title", Sort.ASCENDING));
+        List<AlarmType> list = realm.where(AlarmType.class)
+                .findAllSorted("title", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

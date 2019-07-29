@@ -28,7 +28,9 @@ public class EquipmentStatusLocalDataSource implements EquipmentStatusDataSource
     @Override
     public List<EquipmentStatus> getEquipmentStatuses() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(EquipmentStatus.class).findAllSorted("title"));
+        List<EquipmentStatus> list = realm.where(EquipmentStatus.class).findAllSorted("title");
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 }

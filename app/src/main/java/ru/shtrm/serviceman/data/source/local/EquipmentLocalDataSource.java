@@ -10,7 +10,6 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.Flat;
 import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.source.EquipmentDataSource;
 
@@ -35,39 +34,41 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
     public Equipment getEquipmentByUuid(String uuid) {
         Realm realm = Realm.getDefaultInstance();
         Equipment equipment = realm.where(Equipment.class).equalTo("uuid", uuid).findFirst();
-        if (equipment!=null)
-            return realm.copyFromRealm(equipment);
-        else
-            return null;
+        if (equipment != null) {
+            equipment = realm.copyFromRealm(equipment);
+        }
+
+        realm.close();
+        return equipment;
     }
 
     @Override
     public List<Equipment> getAllEquipment() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).findAllSorted("equipmentType", Sort.ASCENDING));
+        List<Equipment> list = realm.where(Equipment.class).findAllSorted("equipmentType", Sort.ASCENDING);
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public List<Equipment> getEquipmentByHouse(House house) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).equalTo("house", house.getUuid()).findAll());
-    }
-
-    @Override
-    public List<Equipment> getEquipmentByFlat(Flat flat) {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).equalTo("flat.uuid", flat.getUuid()).findAll());
+        List<Equipment> list = realm.where(Equipment.class)
+                .equalTo("house", house.getUuid()).findAll();
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
     public List<Equipment> getEquipmentByType(EquipmentType equipmentType) {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
-                realm.where(Equipment.class).
-                        equalTo("equipmentType", equipmentType.getUuid()).findAll());
+        List<Equipment> list = realm.where(Equipment.class)
+                .equalTo("equipmentType", equipmentType.getUuid()).findAll();
+        list = realm.copyFromRealm(list);
+        realm.close();
+        return list;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipment.setSent(false);
+//                equipment.setSent(false);
                 realm.copyToRealmOrUpdate(equipment);
             }
         });
@@ -105,7 +106,7 @@ public class EquipmentLocalDataSource implements EquipmentDataSource {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                equipment.setSent(false);
+//                equipment.setSent(false);
                 equipment.setEquipmentStatus(equipmentStatus);
                 realm.copyToRealmOrUpdate(equipment);
             }

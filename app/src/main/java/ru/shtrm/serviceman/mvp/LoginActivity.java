@@ -81,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                             // по кодам из RFID можно показать более подробные сообщения
                             Toast.makeText(getApplicationContext(),
                                     "Операция прервана", Toast.LENGTH_SHORT).show();
+                            rfidDialog.dismiss();
                             return true;
                         }
 
@@ -191,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
 //        });
 //        pinCode.requestFocus();
 
-        RealmResults<User> users = presenter.loadUsers();
+        RealmResults<User> users = presenter.loadUsers(User.Type.WORKER);
         UserListAdapter adapter = new UserListAdapter(this, R.layout.item_user, users);
         userSelect.setAdapter(adapter);
         SharedPreferences sp = getApplicationContext().getSharedPreferences("lastUser", MODE_PRIVATE);

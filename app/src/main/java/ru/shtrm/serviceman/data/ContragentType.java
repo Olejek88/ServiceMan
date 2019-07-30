@@ -1,9 +1,13 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class ContragentType extends RealmObject {
 
@@ -13,6 +17,22 @@ public class ContragentType extends RealmObject {
     private String title;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<ContragentType> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(ContragentType.class));
+        Call<List<ContragentType>> call = SManApiFactory.getContragentTypeService().getData(lastUpdate);
+        try {
+            Response<List<ContragentType>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;

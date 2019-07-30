@@ -1,9 +1,13 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class Contragent extends RealmObject implements IBaseRecord {
 
@@ -22,6 +26,22 @@ public class Contragent extends RealmObject implements IBaseRecord {
     private ContragentType contragentType;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<Contragent> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Contragent.class));
+        Call<List<Contragent>> call = SManApiFactory.getContragentService().getData(lastUpdate);
+        try {
+            Response<List<Contragent>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;
@@ -134,4 +154,5 @@ public class Contragent extends RealmObject implements IBaseRecord {
     public void setContragentType(ContragentType contragentType) {
         this.contragentType = contragentType;
     }
+
 }

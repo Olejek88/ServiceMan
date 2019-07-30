@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +51,7 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Measure;
@@ -62,14 +65,14 @@ import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
+import ru.shtrm.serviceman.mvp.MainActivity;
+import ru.shtrm.serviceman.mvp.object.ObjectActivity;
 import ru.shtrm.serviceman.mvp.task.TaskAdapter;
-import ru.shtrm.serviceman.mvp.task.TaskContract;
 import ru.shtrm.serviceman.mvp.task.TaskInfoActivity;
-import ru.shtrm.serviceman.mvp.operations.OperationAdapter;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_UUID;
+import static ru.shtrm.serviceman.rfid.RfidDialog.TAG;
 
 public class EquipmentFragment extends Fragment implements EquipmentContract.View {
     public final static int ACTIVITY_PHOTO = 100;
@@ -126,9 +129,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view;
+        final View view;
         Bundle b = getArguments();
         checkRepository();
         if (b != null) {
@@ -137,12 +140,69 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 equipment = EquipmentLocalDataSource.getInstance().getEquipmentByUuid(equipmentUuid);
         }
         view = inflater.inflate(R.layout.fragment_equipment, container, false);
+
         if (equipment != null) {
             initViews(view);
+
+            FloatingActionButton measureButton = view.findViewById(R.id.add_measure);
+            measureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    View view = v.getRootView().findViewById(R.id.equipment_measure_input);
+                    if (view.isShown()) {
+                        view.setVisibility(View.INVISIBLE);
+                        view.refreshDrawableState();
+                    } else {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+            FloatingActionButton defectButton = view.findViewById(R.id.add_new_defect);
+            defectButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Defect.showDialogNewDefect(getContext(), getLayoutInflater(), container, equipment);
+                }
+            });
+            FloatingActionButton photoButton = view.findViewById(R.id.make_photo);
+            photoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                    Context context = getContext();
+                    Activity activity = getActivity();
+                    if (context == null || activity == null) {
+                        return;
+                    }
+
+                    File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
+                    if (!photoFile.getParentFile().exists()) {
+                        if (!photoFile.getParentFile().mkdirs()) {
+                            Log.e(TAG, "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
+                            return;
+                        }
+                    }
+
+                    // запоминаем данные необходимые для создания записи Photo в onActivityResult
+                    EquipmentActivity.photoFile = photoFile.getAbsolutePath();
+                    EquipmentActivity.objectUuid = equipment.getUuid();
+                    EquipmentActivity.photoUuid = photoUuid;
+
+                    try {
+                        Uri photoURI = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        activity.startActivityForResult(intent, MainActivity.PHOTO_RESULT);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         } else {
             if (getActivity() != null)
                 getActivity().finishActivity(0);
         }
+
         setHasOptionsMenu(true);
         return view;
     }
@@ -172,7 +232,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
-        FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
 
         myCalendar = Calendar.getInstance();
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
@@ -285,13 +344,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-            }
-        });
-
-        add_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EquipmentActivity.createAddMessageDialog(mainActivityConnector);
             }
         });
 
@@ -421,19 +473,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         }
     }
 
-    public class MyXAxisValueFormatter implements IAxisValueFormatter {
-        private ArrayList<String> mValues;
-
-        MyXAxisValueFormatter(ArrayList<String> values) {
-            this.mValues = values;
-        }
-
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            return mValues.get((int) value);
-        }
-    }
-
     /**
      * Show flats with recycler view.
      * @param list The data.
@@ -472,6 +511,19 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         } else {
             recyclerView.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public class MyXAxisValueFormatter implements IAxisValueFormatter {
+        private ArrayList<String> mValues;
+
+        MyXAxisValueFormatter(ArrayList<String> values) {
+            this.mValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return mValues.get((int) value);
         }
     }
 }

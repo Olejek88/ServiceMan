@@ -210,7 +210,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 //                    MainUtil.getPicturesDirectory(mainActivityConnector),
 //                    photoEquipment.getUuid().concat(".jpg")));
 //        } else {
-            circleImageView.setImageResource(R.drawable.counter);
+        circleImageView.setImageResource(R.drawable.zhkh);
             textViewPhotoDate.setText("нет фото");
 //        }
 

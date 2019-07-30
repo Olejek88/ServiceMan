@@ -61,7 +61,7 @@
                             android:layout_height="120dp"
                             android:layout_gravity="center"
                             android:contentDescription="@string/service_app_name"
-                            android:src="@drawable/counter" />
+                            android:src="@drawable/zhkh" />
                     </LinearLayout>
 
                     <android.support.design.widget.TextInputLayout

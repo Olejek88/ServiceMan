@@ -318,13 +318,13 @@ public class MainActivity extends AppCompatActivity
                 showMapFragment();
                 break;
             case R.id.nav_users:
-                showMessagesFragment();
+                showObjectsFragment();
                 break;
             case R.id.nav_tasks:
                 showTasksFragment();
                 break;
             case R.id.nav_checkin:
-                showObjectsFragment();
+                showTasksFragment();
                 break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {

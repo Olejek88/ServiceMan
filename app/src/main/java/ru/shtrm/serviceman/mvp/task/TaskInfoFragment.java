@@ -32,9 +32,6 @@ public class TaskInfoFragment extends Fragment {
     private TaskRepository taskRepository;
     private Task task;
 
-    private FloatingActionButton fab_complete;
-    private FloatingActionButton fab_cancel;
-
     public TaskInfoFragment() {}
 
     public static TaskInfoFragment newInstance() {
@@ -112,8 +109,8 @@ public class TaskInfoFragment extends Fragment {
         textComment = view.findViewById(R.id.textComment);
         endLayout = view.findViewById(R.id.endLayout);
 
-        fab_cancel = view.findViewById(R.id.task_verdict);
-        fab_complete = view.findViewById(R.id.task_complete);
+        FloatingActionButton fab_cancel = view.findViewById(R.id.task_verdict);
+        FloatingActionButton fab_complete = view.findViewById(R.id.task_complete);
 
         if (this.task!=null) {
             textViewTaskTitle.setText(task.getTaskTemplate().getTitle());
@@ -139,6 +136,13 @@ public class TaskInfoFragment extends Fragment {
 
             textAuthor.setText(task.getAuthor().getName());
             textComment.setText(task.getComment());
+            if (task.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE)) {
+                fab_complete.setVisibility(View.GONE);
+                fab_cancel.setVisibility(View.GONE);
+            } else {
+                fab_complete.setVisibility(View.VISIBLE);
+                fab_cancel.setVisibility(View.VISIBLE);
+            }
         }
 
         fab_complete.setOnClickListener(new View.OnClickListener() {

@@ -88,7 +88,7 @@
 
     <!--navigation drawer-->
     <string name="nav_profile">Профиль</string>
-    <string name="nav_users">Абоненты</string>
+    <string name="nav_users">Элементы</string>
     <string name="nav_map">Карта</string>
     <string name="nav_checkin">Работа</string>
     <string name="nav_alarms">Аварии</string>
@@ -214,39 +214,15 @@
     <string name="rate_desc">Если Вам нравится приложение - оцените его.</string>
     <string name="licenses">Лицензия</string>
     <string name="source_code">GitHub Source code</string>
-    <string name="source_code_desc">https://github.com/Olejek88/AskMaster</string>
+    <string name="source_code_desc">https://github.com/Olejek88/</string>
     <string name="support">Поддержка</string>
     <string name="send_advices">Связаться со мной</string>
-    <string name="mail_account">mailto:shtrmvk@gmail.com</string>
-    <string name="mail_topic">AskMaster</string>
+    <string name="mail_account">mailto:olejek8@yandex.ru</string>
+    <string name="mail_topic">ServceMan</string>
     <string name="send_advices_desc">Помогите мне улучшить приложение.</string>
     <string name="web_site">Страница проекта в сети</string>
-    <string name="web_site_link">http://askmaster.ru</string>
-    <string name="set_end_time_error">Start time can not be same as end time.</string>
-    <string name="notification_new_answer">\"The question has a new answer\"</string>
+    <string name="web_site_link">http://toirus.ru</string>
     <!--About end-->
-
-    <!--shortcuts-->
-    <string name="shortcut_label_add_package">Add manually</string>
-    <string name="shortcut_label_search">Search</string>
-    <string name="shortcut_label_scan_code">Scan code</string>
-    <!--shortcuts end-->
-
-    <!--widget-->
-    <string name="all_packages_are_delivered">All packages are delivered.</string>
-    <!--widget end-->
-
-    <!--search-->
-    <string name="no_result">NO RESULT</string>
-    <string name="search_hint">Package or company…</string>
-    <string name="search_label_package">PACKAGE</string>
-    <string name="search_label_company">COMPANY</string>
-    <string name="item_loading">Loading…</string>
-    <!--search end-->
-
-    <!--custom tabs-->
-    <string name="error_no_browser">No browser installed on the device.</string>
-    <!--custom tabs end-->
 
     <string name="api_url">api_url</string>
     <string name="api_pref_title">Сервер</string>

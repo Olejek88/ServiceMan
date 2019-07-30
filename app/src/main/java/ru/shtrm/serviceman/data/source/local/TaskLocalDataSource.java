@@ -47,36 +47,45 @@ public class TaskLocalDataSource implements TaskDataSource {
     @Override
     public List<Task> getTaskByEquipment(Equipment equipment, String  status) {
         Realm realm = Realm.getDefaultInstance();
-        if (status!=null)
-            return realm.copyFromRealm(
-                realm.where(Task.class).
-                        equalTo("equipment.uuid", equipment.getUuid()).
-                        equalTo("workStatus.uuid", status).
-                        findAllSorted("createdAt", Sort.ASCENDING));
-        else
-            return realm.copyFromRealm(
+        if (status != null) {
+            List<Task> tasks = realm.copyFromRealm(
+                    realm.where(Task.class).
+                            equalTo("equipment.uuid", equipment.getUuid()).
+                            equalTo("workStatus.uuid", status).
+                            findAllSorted("createdAt", Sort.ASCENDING));
+            realm.close();
+            return tasks;
+        } else {
+            List<Task> tasks = realm.copyFromRealm(
                     realm.where(Task.class).
                             equalTo("equipment.uuid", equipment.getUuid()).
                             findAllSorted("createdAt", Sort.ASCENDING));
+            realm.close();
+            return tasks;
+        }
     }
 
     @Override
     public List<Task> getNewTasks() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<Task> tasks = realm.copyFromRealm(
                 realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
                         equalTo("workStatus.uuid", WorkStatus.Status.NEW).
                         or().
                         equalTo("workStatus.uuid", WorkStatus.Status.IN_WORK).
                         findAllSorted("createdAt", Sort.ASCENDING));
+        realm.close();
+        return tasks;
     }
 
     @Override
     public List<Task> getTasks() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<Task> tasks = realm.copyFromRealm(
                 realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
                         findAllSorted("changedAt", Sort.ASCENDING));
+        realm.close();
+        return tasks;
     }
 
     @Override

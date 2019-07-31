@@ -28,8 +28,7 @@ public class WorkStatusLocalDataSource implements WorkStatusDataSource {
     @Override
     public WorkStatus getWorkStatusByUuid(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        WorkStatus list = realm.copyFromRealm(
-                realm.where(WorkStatus.class).equalTo("uuid", uuid).findFirst());
+        WorkStatus list = realm.where(WorkStatus.class).equalTo("uuid", uuid).findFirst();
         if (list != null) {
             list = realm.copyFromRealm(list);
         }

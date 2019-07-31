@@ -5,12 +5,9 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
-import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
-import ru.shtrm.serviceman.data.House;
 import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.data.source.EquipmentDataSource;
 

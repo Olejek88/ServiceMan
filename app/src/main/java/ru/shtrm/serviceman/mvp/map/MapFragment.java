@@ -3,24 +3,18 @@ package ru.shtrm.serviceman.mvp.map;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +31,6 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -46,12 +39,10 @@ import java.util.TimerTask;
 import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.House;
-import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.gps.TaskItemizedOverlay;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.HouseAdapter;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -98,44 +89,6 @@ public class MapFragment extends Fragment implements MapContract.View {
         View contentView = inflater.inflate(R.layout.fragment_map, container, false);
         initViews(contentView);
         setHasOptionsMenu(true);
-
-        // пример запуска штатного приложения для получения фотографии привязанной к какой-то модели
-        new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // пример запуска активити для получения фотографии
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
-                Context context = getContext();
-                Activity activity = getActivity();
-                if (context == null || activity == null) {
-                    return;
-                }
-
-                File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
-                if (!photoFile.getParentFile().exists()) {
-                    if (!photoFile.getParentFile().mkdirs()) {
-                        Log.e(TAG, "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
-                        return;
-                    }
-                }
-
-                // запоминаем данные необходимые для создания записи Photo в onActivityResult
-                MainActivity.photoFile = photoFile.getAbsolutePath();
-                // пока ни к чему реальному фотки не привязываются
-                MainActivity.objectUuid = java.util.UUID.randomUUID().toString().toUpperCase();
-                MainActivity.photoUuid = photoUuid;
-
-                try {
-                    Uri photoURI = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", photoFile);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    activity.startActivityForResult(intent, MainActivity.PHOTO_RESULT);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
         return contentView;
     }
 

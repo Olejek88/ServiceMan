@@ -14,7 +14,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -39,31 +38,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Photo;
-import ru.shtrm.serviceman.data.UpdateQuery;
-import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.AlarmRepository;
-import ru.shtrm.serviceman.data.source.EquipmentRepository;
-import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
-import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.ObjectRepository;
 import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.TaskRepository;
-import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
@@ -71,8 +54,6 @@ import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.alarm.AlarmPresenter;
-import ru.shtrm.serviceman.mvp.equipment.EquipmentPresenter;
 import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
@@ -80,7 +61,6 @@ import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.mvp.task.TaskFragment;
 import ru.shtrm.serviceman.mvp.task.TaskPresenter;
 import ru.shtrm.serviceman.retrofit.TokenTask;
-import ru.shtrm.serviceman.retrofit.serial.PhotoSerializer;
 import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.service.GetReferenceService;
 import ru.shtrm.serviceman.service.SendDataService;
@@ -97,7 +77,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOGIN = 0;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
-    public static Toolbar toolbar;
     // контейнер для пути по которому сохраним файл фотографии, полученой через штатное приложение телефона
     public static String photoFile;
     // контейнер для хранения uuid модели к которой привяжем фотографию
@@ -105,6 +84,7 @@ public class MainActivity extends AppCompatActivity
     // контейнер для хранения uuid модели фотографии
     public static String photoUuid;
     public boolean isLogged = false;
+    private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
@@ -148,6 +128,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.toolbar);
 
         // запускаем сервис который будет в фоне заниматься получением/отправкой данных
         Intent intent = new Intent(this, ForegroundService.class);
@@ -198,39 +180,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case PHOTO_RESULT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Gson gson = new GsonBuilder()
-                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                            .registerTypeAdapter(Photo.class, new PhotoSerializer())
-                            .serializeNulls()
-                            .create();
-
-                    GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-                    GpsTrack lastPosition = gpsTrackRepository.getLastTrack();
-
-                    Photo photo = new Photo();
-                    photo.setUuid(photoUuid);
-                    photo.setObjectUuid(objectUuid);
-                    if (lastPosition != null) {
-                        photo.setLatitude(lastPosition.getLatitude());
-                        photo.setLongitude(lastPosition.getLongitude());
-                    } else {
-                        photo.setLatitude(App.defaultLatitude);
-                        photo.setLongitude(App.defaultLongitude);
-                    }
-
-                    UpdateQuery query = new UpdateQuery(
-                            Photo.class.getSimpleName(),
-                            photoUuid,
-                            null,
-                            gson.toJson(photo),
-                            photo.getChangedAt()
-                    );
-                    query.set_id(UpdateQuery.getLastId() + 1);
-                    Realm realm = Realm.getDefaultInstance();
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(query);
-                    realm.commitTransaction();
-                    realm.close();
+                    Photo.savePhoto(photoUuid, objectUuid);
                 }
                 break;
             default:

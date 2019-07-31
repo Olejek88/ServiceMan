@@ -4,13 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +27,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,11 +38,12 @@ import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
-import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentAdapter;
 import ru.shtrm.serviceman.rfid.RfidDialog;
 import ru.shtrm.serviceman.rfid.RfidDriverBase;
+import ru.shtrm.serviceman.rfid.Tag;
 import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
@@ -49,7 +52,6 @@ import static ru.shtrm.serviceman.rfid.RfidDialog.TAG;
 
 public class ObjectFragment extends Fragment implements ObjectContract.View {
     private Activity mainActivityConnector = null;
-    private final static int ACTIVITY_PHOTO = 100;
 
     private ObjectContract.Presenter presenter;
     private ZhObject object;
@@ -62,6 +64,7 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
     private RecyclerView recyclerView;
     private CircleImageView circleImageView;
     private TextView textViewStatus;
+    private RfidDialog rfidDialog;
 
     private SharedPreferences sp;
 
@@ -83,6 +86,42 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_flat, container, false);
         sp = PreferenceManager.getDefaultSharedPreferences(mainActivityConnector);
+
+        FloatingActionButton photoButton = view.findViewById(R.id.add_photo);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                Context context = getContext();
+                Activity activity = getActivity();
+                if (context == null || activity == null) {
+                    return;
+                }
+
+                File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
+                if (!photoFile.getParentFile().exists()) {
+                    if (!photoFile.getParentFile().mkdirs()) {
+                        Log.e(TAG, "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
+                        return;
+                    }
+                }
+
+                // запоминаем данные необходимые для создания записи Photo в onActivityResult
+                ObjectActivity.photoFile = photoFile.getAbsolutePath();
+                ObjectActivity.objectUuid = object.getUuid();
+                ObjectActivity.photoUuid = photoUuid;
+
+                try {
+                    Uri photoURI = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", photoFile);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    activity.startActivityForResult(intent, MainActivity.PHOTO_RESULT);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         Bundle b = getArguments();
         if (b != null) {
             String flatUuid = b.getString(OBJECT_UUID);
@@ -98,6 +137,7 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
         }
         if (getFragmentManager() != null)
             getFragmentManager().popBackStack();
+
         return view;
     }
 
@@ -195,10 +235,9 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
             public void OnItemClick(View v, int position) {
                 Equipment equipment = list.get(position);
                 String uuid = equipment.getUuid();
-                //final String expectedTagId = equipment.getTag();
-                final String expectedTagId = "111";
+                final String expectedTagId = equipment.getTag();
                 boolean ask_tags = sp.getBoolean("without_tags_mode", true);
-                if (!ask_tags && expectedTagId!=null && !expectedTagId.equals("")) {
+                if (!ask_tags && expectedTagId != null && !expectedTagId.equals("")) {
                     runRfidDialog(expectedTagId, uuid);
                 } else {
                     Intent intent = new Intent(getContext(), EquipmentActivity.class);
@@ -210,43 +249,16 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
         //showEmptyView(list.isEmpty());
     }
 
-    /**
-     * Сохраняем фото
-     *
-     * @param requestCode The request code. See at {@link WorkFragment}.
-     * @param resultCode  The result code.
-     * @param data        The result.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_PHOTO:
-                if (resultCode == Activity.RESULT_OK) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 2; // половина изображения
-                    Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                    if (bitmap != null) {
-                        String uuid = java.util.UUID.randomUUID().toString();
-                        MainUtil.storeNewImage(bitmap, getContext(),
-                                800, uuid.concat(".jpg"));
-                        //MainUtil.s (flat, uuid);
-                        photoFile.delete();
-                        circleImageView.setImageBitmap(bitmap);
-                    }
-                }
-                break;
-        }
-    }
-
-    private RfidDialog rfidDialog;
     private void runRfidDialog(String expectedTagId, final String uuid) {
-        final String expectedTagUuid = expectedTagId;
+        Tag tag = new Tag();
+        tag.loadData(expectedTagId);
+        final String expectedTag = tag.getTagId();
         final Activity activity = getActivity();
 
         if (activity == null) {
             return;
         }
+
         Log.d(TAG, "Ожидаемая метка: " + expectedTagId);
         Handler handler = new Handler(new Handler.Callback() {
 
@@ -258,12 +270,12 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
                         Toast.makeText(getContext(), "Не верное оборудование!", Toast.LENGTH_SHORT).show();
                         return false;
                     }
+
                     String tagId = tagIds[0].substring(4);
                     Log.d(TAG, "Ид метки получили: " + tagId);
-                    if (!expectedTagUuid.equals(tagId)) {
+                    if (!expectedTag.equals(tagId)) {
                         Toast.makeText(getContext(), "Не верное оборудование!", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    } else {
                         Intent intent = new Intent(getContext(), EquipmentActivity.class);
                         intent.putExtra("EQUIPMENT_UUID", String.valueOf(uuid));
                         startActivity(intent);
@@ -277,10 +289,9 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
                 return false;
             }
         });
-
         rfidDialog = new RfidDialog();
         rfidDialog.setHandler(handler);
-        rfidDialog.readMultiTagId(expectedTagId);
+        rfidDialog.readMultiTagId(tag.getTagDriver(getContext()), tag.getTagId());
         rfidDialog.show(activity.getFragmentManager(), TAG);
     }
 }

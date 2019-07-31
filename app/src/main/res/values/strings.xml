@@ -271,5 +271,7 @@
     <string name="default_rfid_driver">Драйвер считывателя</string>
     <string name="dont_ask_text_tags">Не спрашивать текстовые теги</string>
     <string name="enter_pin">Введите пин-код</string>
+    <string name="defect_type">Тип дефекта</string>
+    <string name="defect_description">Описание дефекта</string>
 
 </resources>

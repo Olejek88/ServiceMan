@@ -1,9 +1,13 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class Request extends RealmObject {
 
@@ -12,7 +16,7 @@ public class Request extends RealmObject {
     private String uuid;
     private Organization organization;
     private int type;
-    private User user;
+    private Contragent contragent;
     private User author;
     private RequestStatus requestStatus;
     private RequestType requestType;
@@ -25,6 +29,22 @@ public class Request extends RealmObject {
     private Date closeDate;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<Request> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(Request.class));
+        Call<List<Request>> call = SManApiFactory.getRequestService().getData(lastUpdate);
+        try {
+            Response<List<Request>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public String getComment() {
         return comment;
@@ -90,12 +110,12 @@ public class Request extends RealmObject {
         this.type = type;
     }
 
-    public User getUser() {
-        return user;
+    public Contragent getContragent() {
+        return contragent;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setContragent(Contragent contragent) {
+        this.contragent = contragent;
     }
 
     public User getAuthor() {

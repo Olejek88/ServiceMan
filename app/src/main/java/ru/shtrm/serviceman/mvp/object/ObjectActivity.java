@@ -1,49 +1,35 @@
 package ru.shtrm.serviceman.mvp.object;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-
-import java.io.File;
-import java.io.IOException;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.House;
+import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.ObjectRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
 import ru.shtrm.serviceman.util.MainUtil;
 
-import static ru.shtrm.serviceman.util.MainUtil.ACTIVITY_PHOTO_MESSAGE;
-
 public class ObjectActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
-    private ObjectFragment fragment;
-    private static ImageView add_photo;
-    private static String photoUuid;
-    private static Bitmap storeBitmap=null;
-    private static File photoFile;
-
     public static final String OBJECT_UUID = "OBJECT_UUID";
     public static final String HOUSE_UUID = "HOUSE_UUID";
+    // контейнер для пути по которому сохраним файл фотографии, полученой через штатное приложение телефона
+    public static String photoFile;
+    // контейнер для хранения uuid модели к которой привяжем фотографию
+    public static String objectUuid;
+    // контейнер для хранения uuid модели фотографии
+    public static String photoUuid;
+    private ObjectFragment fragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,108 +88,17 @@ public class ObjectActivity extends AppCompatActivity
      * @param data        The result.
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case ACTIVITY_PHOTO_MESSAGE:
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                // берем половину изображения, больше не нужно
-                options.inSampleSize = 2;
-                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                if (bitmap != null) {
-                    storeBitmap = bitmap;
-                    if (add_photo != null)
-                        add_photo.setImageBitmap(bitmap);
-                    if (photoFile!=null)
-                        photoFile.delete();
+            case MainActivity.PHOTO_RESULT:
+                if (resultCode == Activity.RESULT_OK) {
+                    Photo.savePhoto(photoUuid, objectUuid);
                 }
+
+                break;
+            default:
                 break;
         }
-    }
-
-    public static void createAddMessageDialog(final Activity activity, final Object object, final House house) {
-        final View mView = LayoutInflater.from(activity).inflate(R.layout.message_add_dialog, null);
-        add_photo = mView.findViewById(R.id.imageAddMessage);
-        final EditText userEditText = mView.findViewById(R.id.userMessage);
-
-        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(activity);
-        alertDialogBuilderUserInput.setView(mView);
-
-        alertDialogBuilderUserInput.setPositiveButton("Отправить",
-                new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                    }
-                });
-        alertDialogBuilderUserInput
-                .setCancelable(false)
-                .setNegativeButton("Отменить",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogBox, int id) {
-                                dialogBox.cancel();
-                            }
-                        });
-
-        add_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    photoUuid = java.util.UUID.randomUUID().toString();
-                    photoFile = MainUtil.createImageFile(photoUuid, activity);
-                    if (photoFile != null) {
-                        Uri photoURI = FileProvider.getUriForFile(activity,
-                                "ru.shtrm.serviceman.fileprovider",
-                                photoFile);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        activity.startActivityForResult(intent, ACTIVITY_PHOTO_MESSAGE);
-                    }
-                }
-                catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-
-        final AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-        alertDialogAndroid.show();
-        alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-        alertDialogAndroid.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
-        alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                String messageText = userEditText.getText().toString();
-/*
-                if (messageText.length()>3) {
-                    Message message = new Message();
-                    MessageLocalDataSource messageRepository = MessageLocalDataSource.getInstance();
-                    User user = AuthorizedUser.getInstance().getUser();
-                    String uuid = java.util.UUID.randomUUID().toString();
-                    message.set_id(messageRepository.getLastId() + 1);
-                    message.setUuid(uuid);
-                    message.setUser(user);
-                    message.setMessage(userEditText.getText().toString());
-                    message.setFlat(flat);
-                    //message.setHouse(house);
-                    message.setDate(new Date());
-                    message.setCreatedAt(new Date());
-                    message.setChangedAt(new Date());
-                    messageRepository.saveMessage(message);
-                    MainUtil.storeNewImage(storeBitmap, activity,
-                            800, uuid.concat(".jpg"));
-                    MainUtil.storePhotoMessage(message, photoUuid);
-                    alertDialogAndroid.dismiss();
-                }
-                else {
-                    TextView error = mView.findViewById(R.id.dialogError);
-                    error.setText(R.string.error_message_title);
-                }
-*/
-            }
-        });
     }
 }

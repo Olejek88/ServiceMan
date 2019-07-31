@@ -6,9 +6,12 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
+import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
+import ru.shtrm.serviceman.data.source.TaskRepository;
+import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 
 public class EquipmentPresenter implements EquipmentContract.Presenter {
 
@@ -19,25 +22,26 @@ public class EquipmentPresenter implements EquipmentContract.Presenter {
     private EquipmentStatusRepository equipmentStatusRepository;
 
     @NonNull
-    private GpsTrackRepository gpsTrackRepository;
+    private final TaskRepository TaskRepository;
 
     @NonNull
-    private EquipmentRepository equipmentRepository;
+    private String equipment_uuid;
 
     public EquipmentPresenter(@NonNull EquipmentContract.View view,
                                 @NonNull EquipmentRepository equipmentRepository,
                                 @NonNull EquipmentStatusRepository equipmentStatusRepository,
-                              @NonNull GpsTrackRepository gpsTrackRepository,
-                              @NonNull String flatId) {
+                              @NonNull TaskRepository taskRepository,
+                              String equipment_uuid) {
         this.view = view;
-        this.equipmentRepository = equipmentRepository;
         this.equipmentStatusRepository = equipmentStatusRepository;
-        this.gpsTrackRepository = gpsTrackRepository;
+        this.TaskRepository = taskRepository;
         this.view.setPresenter(this);
+        this.equipment_uuid = equipment_uuid;
     }
 
     @Override
     public void subscribe() {
+        loadTasks();
     }
 
     @Override
@@ -45,17 +49,20 @@ public class EquipmentPresenter implements EquipmentContract.Presenter {
     }
 
     @Override
-    public void addEquipment(Equipment equipment) {
-        equipmentRepository.addEquipment(equipment);
-    }
-
-    @Override
     public void updateEquipmentStatus(Equipment equipment, EquipmentStatus equipmentStatus) {
-        equipmentRepository.updateEquipmentStatus(equipment, equipmentStatus);
+        //equipmentRepository.updateEquipmentStatus(equipment, equipmentStatus);
     }
 
     @Override
     public List<EquipmentStatus> loadEquipmentStatuses() {
         return equipmentStatusRepository.getEquipmentStatuses();
+    }
+
+    @Override
+    public List<Task> loadTasks() {
+        Equipment equipment = EquipmentLocalDataSource.getInstance().getEquipmentByUuid(equipment_uuid);
+        List<Task> tasks = TaskRepository.getTaskByEquipment(equipment, null);
+        view.showTaskList(tasks);
+        return tasks;
     }
 }

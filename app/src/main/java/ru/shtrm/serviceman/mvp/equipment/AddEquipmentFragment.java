@@ -88,7 +88,6 @@ public class AddEquipmentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_equipment, container, false);
         Bundle b = getArguments();
         if (b != null) {
-
         }
 
         if (house == null) {
@@ -98,23 +97,6 @@ public class AddEquipmentFragment extends Fragment {
         }
 
         initViews(view);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideImm();
-                String title = editTextSerial.getText().toString();
-                if (title.length() < 1) {
-                    //showTitleError();
-                    //return;
-                }
-                int res = storeEquipment();
-                if (res==0) {
-                    if (getActivity()!=null)
-                        getActivity().onBackPressed();
-                }
-            }
-        });
-
         setHasOptionsMenu(true);
         return view;
     }
@@ -218,7 +200,6 @@ public class AddEquipmentFragment extends Fragment {
 //        equipment.setHouse(house);
         equipment.setEquipmentStatus((EquipmentStatus) editEquipmentStatus.getSelectedItem());
         equipment.setEquipmentType((EquipmentType) editEquipmentType.getSelectedItem());
-        equipmentRepository.addEquipment(equipment);
         Toast.makeText(mainActivityConnector, "Успешно добавлено оборудование", Toast.LENGTH_SHORT).show();
         if (storeBitmap!=null) {
             // новый uuid (старый временный)

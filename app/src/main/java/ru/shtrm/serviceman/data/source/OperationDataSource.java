@@ -8,7 +8,5 @@ import ru.shtrm.serviceman.data.WorkStatus;
 
 public interface OperationDataSource {
 
-    List<Operation> getOperationByTask(Task task);
-
     void setOperationStatus(Operation operation, WorkStatus status);
 }

@@ -14,7 +14,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -39,32 +38,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Photo;
-import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.AlarmRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
-import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
+import ru.shtrm.serviceman.data.source.ObjectRepository;
+import ru.shtrm.serviceman.data.source.StreetRepository;
+import ru.shtrm.serviceman.data.source.TaskRepository;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.gps.GPSListener;
+import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.alarm.AlarmFragment;
-import ru.shtrm.serviceman.mvp.alarm.AlarmPresenter;
 import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
+import ru.shtrm.serviceman.mvp.task.TaskFragment;
+import ru.shtrm.serviceman.mvp.task.TaskPresenter;
 import ru.shtrm.serviceman.retrofit.TokenTask;
-import ru.shtrm.serviceman.retrofit.serial.PhotoSerializer;
 import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.service.GetReferenceService;
 import ru.shtrm.serviceman.service.SendDataService;
@@ -87,14 +83,14 @@ public class MainActivity extends AppCompatActivity
     public static String objectUuid;
     // контейнер для хранения uuid модели фотографии
     public static String photoUuid;
-    public Toolbar toolbar;
     public boolean isLogged = false;
+    private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
     private MapFragment mapFragment;
-    private AlarmFragment alarmsFragment;
     private WorkFragment workFragment;
+    private TaskFragment taskFragment;
     private int selectedNavItem = 0;
     private LocationManager _locationManager;
     private GPSListener _gpsListener;
@@ -132,6 +128,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.toolbar);
 
         // запускаем сервис который будет в фоне заниматься получением/отправкой данных
         Intent intent = new Intent(this, ForegroundService.class);
@@ -182,39 +180,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case PHOTO_RESULT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Gson gson = new GsonBuilder()
-                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                            .registerTypeAdapter(Photo.class, new PhotoSerializer())
-                            .serializeNulls()
-                            .create();
-
-                    GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-                    GpsTrack lastPosition = gpsTrackRepository.getLastTrack();
-
-                    Photo photo = new Photo();
-                    photo.setUuid(photoUuid);
-                    photo.setObjectUuid(objectUuid);
-                    if (lastPosition != null) {
-                        photo.setLatitude(lastPosition.getLatitude());
-                        photo.setLongitude(lastPosition.getLongitude());
-                    } else {
-                        photo.setLatitude(App.defaultLatitude);
-                        photo.setLongitude(App.defaultLongitude);
-                    }
-
-                    UpdateQuery query = new UpdateQuery(
-                            Photo.class.getSimpleName(),
-                            photoUuid,
-                            null,
-                            gson.toJson(photo),
-                            photo.getChangedAt()
-                    );
-                    query.set_id(UpdateQuery.getLastId() + 1);
-                    Realm realm = Realm.getDefaultInstance();
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(query);
-                    realm.commitTransaction();
-                    realm.close();
+                    Photo.savePhoto(photoUuid, objectUuid);
                 }
                 break;
             default:
@@ -302,18 +268,12 @@ public class MainActivity extends AppCompatActivity
                 showMapFragment();
                 break;
             case R.id.nav_users:
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                this.startActivityForResult(intent, 666);
                 showMessagesFragment();
                 break;
-            case R.id.nav_alarms:
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                this.startActivityForResult(intent, 666);
+            case R.id.nav_tasks:
                 showTasksFragment();
                 break;
             case R.id.nav_checkin:
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                this.startActivityForResult(intent, 666);
                 showObjectsFragment();
                 break;
             case R.id.nav_switch_theme:
@@ -391,15 +351,16 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().putFragment(outState, "MapFragment", mapFragment);
         }
 
-        if (alarmsFragment.isAdded()) {
-            getSupportFragmentManager().putFragment(outState, "AlarmFragment", alarmsFragment);
-        }
-
         if (profileFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "UserFragment", profileFragment);
         }
+
         if (workFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, "WorkFragment", workFragment);
+        }
+
+        if (taskFragment.isAdded()) {
+            getSupportFragmentManager().putFragment(outState, "TaskFragment", taskFragment);
         }
     }
 
@@ -407,37 +368,36 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             profileFragment = (UserDetailFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "UserFragment");
-            alarmsFragment = (AlarmFragment) getSupportFragmentManager().
-                    getFragment(savedInstanceState, "AlarmFragment");
             mapFragment = (MapFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "MapFragment");
             workFragment = (WorkFragment) getSupportFragmentManager().
                     getFragment(savedInstanceState, "WorkFragment");
+            taskFragment = (TaskFragment) getSupportFragmentManager().
+                    getFragment(savedInstanceState, TaskFragment.class.getSimpleName());
             selectedNavItem = savedInstanceState.getInt(KEY_NAV_ITEM);
         } else {
-            mapFragment = (MapFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            alarmsFragment = (AlarmFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            profileFragment = (UserDetailFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-            workFragment = (WorkFragment) getSupportFragmentManager().
-                    findFragmentById(R.id.content_main);
-
-            if (profileFragment == null) {
-                profileFragment = UserDetailFragment.newInstance();
-            }
-
+            mapFragment = (MapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.content_main);
             if (mapFragment == null) {
                 mapFragment = MapFragment.newInstance();
             }
 
-            if (alarmsFragment == null) {
-                alarmsFragment = AlarmFragment.newInstance();
+            profileFragment = (UserDetailFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
+            if (profileFragment == null) {
+                profileFragment = UserDetailFragment.newInstance();
             }
 
+            workFragment = (WorkFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
             if (workFragment == null) {
                 workFragment = WorkFragment.newInstance();
+            }
+
+            taskFragment = (TaskFragment) getSupportFragmentManager().
+                    findFragmentById(R.id.content_main);
+            if (taskFragment == null) {
+                taskFragment = TaskFragment.newInstance();
             }
         }
 
@@ -453,15 +413,15 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         }
 
-        if (alarmsFragment != null && !alarmsFragment.isAdded()) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_main, alarmsFragment, "AlarmFragment")
-                    .commit();
-        }
-
         if (workFragment != null && !workFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_main, workFragment, "WorkFragment")
+                    .commit();
+        }
+
+        if (taskFragment != null && !taskFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_main, taskFragment, TaskFragment.class.getSimpleName())
                     .commit();
         }
 
@@ -471,21 +431,26 @@ public class MainActivity extends AppCompatActivity
         new MapPresenter(mapFragment,
                 HouseRepository.getInstance(HouseLocalDataSource.getInstance()));
 
-        new AlarmPresenter(alarmsFragment,
-                AlarmRepository.getInstance(AlarmLocalDataSource.getInstance()));
+        new TaskPresenter(taskFragment,
+                TaskRepository.getInstance(TaskLocalDataSource.getInstance()));
+
+        new AbonentsPresenter(
+                workFragment,
+                StreetRepository.getInstance(StreetLocalDataSource.getInstance()),
+                HouseRepository.getInstance(HouseLocalDataSource.getInstance()),
+                ObjectRepository.getInstance(ObjectLocalDataSource.getInstance()));
 
         // Show the default fragment.
         if (selectedNavItem == 0) {
             showMapFragment();
         } else if (selectedNavItem == 1) {
-            showMessagesFragment();
-        } else if (selectedNavItem == 2) {
             showTasksFragment();
+        } else if (selectedNavItem == 2) {
+            showMessagesFragment();
         } else if (selectedNavItem == 3) {
             showObjectsFragment();
         }
 
-        toolbar.setTitle(getResources().getString(R.string.nav_map));
     }
 
     /**
@@ -524,21 +489,11 @@ public class MainActivity extends AppCompatActivity
                     case R.id.nav_tasks:
                         showTasksFragment();
                         break;
-                    case R.id.nav_messages:
-                        showMessagesFragment();
-                        break;
                 }
                 return true;
             }
         });
 
-    }
-
-    public void showTasksFragment() {
-        changeFragment(alarmsFragment);
-        toolbar.setTitle(getResources().getString(R.string.nav_alarms));
-        toolbar.setSubtitle(null);
-        navigationView.setCheckedItem(R.id.nav_alarms);
     }
 
     private void showProfileFragment() {
@@ -569,19 +524,22 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_map);
     }
 
+    public void showTasksFragment() {
+        changeFragment(taskFragment);
+        toolbar.setTitle(getResources().getString(R.string.nav_tasks));
+        toolbar.setSubtitle("Текущие и выполненные задания");
+        navigationView.setCheckedItem(R.id.nav_tasks);
+    }
+
     void changeFragment(Fragment selectedFragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.hide(mapFragment);
-        fragmentTransaction.hide(alarmsFragment);
         fragmentTransaction.hide(profileFragment);
         fragmentTransaction.hide(workFragment);
+        fragmentTransaction.hide(taskFragment);
 
         if (selectedFragment == mapFragment) {
             fragmentTransaction.show(mapFragment);
-        }
-
-        if (selectedFragment == alarmsFragment) {
-            fragmentTransaction.show(alarmsFragment);
         }
 
         if (selectedFragment == profileFragment) {
@@ -590,6 +548,10 @@ public class MainActivity extends AppCompatActivity
 
         if (selectedFragment == workFragment) {
             fragmentTransaction.show(workFragment);
+        }
+
+        if (selectedFragment == taskFragment) {
+            fragmentTransaction.show(taskFragment);
         }
 
         fragmentTransaction.commit();

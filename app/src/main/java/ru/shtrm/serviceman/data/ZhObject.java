@@ -107,6 +107,10 @@ public class ZhObject extends RealmObject implements IBaseRecord {
         return title;
     }
 
+    public String getFullTitle() {
+        return this.getHouse().getFullTitle().concat(" ").concat(this.title);
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

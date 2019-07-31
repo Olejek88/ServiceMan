@@ -90,12 +90,14 @@ public class StreetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             textViewTitle = itemView.findViewById(R.id.textViewObjectTitle);
             textViewImage = itemView.findViewById(R.id.textViewImage);
             circleImageView = itemView.findViewById(R.id.circleImageView);
+/*
             circleUnCompletedTaskView = itemView.findViewById(R.id.circleUnCompletedTaskView);
             circleCompletedTaskView = itemView.findViewById(R.id.circleCompletedTaskView);
             if (circleUnCompletedTaskView!=null)
                 circleUnCompletedTaskView.setVisibility(View.INVISIBLE);
             if (circleCompletedTaskView!=null)
                 circleCompletedTaskView.setVisibility(View.INVISIBLE);
+*/
 
             this.listener = listener;
             itemView.setOnClickListener(this);

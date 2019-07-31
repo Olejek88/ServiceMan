@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +15,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,25 +51,30 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
+import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Measure;
-import ru.shtrm.serviceman.data.Operation;
+import ru.shtrm.serviceman.data.MeasureType;
 import ru.shtrm.serviceman.data.Task;
-import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
+import ru.shtrm.serviceman.data.source.MeasureTypeRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.OperationLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.MeasureTypeLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
-import ru.shtrm.serviceman.mvp.operations.OperationAdapter;
+import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
+import ru.shtrm.serviceman.mvp.MainActivity;
+import ru.shtrm.serviceman.mvp.measuretype.MeasureTypeAdapter;
+import ru.shtrm.serviceman.mvp.task.TaskAdapter;
+import ru.shtrm.serviceman.mvp.task.TaskInfoActivity;
 import ru.shtrm.serviceman.util.MainUtil;
 
 import static ru.shtrm.serviceman.mvp.equipment.EquipmentActivity.EQUIPMENT_UUID;
+import static ru.shtrm.serviceman.rfid.RfidDialog.TAG;
 
 public class EquipmentFragment extends Fragment implements EquipmentContract.View {
     public final static int ACTIVITY_PHOTO = 100;
@@ -77,8 +86,10 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private GpsTrackRepository gpsTrackRepository;
     private MeasureRepository measureRepository;
     private EquipmentRepository equipmentRepository;
-    private ListView listView;
-    private ListView listView_archive;
+    private RecyclerView recyclerView;
+    private LinearLayout emptyView;
+    private TaskAdapter taskAdapter;
+
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
     private TextView textViewPhotoDate;
@@ -120,9 +131,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view;
+        final View view;
         Bundle b = getArguments();
         checkRepository();
         if (b != null) {
@@ -131,13 +142,73 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 equipment = EquipmentLocalDataSource.getInstance().getEquipmentByUuid(equipmentUuid);
         }
         view = inflater.inflate(R.layout.fragment_equipment, container, false);
+
         if (equipment != null) {
             initViews(view);
+
+            Spinner measureTypeSpinner = view.findViewById(R.id.measure_type);
+            MeasureTypeRepository measureTypeRepository = MeasureTypeRepository.getInstance(MeasureTypeLocalDataSource.getInstance());
+            measureTypeSpinner.setAdapter(new MeasureTypeAdapter(measureTypeRepository.getMeasureTypes()));
+
+            FloatingActionButton measureButton = view.findViewById(R.id.add_measure);
+            measureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    View view = v.getRootView().findViewById(R.id.equipment_measure_input);
+                    if (view.isShown()) {
+                        view.setVisibility(View.GONE);
+                        view.refreshDrawableState();
+                    } else {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+            FloatingActionButton defectButton = view.findViewById(R.id.add_new_defect);
+            defectButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Defect.showDialogNewDefect(getContext(), getLayoutInflater(), container, equipment);
+                }
+            });
+            FloatingActionButton photoButton = view.findViewById(R.id.make_photo);
+            photoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                    Context context = getContext();
+                    Activity activity = getActivity();
+                    if (context == null || activity == null) {
+                        return;
+                    }
+
+                    File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
+                    if (!photoFile.getParentFile().exists()) {
+                        if (!photoFile.getParentFile().mkdirs()) {
+                            Log.e(TAG, "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
+                            return;
+                        }
+                    }
+
+                    // запоминаем данные необходимые для создания записи Photo в onActivityResult
+                    EquipmentActivity.photoFile = photoFile.getAbsolutePath();
+                    EquipmentActivity.objectUuid = equipment.getUuid();
+                    EquipmentActivity.photoUuid = photoUuid;
+
+                    try {
+                        Uri photoURI = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        activity.startActivityForResult(intent, MainActivity.PHOTO_RESULT);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         } else {
-            equipmentRepository.deleteEmptyEquipment();
             if (getActivity() != null)
                 getActivity().finishActivity(0);
         }
+
         setHasOptionsMenu(true);
         return view;
     }
@@ -167,25 +238,22 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 
         FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
-        FloatingActionButton fab_delete = view.findViewById(R.id.fab_delete);
-        FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
 
         myCalendar = Calendar.getInstance();
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         textInputMeasure = view.findViewById(R.id.addMeasureValue);
         circleImageView = view.findViewById(R.id.imageViewEquipment);
+        emptyView = view.findViewById(R.id.emptyView);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         initChart(view);
 
-        //editTextSerial.setText(equipment.getSerial());
-        //textViewType.setText(equipment.getEquipmentType().getTitle());
-        //textViewStatus.setText(equipment.getEquipmentStatus().getTitle());
         SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
         if (equipment.getTestDate() != null)
             textViewDate.setText(sDf.format(equipment.getTestDate()));
         else
             textViewDate.setText(R.string.no_last_time);
-        //textViewEquipment.setText(equipment.getEquipmentType().getTitle().substring(0, 1));
 
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
 
@@ -207,8 +275,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 //                    MainUtil.getPicturesDirectory(mainActivityConnector),
 //                    photoEquipment.getUuid().concat(".jpg")));
 //        } else {
-            circleImageView.setImageResource(R.drawable.counter);
-            textViewPhotoDate.setText("нет фото");
+        circleImageView.setImageResource(R.drawable.counter);
+        textViewPhotoDate.setText("нет фото");
 //        }
 
         final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
@@ -240,23 +308,29 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             public void onClick(View v) {
                 if (firstMeasureClick) {
                     // если есть данные - вводим их, иначе сохраняем оборудование
-                    if (textInputMeasure.getText().toString().length() > 0 &&
-                            textInputMeasure.getText().toString().indexOf('.') > -1)
-                        createMeasure();
-                    else
+                    if (textInputMeasure.getText().toString().length() > 0) {
+                        Spinner measureTypeSpinner = v.getRootView().findViewById(R.id.measure_type);
+                        createMeasure(textInputMeasure.getText().toString(), (MeasureType) measureTypeSpinner.getSelectedItem());
+                        firstMeasureClick = false;
+                        textInputMeasure.setText("");
+                        equipment_measure.setVisibility(View.GONE);
+                        equipment_measure_input.setVisibility(View.GONE);
+                        textInputMeasure.clearFocus();
+                    } else {
                         Toast.makeText(mainActivityConnector,
                                 "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
                                 Toast.LENGTH_LONG).show();
-                    mChart.refreshDrawableState();
+                        mChart.refreshDrawableState();
+                    }
                     // не дать возможность вводить по несколько раз
 /*
                     storeEditEquipment(editTextSerial.getText().toString(),
                             (EquipmentStatus) statusSpinner.getSelectedItem());
 */
-                    if (getActivity() != null) {
-                        getActivity().finishActivity(0);
-                        getActivity().onBackPressed();
-                    }
+//                    if (getActivity() != null) {
+//                        getActivity().finishActivity(0);
+//                        getActivity().onBackPressed();
+//                    }
                 } else {
                     firstMeasureClick = true;
                     equipment_measure.setVisibility(View.VISIBLE);
@@ -285,47 +359,24 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             }
         });
 
-        add_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EquipmentActivity.createAddMessageDialog(mainActivityConnector);
-            }
-        });
-
-        fab_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                equipmentRepository.deleteEquipment(equipment);
-                if (getActivity() != null)
-                    getActivity().finishActivity(0);
-            }
-        });
-
         // TODO когда определимся с фото здесь будет грид с последними фото
         //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
         //gridView.invalidateViews();
         //gridView.setVisibility(View.INVISIBLE);
-        listView = view.findViewById(R.id.list_view);
-        listView_archive = view.findViewById(R.id.list_view_archive);
-/*
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-*/
-        fillListViewOperations(equipment, 0);
-        fillListViewOperations(equipment, 1);
+        //listView = view.findViewById(R.id.list_view);
+        //fillListViewOperations(equipment);
     }
 
-    void createMeasure() {
+    void createMeasure(String value, MeasureType measureType) {
+        value = value.replace(',', '.');
         Measure measure = new Measure();
         measure.set_id(measureRepository.getLastId() + 1);
-        measure.setValue(Double.valueOf(textInputMeasure.getText().toString()));
-        measure.setChangedAt(new Date());
-        measure.setCreatedAt(new Date());
-        measure.setDate(new Date());
+        measure.setMeasureType(measureType);
+        measure.setValue(Double.valueOf(value));
         measure.setEquipment(equipment);
-        measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid()));
-        measure.setUuid(java.util.UUID.randomUUID().toString());
-        MeasureLocalDataSource.getInstance().addMeasure(measure);
+        measure.setOrganization(AuthorizedUser.getInstance().getUser().getOrganization());
+        measureRepository.addMeasure(measure);
+        Measure.addToUpdateQuery(measure);
         Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
         // обновляем ярлык количества не отправленных измерений
         MainUtil.setBadges(mainActivityConnector);
@@ -341,17 +392,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (equipmentRepository == null)
             equipmentRepository = EquipmentRepository.getInstance
                     (EquipmentLocalDataSource.getInstance());
-    }
-
-    void storeEditEquipment(String serial, EquipmentStatus equipmentStatus) {
-        equipment.setChangedAt(new Date());
-        if (myCalendar.getTime() != null)
-            equipment.setTestDate(myCalendar.getTime());
-        else
-            equipment.setTestDate(new Date());
-        equipment.setSerial(serial);
-        equipment.setEquipmentStatus(equipmentStatus);
-        equipmentRepository.addEquipment(equipment);
     }
 
     @Override
@@ -426,27 +466,62 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     }
 
     // Operations----------------------------------------------------------------------------------------
-    private void fillListViewOperations(Equipment equipment, int type) {
+    private void fillListViewOperations(Equipment equipment) {
         Activity activity = getActivity();
         List<Task> tasks;
         if (activity == null) {
             return;
         }
-        if (type == 0)
-            tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.UN_COMPLETE);
-        else
-            tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, WorkStatus.Status.COMPLETE);
+        tasks = TaskLocalDataSource.getInstance().getTaskByEquipment(equipment, null);
         if (tasks.size() > 0) {
-            List<Operation> operations = OperationLocalDataSource.getInstance().getOperationByTask(tasks.get(0));
-            OperationAdapter operationAdapter = new OperationAdapter(activity, operations);
-            if (type == 0) {
-                listView.setAdapter(operationAdapter);
-                //setListViewHeightBasedOnChildren(listView);
-            }
-            else {
-                listView_archive.setAdapter(operationAdapter);
-                setListViewHeightBasedOnChildren(listView_archive);
-            }
+            showTaskList(tasks);
+/*
+            TaskAdapter taskAdapter = new TaskAdapter(mainActivityConnector, tasks);
+            recyclerView.setAdapter(taskAdapter);
+            emptyView.setVisibility(View.VISIBLE);
+*/
+            //setListViewHeightBasedOnChildren(listView);
+        }
+    }
+
+    /**
+     * Show flats with recycler view.
+     * @param list The data.
+     */
+    @Override
+    public void showTaskList(@NonNull final List<Task> list) {
+        if (taskAdapter == null) {
+            taskAdapter = new TaskAdapter(mainActivityConnector, list);
+            taskAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
+                @Override
+                public void OnItemClick(View v, int position) {
+                    Task task = list.get(position);
+                    Intent intent = new Intent(getActivity(), TaskInfoActivity.class);
+                    intent.putExtra("TASK_UUID", String.valueOf(task.getUuid()));
+                    startActivity(intent);
+                }
+            });
+            recyclerView.setAdapter(taskAdapter);
+        } else {
+            taskAdapter.updateData(list);
+            recyclerView.setAdapter(taskAdapter);
+        }
+        showEmptyView(list.isEmpty());
+    }
+
+    /**
+     * Hide a RecyclerView when it is empty and show a empty view
+     * to tell the uses that there is no data currently.
+     * @param toShow Hide or show.
+     */
+    @Override
+    public void showEmptyView(boolean toShow) {
+        if (toShow) {
+            recyclerView.setVisibility(View.INVISIBLE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -23,6 +23,8 @@ import ru.shtrm.serviceman.data.AlarmStatus;
 import ru.shtrm.serviceman.data.AlarmType;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.City;
+import ru.shtrm.serviceman.data.Contragent;
+import ru.shtrm.serviceman.data.ContragentType;
 import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.DefectType;
 import ru.shtrm.serviceman.data.Documentation;
@@ -39,6 +41,9 @@ import ru.shtrm.serviceman.data.MeasureType;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.OperationTemplate;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
+import ru.shtrm.serviceman.data.Request;
+import ru.shtrm.serviceman.data.RequestStatus;
+import ru.shtrm.serviceman.data.RequestType;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.TaskTemplate;
@@ -199,6 +204,15 @@ public class GetReferenceService extends Service {
                 Journal.add("EquipmentSystem not updated.");
             }
 
+            list = RequestStatus.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("RequestStatus not updated.");
+            }
+
             if (AuthorizedUser.getInstance().isValidToken()) {
                 list = User.getData();
                 if (list != null) {
@@ -212,6 +226,15 @@ public class GetReferenceService extends Service {
                 if (!updateUserByService(realm)) {
                     Journal.add("User not updated by service user.");
                 }
+            }
+
+            list = ContragentType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("ContragentType not updated.");
             }
 
             // --------
@@ -323,8 +346,35 @@ public class GetReferenceService extends Service {
                 Journal.add("TaskTemplate not updated.");
             }
 
+            list = Contragent.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("Contragent not updated.");
+            }
+
+            list = RequestType.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("RequestType not updated.");
+            }
+
             if (!getNewTask(realm)) {
                 Journal.add("Task not received.");
+            }
+
+            list = Request.getData();
+            if (list != null) {
+                if (list.size() > 0) {
+                    saveData(list, updateDate, realm);
+                }
+            } else {
+                Journal.add("Request not updated.");
             }
 
             realm.close();

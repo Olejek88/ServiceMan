@@ -9,19 +9,18 @@
         android:id="@+id/defect_type_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="Тип дефекта"
+        android:text="@string/defect_type"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#222222" />
 
-    <!--style="@android:style/Widget.Holo.Light.Spinner"-->
+
     <Spinner
         android:id="@+id/spinner_defect_type"
+        style="@android:style/Widget.Holo.Light.Spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/defect_type_label"
         android:layout_marginTop="5dp"
@@ -31,10 +30,9 @@
         android:id="@+id/add_new_comment_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/spinner_defect_type"
-        android:text="Описание дефекта"
+        android:text="@string/defect_description"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#222222" />
 
@@ -43,8 +41,9 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/add_new_comment_label"
-        android:gravity="top|left"
+        android:gravity="top|start"
         android:inputType="textMultiLine"
+        android:labelFor="@+id/add_new_comment"
         android:lines="8"
         android:maxLines="10"
         android:minLines="6"

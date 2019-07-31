@@ -18,6 +18,8 @@ public class MeasureSerializer implements JsonSerializer<Measure> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         object.addProperty("uuid", src.getUuid());
+        object.addProperty("oid", src.getOrganization().getUuid());
+        object.addProperty("measureTypeUuid", src.getMeasureType().getUuid());
         object.addProperty("equipmentUuid", src.getEquipment().getUuid());
         object.addProperty("userUuid", src.getUser().getUuid());
         object.addProperty("date", sdf.format(src.getDate()));

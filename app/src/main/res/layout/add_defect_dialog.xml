@@ -15,9 +15,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#222222" />
 
-    <!--style="@android:style/Widget.Holo.Light.Spinner"-->
+
     <Spinner
         android:id="@+id/spinner_defect_type"
+        style="@android:style/Widget.Holo.Light.Spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

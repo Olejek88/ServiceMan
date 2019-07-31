@@ -55,18 +55,20 @@ import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.Measure;
+import ru.shtrm.serviceman.data.MeasureType;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
+import ru.shtrm.serviceman.data.source.MeasureTypeRepository;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.MeasureTypeLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.UsersLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
-import ru.shtrm.serviceman.mvp.object.ObjectActivity;
+import ru.shtrm.serviceman.mvp.measuretype.MeasureTypeAdapter;
 import ru.shtrm.serviceman.mvp.task.TaskAdapter;
 import ru.shtrm.serviceman.mvp.task.TaskInfoActivity;
 import ru.shtrm.serviceman.util.MainUtil;
@@ -144,13 +146,17 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         if (equipment != null) {
             initViews(view);
 
+            Spinner measureTypeSpinner = view.findViewById(R.id.measure_type);
+            MeasureTypeRepository measureTypeRepository = MeasureTypeRepository.getInstance(MeasureTypeLocalDataSource.getInstance());
+            measureTypeSpinner.setAdapter(new MeasureTypeAdapter(measureTypeRepository.getMeasureTypes()));
+
             FloatingActionButton measureButton = view.findViewById(R.id.add_measure);
             measureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     View view = v.getRootView().findViewById(R.id.equipment_measure_input);
                     if (view.isShown()) {
-                        view.setVisibility(View.INVISIBLE);
+                        view.setVisibility(View.GONE);
                         view.refreshDrawableState();
                     } else {
                         view.setVisibility(View.VISIBLE);
@@ -237,7 +243,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
         textInputMeasure = view.findViewById(R.id.addMeasureValue);
         circleImageView = view.findViewById(R.id.imageViewEquipment);
-        emptyView =  view.findViewById(R.id.emptyView);
+        emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -269,8 +275,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
 //                    MainUtil.getPicturesDirectory(mainActivityConnector),
 //                    photoEquipment.getUuid().concat(".jpg")));
 //        } else {
-            circleImageView.setImageResource(R.drawable.counter);
-            textViewPhotoDate.setText("нет фото");
+        circleImageView.setImageResource(R.drawable.counter);
+        textViewPhotoDate.setText("нет фото");
 //        }
 
         final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
@@ -302,23 +308,29 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             public void onClick(View v) {
                 if (firstMeasureClick) {
                     // если есть данные - вводим их, иначе сохраняем оборудование
-                    if (textInputMeasure.getText().toString().length() > 0 &&
-                            textInputMeasure.getText().toString().indexOf('.') > -1)
-                        createMeasure();
-                    else
+                    if (textInputMeasure.getText().toString().length() > 0) {
+                        Spinner measureTypeSpinner = v.getRootView().findViewById(R.id.measure_type);
+                        createMeasure(textInputMeasure.getText().toString(), (MeasureType) measureTypeSpinner.getSelectedItem());
+                        firstMeasureClick = false;
+                        textInputMeasure.setText("");
+                        equipment_measure.setVisibility(View.GONE);
+                        equipment_measure_input.setVisibility(View.GONE);
+                        textInputMeasure.clearFocus();
+                    } else {
                         Toast.makeText(mainActivityConnector,
                                 "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
                                 Toast.LENGTH_LONG).show();
-                    mChart.refreshDrawableState();
+                        mChart.refreshDrawableState();
+                    }
                     // не дать возможность вводить по несколько раз
 /*
                     storeEditEquipment(editTextSerial.getText().toString(),
                             (EquipmentStatus) statusSpinner.getSelectedItem());
 */
-                    if (getActivity() != null) {
-                        getActivity().finishActivity(0);
-                        getActivity().onBackPressed();
-                    }
+//                    if (getActivity() != null) {
+//                        getActivity().finishActivity(0);
+//                        getActivity().onBackPressed();
+//                    }
                 } else {
                     firstMeasureClick = true;
                     equipment_measure.setVisibility(View.VISIBLE);
@@ -355,17 +367,16 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         //fillListViewOperations(equipment);
     }
 
-    void createMeasure() {
+    void createMeasure(String value, MeasureType measureType) {
+        value = value.replace(',', '.');
         Measure measure = new Measure();
         measure.set_id(measureRepository.getLastId() + 1);
-        measure.setValue(Double.valueOf(textInputMeasure.getText().toString()));
-        measure.setChangedAt(new Date());
-        measure.setCreatedAt(new Date());
-        measure.setDate(new Date());
+        measure.setMeasureType(measureType);
+        measure.setValue(Double.valueOf(value));
         measure.setEquipment(equipment);
-        measure.setUser(UsersLocalDataSource.getInstance().getUser(AuthorizedUser.getInstance().getUser().getUuid()));
-        measure.setUuid(java.util.UUID.randomUUID().toString());
-        MeasureLocalDataSource.getInstance().addMeasure(measure);
+        measure.setOrganization(AuthorizedUser.getInstance().getUser().getOrganization());
+        measureRepository.addMeasure(measure);
+        Measure.addToUpdateQuery(measure);
         Toast.makeText(mainActivityConnector, "Успешно добавлено значение", Toast.LENGTH_SHORT).show();
         // обновляем ярлык количества не отправленных измерений
         MainUtil.setBadges(mainActivityConnector);

@@ -28,10 +28,7 @@ import retrofit2.Response;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.IBaseRecord;
-import ru.shtrm.serviceman.data.Journal;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.Token;
@@ -140,17 +137,6 @@ public class ForegroundService extends Service {
                     alarmItems = realm.where(Alarm.class).in("_id", limitIds).findAll();
                     ids = getIds(alarmItems);
                     bundle.putLongArray(SendDataService.ALARM_IDS, ids);
-                }
-
-                // получаем данные для отправки измерений
-                RealmResults<Measure> measureItems = realm.where(Measure.class)
-                        .equalTo("sent", false)
-                        .findAll().sort("_id");
-                if (measureItems.size() > 0) {
-                    limitIds = getLimitElements(measureItems);
-                    measureItems = realm.where(Measure.class).in("_id", limitIds).findAll();
-                    ids = getIds(measureItems);
-                    bundle.putLongArray(SendDataService.MEASURE_IDS, ids);
                 }
 
                 // получаем данные для отправки сообщений

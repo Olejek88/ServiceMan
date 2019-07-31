@@ -14,7 +14,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -49,20 +48,11 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.UpdateQuery;
-import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.User;
-import ru.shtrm.serviceman.data.source.AlarmRepository;
-import ru.shtrm.serviceman.data.source.EquipmentRepository;
-import ru.shtrm.serviceman.data.source.EquipmentStatusRepository;
-import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.ObjectRepository;
 import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.TaskRepository;
-import ru.shtrm.serviceman.data.source.local.AlarmLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
-import ru.shtrm.serviceman.data.source.local.EquipmentStatusLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
@@ -71,8 +61,6 @@ import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.gps.GPSListener;
 import ru.shtrm.serviceman.mvp.abonents.AbonentsPresenter;
 import ru.shtrm.serviceman.mvp.abonents.WorkFragment;
-import ru.shtrm.serviceman.mvp.alarm.AlarmPresenter;
-import ru.shtrm.serviceman.mvp.equipment.EquipmentPresenter;
 import ru.shtrm.serviceman.mvp.map.MapFragment;
 import ru.shtrm.serviceman.mvp.map.MapPresenter;
 import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
@@ -323,9 +311,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_tasks:
                 showTasksFragment();
                 break;
-            case R.id.nav_checkin:
-                showTasksFragment();
-                break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
                     @Override
@@ -564,7 +549,7 @@ public class MainActivity extends AppCompatActivity
         changeFragment(workFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_checkin));
         toolbar.setSubtitle(null);
-        navigationView.setCheckedItem(R.id.nav_checkin);
+        navigationView.setCheckedItem(R.id.nav_tasks);
     }
 
     private void showMapFragment() {

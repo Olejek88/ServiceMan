@@ -58,8 +58,6 @@ public class TaskFragment extends Fragment implements TaskContract.View {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.nav_checkin:
-                        break;
                     case R.id.nav_users:
                         break;
                     case R.id.nav_map:

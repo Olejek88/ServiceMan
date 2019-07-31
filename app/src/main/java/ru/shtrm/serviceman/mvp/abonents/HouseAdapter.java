@@ -116,9 +116,9 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * @param list The data.
      */
     public void updateData(@NonNull List<House> list) {
-        this.list.clear();
-        this.list.addAll(list);
-        notifyDataSetChanged();
+        //this.list.clear();
+        //this.list.addAll(list);
+        //notifyDataSetChanged();
     }
 
     /**

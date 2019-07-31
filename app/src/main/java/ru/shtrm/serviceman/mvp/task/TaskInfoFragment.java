@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
 import java.text.SimpleDateFormat;
@@ -161,17 +160,6 @@ public class TaskInfoFragment extends Fragment {
                 mainActivityConnector.onBackPressed();
             }
         });
-    }
-
-    /**
-     * Hide the input method like soft keyboard, etc... when they are active.
-     */
-    private void hideImm() {
-        InputMethodManager imm = (InputMethodManager)
-                mainActivityConnector.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm!=null && imm.isActive()) {
-            //imm.hideSoftInputFromWindow(fab.getWindowToken(), 0);
-        }
     }
 
     @Override

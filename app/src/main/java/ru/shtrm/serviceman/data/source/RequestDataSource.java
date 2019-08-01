@@ -4,24 +4,15 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Operation;
+import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
 
-public interface TaskDataSource {
+public interface RequestDataSource {
 
-    Task getTask(String uuid);
+    Request getRequest(String uuid);
 
-    List<Task> getTaskByEquipment(Equipment equipment, String status);
+    Request getRequestByTask(String taskUuid);
 
-    List<Task> getNewTasks();
-
-    List<Task> getTasks();
-
-    boolean checkAllOperationsComplete(Task task);
-
-    void setTaskStatus(Task task, WorkStatus status);
-
-    void setEndDate(Task task);
-
-    List<Operation> getOperationByTask(Task task);
+    List<Request> getRequests();
 }

@@ -7,127 +7,50 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.Sort;
+import ru.shtrm.serviceman.data.Contragent;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
+import ru.shtrm.serviceman.data.source.ContragentDataSource;
 import ru.shtrm.serviceman.data.source.TaskDataSource;
 
-public class TaskLocalDataSource implements TaskDataSource {
+public class ContragentLocalDataSource implements ContragentDataSource {
 
     @Nullable
-    private static TaskLocalDataSource INSTANCE = null;
+    private static ContragentLocalDataSource INSTANCE = null;
 
     // Prevent direct instantiation
-    private TaskLocalDataSource() {
+    private ContragentLocalDataSource() {
 
     }
 
-    public static TaskLocalDataSource getInstance() {
+    public static ContragentLocalDataSource getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new TaskLocalDataSource();
+            INSTANCE = new ContragentLocalDataSource();
         }
         return INSTANCE;
     }
 
     @Override
-    public Task getTask(String uuid) {
+    public Contragent getContragent(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        Task task = realm.where(Task.class).equalTo("uuid", uuid).findFirst();
-        if (task!=null) {
-            task = realm.copyFromRealm(task);
+        Contragent contragent = realm.where(Contragent.class).equalTo("uuid", uuid).findFirst();
+        if (contragent != null) {
+            contragent = realm.copyFromRealm(contragent);
             realm.close();
-            return task;
-        }
-        else {
+            return contragent;
+        } else {
             return null;
         }
     }
 
     @Override
-    public List<Task> getTaskByEquipment(Equipment equipment, String  status) {
+    public List<Contragent> getContragents() {
         Realm realm = Realm.getDefaultInstance();
-        if (status != null) {
-            List<Task> tasks = realm.copyFromRealm(
-                    realm.where(Task.class).
-                            equalTo("equipment.uuid", equipment.getUuid()).
-                            equalTo("workStatus.uuid", status).
-                            findAllSorted("createdAt", Sort.ASCENDING));
-            realm.close();
-            return tasks;
-        } else {
-            List<Task> tasks = realm.copyFromRealm(
-                    realm.where(Task.class).
-                            equalTo("equipment.uuid", equipment.getUuid()).
-                            findAllSorted("createdAt", Sort.ASCENDING));
-            realm.close();
-            return tasks;
-        }
-    }
-
-    @Override
-    public List<Task> getNewTasks() {
-        Realm realm = Realm.getDefaultInstance();
-        List<Task> tasks = realm.copyFromRealm(
-                realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
-                        equalTo("workStatus.uuid", WorkStatus.Status.NEW).
-                        or().
-                        equalTo("workStatus.uuid", WorkStatus.Status.IN_WORK).
-                        findAllSorted("createdAt", Sort.ASCENDING));
+        List<Contragent> contragents = realm.copyFromRealm(
+                realm.where(Contragent.class).findAllSorted("createdAt", Sort.ASCENDING));
         realm.close();
-        return tasks;
-    }
-
-    @Override
-    public List<Task> getTasks() {
-        Realm realm = Realm.getDefaultInstance();
-        List<Task> tasks = realm.copyFromRealm(
-                realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
-                        findAllSorted("changedAt", Sort.ASCENDING));
-        realm.close();
-        return tasks;
-    }
-
-    @Override
-    public boolean checkAllOperationsComplete(Task task) {
-        Realm realm = Realm.getDefaultInstance();
-        long unCompleteOperations = realm.where(Operation.class).
-                equalTo("task.uuid", task.getUuid()).
-                equalTo("workStatus.uuid", WorkStatus.Status.UN_COMPLETE).
-                count();
-        realm.close();
-        return unCompleteOperations <= 0;
-    }
-
-    @Override
-    public void setTaskStatus(final Task task, final WorkStatus status) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                task.setWorkStatus(status);
-                realm.copyToRealmOrUpdate(task);
-            }
-        });
-        realm.close();
-    }
-
-    @Override
-    public void setEndDate(final Task task) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                task.setStartDate(new Date());
-                task.setEndDate(new Date());
-                realm.copyToRealmOrUpdate(task);
-            }
-        });
-        realm.close();
-    }
-
-    @Override
-    public List<Operation> getOperationByTask(Task task) {
-        return task.getOperations();
+        return contragents;
     }
 }

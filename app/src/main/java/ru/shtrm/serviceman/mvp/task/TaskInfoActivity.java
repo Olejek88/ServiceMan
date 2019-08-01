@@ -54,6 +54,16 @@ public class TaskInfoActivity extends AppCompatActivity {
 
     private void runRfidDialog(String expectedTagId, final String uuid) {
         Tag tag = new Tag();
+        if (!expectedTagId.contains(":")) {
+            // TODO старые и ошибочные метки пока пускаем
+            Bundle b = new Bundle();
+            b.putString(TASK_UUID, uuid);
+            fragment.setArguments(b);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.view_pager, fragment, "TaskInfoFragment")
+                    .commit();
+            return;
+        }
         tag.loadData(expectedTagId);
         final String expectedTag = tag.getTagId();
 

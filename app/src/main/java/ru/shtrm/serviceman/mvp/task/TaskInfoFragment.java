@@ -18,9 +18,11 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.TaskRepository;
+import ru.shtrm.serviceman.data.source.local.RequestLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.WorkStatusLocalDataSource;
 
@@ -92,7 +94,12 @@ public class TaskInfoFragment extends Fragment {
         AppCompatTextView textEndDate;
         AppCompatTextView textDeadlineDate;
         AppCompatTextView textComment;
+        AppCompatTextView textContragent;
+        AppCompatTextView textType;
+
         LinearLayout endLayout;
+        LinearLayout typeLayout;
+        LinearLayout contragentLayout;
 
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
         if (mToolbar !=null) {
@@ -106,7 +113,12 @@ public class TaskInfoFragment extends Fragment {
         textEndDate = view.findViewById(R.id.textEndDate);
         textDeadlineDate = view.findViewById(R.id.textDeadlineDate);
         textComment = view.findViewById(R.id.textComment);
+        textContragent = view.findViewById(R.id.textContragent);
+        textType = view.findViewById(R.id.textType);
+
         endLayout = view.findViewById(R.id.endLayout);
+        typeLayout = view.findViewById(R.id.type);
+        contragentLayout = view.findViewById(R.id.contragent);
 
         FloatingActionButton fab_cancel = view.findViewById(R.id.task_verdict);
         FloatingActionButton fab_complete = view.findViewById(R.id.task_complete);
@@ -132,6 +144,17 @@ public class TaskInfoFragment extends Fragment {
                 endLayout.setVisibility(View.VISIBLE);
             }
             else endLayout.setVisibility(View.GONE);
+
+            Request request = RequestLocalDataSource.getInstance().getRequestByTask(task.getUuid());
+            if (request != null) {
+                typeLayout.setVisibility(View.VISIBLE);
+                contragentLayout.setVisibility(View.VISIBLE);
+                textContragent.setText(request.getContragent().getTitle());
+                textType.setText(request.getRequestType().getTitle());
+            } else {
+                typeLayout.setVisibility(View.GONE);
+                contragentLayout.setVisibility(View.GONE);
+            }
 
             textAuthor.setText(task.getAuthor().getName());
             textComment.setText(task.getComment());

@@ -2,12 +2,13 @@ package ru.shtrm.serviceman.data.source;
 
 import java.util.List;
 
+import ru.shtrm.serviceman.data.Contragent;
 import ru.shtrm.serviceman.data.TaskType;
 
-public interface TaskTypeDataSource {
+public interface ContragentDataSource {
 
-    List<TaskType> getTaskTypes();
+    List<Contragent> getContragents();
 
-    TaskType getTaskType(String uuid);
+    Contragent getContragent(String uuid);
 
 }

@@ -7,66 +7,43 @@ import java.util.List;
 
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Operation;
+import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
 
-public class TaskRepository implements TaskDataSource {
+public class RequestRepository implements RequestDataSource {
 
     @Nullable
-    private static TaskRepository INSTANCE = null;
+    private static RequestRepository INSTANCE = null;
 
     @NonNull
-    private final TaskDataSource localDataSource;
+    private final RequestDataSource localDataSource;
 
     // Prevent direct instantiation
-    private TaskRepository(@NonNull TaskDataSource localDataSource) {
+    private RequestRepository(@NonNull RequestDataSource localDataSource) {
         this.localDataSource = localDataSource;
     }
 
-    public static TaskRepository getInstance(@NonNull TaskDataSource localDataSource) {
+    public static RequestRepository getInstance(@NonNull RequestDataSource localDataSource) {
         if (INSTANCE == null) {
-            INSTANCE = new TaskRepository(localDataSource);
+            INSTANCE = new RequestRepository(localDataSource);
         }
         return INSTANCE;
     }
 
     @Override
-    public List<Task> getTaskByEquipment(Equipment equipment, String status) {
-        return localDataSource.getTaskByEquipment(equipment,status);
+    public Request getRequest(String uuid) {
+        return localDataSource.getRequest(uuid);
     }
 
     @Override
-    public Task getTask(String uuid) {
-        return localDataSource.getTask(uuid);
+    public Request getRequestByTask(String taskUuid) {
+        return localDataSource.getRequestByTask(taskUuid);
     }
 
     @Override
-    public List<Task> getNewTasks() {
-        return localDataSource.getNewTasks();
+    public List<Request> getRequests() {
+        return localDataSource.getRequests();
     }
 
-    @Override
-    public List<Task> getTasks() {
-        return localDataSource.getTasks();
-    }
-
-    @Override
-    public boolean checkAllOperationsComplete(Task task) {
-        return localDataSource.checkAllOperationsComplete(task);
-    }
-
-    @Override
-    public void setTaskStatus(Task task, WorkStatus status) {
-        localDataSource.setTaskStatus(task, status);
-    }
-
-    @Override
-    public void setEndDate(Task task) {
-        localDataSource.setEndDate(task);
-    }
-
-    @Override
-    public List<Operation> getOperationByTask(Task task) {
-        return localDataSource.getOperationByTask(task);
-    }
 }

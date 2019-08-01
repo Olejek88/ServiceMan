@@ -24,6 +24,7 @@ import ru.shtrm.serviceman.BuildConfig;
 import ru.shtrm.serviceman.data.Alarm;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.City;
+import ru.shtrm.serviceman.data.Contragent;
 import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.Equipment;
@@ -34,11 +35,13 @@ import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.OperationTemplate;
+import ru.shtrm.serviceman.data.RequestType;
 import ru.shtrm.serviceman.data.Street;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.TaskTemplate;
 import ru.shtrm.serviceman.data.ZhObject;
 import ru.shtrm.serviceman.retrofit.deserial.CityDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.ContragentDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.DateTypeDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.DefectDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.DocumentationDeserializer;
@@ -50,6 +53,8 @@ import ru.shtrm.serviceman.retrofit.deserial.MessageDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.ObjectDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.OperationDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.OperationTemplateDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.RequestDeserializer;
+import ru.shtrm.serviceman.retrofit.deserial.RequestTypeDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.StreetDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.TaskDeserializer;
 import ru.shtrm.serviceman.retrofit.deserial.TaskTemplateDeserializer;
@@ -57,6 +62,8 @@ import ru.shtrm.serviceman.retrofit.iface.IAlarmService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmStatusService;
 import ru.shtrm.serviceman.retrofit.iface.IAlarmTypeService;
 import ru.shtrm.serviceman.retrofit.iface.ICityService;
+import ru.shtrm.serviceman.retrofit.iface.IContragentService;
+import ru.shtrm.serviceman.retrofit.iface.IContragentTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IDefectService;
 import ru.shtrm.serviceman.retrofit.iface.IDefectTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IDocumentationService;
@@ -77,6 +84,9 @@ import ru.shtrm.serviceman.retrofit.iface.IOperationService;
 import ru.shtrm.serviceman.retrofit.iface.IOperationTemplateService;
 import ru.shtrm.serviceman.retrofit.iface.IPhotoService;
 import ru.shtrm.serviceman.retrofit.iface.IPingService;
+import ru.shtrm.serviceman.retrofit.iface.IRequestService;
+import ru.shtrm.serviceman.retrofit.iface.IRequestStatusService;
+import ru.shtrm.serviceman.retrofit.iface.IRequestTypeService;
 import ru.shtrm.serviceman.retrofit.iface.IStreetService;
 import ru.shtrm.serviceman.retrofit.iface.ITaskService;
 import ru.shtrm.serviceman.retrofit.iface.ITaskTemplateService;
@@ -312,6 +322,31 @@ public class SManApiFactory {
     }
 
     @NonNull
+    public static IRequestTypeService getRequestTypeService() {
+        return getRetrofit().create(IRequestTypeService.class);
+    }
+
+    @NonNull
+    public static IRequestStatusService getRequestStatusService() {
+        return getRetrofit().create(IRequestStatusService.class);
+    }
+
+    @NonNull
+    public static IRequestService getRequestService() {
+        return getRetrofit().create(IRequestService.class);
+    }
+
+    @NonNull
+    public static IContragentService getContragentService() {
+        return getRetrofit().create(IContragentService.class);
+    }
+
+    @NonNull
+    public static IContragentTypeService getContragentTypeService() {
+        return getRetrofit().create(IContragentTypeService.class);
+    }
+
+    @NonNull
     public static Retrofit getPrivateRetrofit() {
         return getRetrofit();
     }
@@ -357,6 +392,9 @@ public class SManApiFactory {
         builder.registerTypeAdapter(Street.class, new StreetDeserializer());
         builder.registerTypeAdapter(Task.class, new TaskDeserializer());
         builder.registerTypeAdapter(TaskTemplate.class, new TaskTemplateDeserializer());
+        builder.registerTypeAdapter(RequestType.class, new RequestTypeDeserializer());
+        builder.registerTypeAdapter(ru.shtrm.serviceman.data.Request.class, new RequestDeserializer());
+        builder.registerTypeAdapter(Contragent.class, new ContragentDeserializer());
 //        builder.registerTypeAdapter(UserHouse.class, new UserHouseDeserializer());
 
         // Serializers

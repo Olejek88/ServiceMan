@@ -1,9 +1,13 @@
 package ru.shtrm.serviceman.data;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import retrofit2.Call;
+import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class RequestType extends RealmObject {
 
@@ -14,6 +18,22 @@ public class RequestType extends RealmObject {
     private TaskTemplate taskTemplate;
     private Date createdAt;
     private Date changedAt;
+
+    public static List<RequestType> getData() {
+        String lastUpdate = ReferenceUpdate.lastChangedAsStr(ReferenceUpdate.makeReferenceName(RequestType.class));
+        Call<List<RequestType>> call = SManApiFactory.getRequestTypeService().getData(lastUpdate);
+        try {
+            Response<List<RequestType>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public long get_id() {
         return _id;

@@ -28,7 +28,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import ru.shtrm.serviceman.data.Alarm;
-import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Message;
 import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.UpdateQuery;
@@ -37,13 +36,11 @@ import ru.shtrm.serviceman.retrofit.SManApiFactory;
 public class SendDataService extends Service {
     public static final String ACTION = "ru.shtrm.serviceman.service.SEND_DATA";
     public static final String ALARM_IDS = "alramIds";
-    public static final String MEASURE_IDS = "measureIds";
     public static final String MESSAGE_IDS = "messageIds";
     private static final String TAG = SendDataService.class.getSimpleName();
     private boolean isRunning;
 
     private long alarmIds[];
-    private long measureIds[];
     private long messageIds[];
 
     /**
@@ -57,11 +54,6 @@ public class SendDataService extends Service {
             // отправка аварий
             if (alarmIds != null && alarmIds.length > 0) {
                 sendAlarm(realm, alarmIds);
-            }
-
-            // отправка измерений
-            if (measureIds != null && measureIds.length > 0) {
-                sendMeasure(realm, measureIds);
             }
 
             // отправка сообщений
@@ -221,46 +213,6 @@ public class SendDataService extends Service {
             }
         }
 
-        void sendMeasure(Realm realm, long[] array) {
-            int count = array.length;
-            Long[] data = new Long[count];
-            for (int i = 0; i < count; i++) {
-                data[i] = array[i];
-            }
-
-            RealmResults<Measure> items = realm.where(Measure.class).in("_id", data)
-                    .findAll();
-            // отправляем данные с измерениями
-            Call<ResponseBody> call = SManApiFactory.getMeasureService().sendData(realm.copyFromRealm(items));
-            try {
-                Response response = call.execute();
-                ResponseBody result = (ResponseBody) response.body();
-                if (response.isSuccessful()) {
-                    JSONObject jObj = new JSONObject(result.string());
-                    // при сохранении данных на сервере произошли ошибки
-                    // данный флаг пока не используем
-//                        boolean success = (boolean) jObj.get("success");
-                    JSONArray jData = (JSONArray) jObj.get("data");
-                    // устанавливаем флаг отправки записям которые подтвердил сервер
-                    realm.beginTransaction();
-                    for (int idx = 0; idx < jData.length(); idx++) {
-                        JSONObject item = (JSONObject) jData.get(idx);
-                        Long _id = Long.parseLong(item.get("_id").toString());
-                        String uuid = item.get("uuid").toString();
-                        Measure sentItem = realm.where(Measure.class).equalTo("uuid", uuid).findFirst();
-                        // устанавливаем id присвоенное сервером
-                        sentItem.set_id(_id);
-                        sentItem.setSent(true);
-                    }
-
-                    realm.commitTransaction();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "Ошибка при отправке измерений.");
-            }
-        }
-
         void sendMessage(Realm realm, long[] array) {
             int count = array.length;
             Long[] data = new Long[count];
@@ -316,7 +268,6 @@ public class SendDataService extends Service {
             Log.d(TAG, "Запускаем поток отправки данных на сервер...");
             isRunning = true;
             alarmIds = intent.getLongArrayExtra(ALARM_IDS);
-            measureIds = intent.getLongArrayExtra(MEASURE_IDS);
             messageIds = intent.getLongArrayExtra(MESSAGE_IDS);
             new Thread(task).start();
         }

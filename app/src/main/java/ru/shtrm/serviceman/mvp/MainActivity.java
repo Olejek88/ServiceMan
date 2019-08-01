@@ -38,14 +38,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.app.App;
 import ru.shtrm.serviceman.data.AuthorizedUser;
-import ru.shtrm.serviceman.data.GpsTrack;
 import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
@@ -68,7 +63,6 @@ import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.mvp.task.TaskFragment;
 import ru.shtrm.serviceman.mvp.task.TaskPresenter;
 import ru.shtrm.serviceman.retrofit.TokenTask;
-import ru.shtrm.serviceman.retrofit.serial.PhotoSerializer;
 import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.service.GetReferenceService;
 import ru.shtrm.serviceman.service.SendDataService;
@@ -85,7 +79,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOGIN = 0;
     private static final String KEY_NAV_ITEM = "CURRENT_NAV_ITEM";
-    public static Toolbar toolbar;
     // контейнер для пути по которому сохраним файл фотографии, полученой через штатное приложение телефона
     public static String photoFile;
     // контейнер для хранения uuid модели к которой привяжем фотографию
@@ -93,6 +86,7 @@ public class MainActivity extends AppCompatActivity
     // контейнер для хранения uuid модели фотографии
     public static String photoUuid;
     public boolean isLogged = false;
+    private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private UserDetailFragment profileFragment;
@@ -136,6 +130,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.toolbar);
 
         // запускаем сервис который будет в фоне заниматься получением/отправкой данных
         Intent intent = new Intent(this, ForegroundService.class);
@@ -186,39 +182,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case PHOTO_RESULT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Gson gson = new GsonBuilder()
-                            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                            .registerTypeAdapter(Photo.class, new PhotoSerializer())
-                            .serializeNulls()
-                            .create();
-
-                    GpsTrackLocalDataSource gpsTrackRepository = GpsTrackLocalDataSource.getInstance();
-                    GpsTrack lastPosition = gpsTrackRepository.getLastTrack();
-
-                    Photo photo = new Photo();
-                    photo.setUuid(photoUuid);
-                    photo.setObjectUuid(objectUuid);
-                    if (lastPosition != null) {
-                        photo.setLatitude(lastPosition.getLatitude());
-                        photo.setLongitude(lastPosition.getLongitude());
-                    } else {
-                        photo.setLatitude(App.defaultLatitude);
-                        photo.setLongitude(App.defaultLongitude);
-                    }
-
-                    UpdateQuery query = new UpdateQuery(
-                            Photo.class.getSimpleName(),
-                            photoUuid,
-                            null,
-                            gson.toJson(photo),
-                            photo.getChangedAt()
-                    );
-                    query.set_id(UpdateQuery.getLastId() + 1);
-                    Realm realm = Realm.getDefaultInstance();
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(query);
-                    realm.commitTransaction();
-                    realm.close();
+                    Photo.savePhoto(photoUuid, objectUuid);
                 }
                 break;
             default:

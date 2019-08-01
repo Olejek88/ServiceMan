@@ -1,5 +1,8 @@
 package ru.shtrm.serviceman.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -7,6 +10,7 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import ru.shtrm.serviceman.retrofit.serial.MeasureSerializer;
 
 public class Measure extends RealmObject implements ISend, IBaseRecord {
     @Index
@@ -43,6 +47,18 @@ public class Measure extends RealmObject implements ISend, IBaseRecord {
 
         realm.close();
         return lastId.longValue();
+    }
+
+    public static void addToUpdateQuery(Measure measure) {
+        // отправляем в очередь на отправку
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .registerTypeAdapter(Measure.class, new MeasureSerializer())
+                .serializeNulls()
+                .create();
+
+        UpdateQuery query = new UpdateQuery(Measure.class.getSimpleName(), null, null, gson.toJson(measure), measure.getChangedAt());
+        UpdateQuery.addToQuery(query);
     }
 
     public double getValue() {

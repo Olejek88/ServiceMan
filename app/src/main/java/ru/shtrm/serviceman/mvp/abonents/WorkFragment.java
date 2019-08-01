@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,16 +38,13 @@ import ru.shtrm.serviceman.util.DensityUtil;
 import ru.shtrm.serviceman.util.MainUtil;
 
 public class WorkFragment extends Fragment implements AbonentsContract.View {
-    private Activity mainActivityConnector = null;
-
+    public final static int ACTIVITY_PHOTO = 100;
     private static final int LEVEL_CITY = 0;
     private static final int LEVEL_STREET = 1;
     private static final int LEVEL_HOUSE = 2;
     private static final int LEVEL_FLAT = 3;
     private static final int LEVEL_INFO = 4;
-
-    public final static int ACTIVITY_PHOTO = 100;
-
+    private Activity mainActivityConnector = null;
     private FloatingActionButton make_photo;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
@@ -121,8 +119,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(intent, ACTIVITY_PHOTO);
                     }
-                }
-                catch (IOException e1) {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -239,12 +236,20 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
             flatAdapter.updateData(list);
             recyclerView.setAdapter(flatAdapter);
         }
+
         if (currentHouse.getHouseType() != null) {
-            if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280)
-                MainActivity.toolbar.setSubtitle(currentHouse.getHouseType().getTitle());
-            else
-                MainActivity.toolbar.setTitle(currentHouse.getHouseType().getTitle());
+            String text = currentHouse.getHouseType().getTitle();
+            Activity activity = getActivity();
+            if (activity != null) {
+                Toolbar toolbar = ((MainActivity) activity).getToolbar();
+                if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280) {
+                    toolbar.setSubtitle(text);
+                } else {
+                    toolbar.setTitle(text);
+                }
+            }
         }
+
         mObjectDate.setText("фото не было");
 
         //mTitle.setText(currentHouse.getFullTitle());
@@ -277,7 +282,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
             recyclerView.setAdapter(streetAdapter);
         }
         if (streetAdapter.getItemCount() > 0) {
-            if (list.get(0)!=null && list.get(0).getCity()!=null) {
+            if (list.get(0) != null && list.get(0).getCity() != null) {
                 //mTitle.setText(list.get(0).getCity().getTitle());
                 mObjectTitle.setText(list.get(0).getCity().getTitle());
                 mObjectDate.setVisibility(View.GONE);
@@ -316,8 +321,13 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
         //mTitle.setText(currentStreet.getFullTitle());
         mObjectTitle.setText(currentStreet.getFullTitle());
         //mImage.setImageResource(R.drawable.street);
-        MainActivity.toolbar.setTitle(currentStreet.getTitle());
-        MainActivity.toolbar.setSubtitle(null);
+        Activity activity = getActivity();
+        if (activity != null) {
+            Toolbar toolbar = ((MainActivity) activity).getToolbar();
+            toolbar.setTitle(currentStreet.getTitle());
+            toolbar.setSubtitle(null);
+        }
+
         make_photo.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }
@@ -334,7 +344,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void onActionAddAttribute() {

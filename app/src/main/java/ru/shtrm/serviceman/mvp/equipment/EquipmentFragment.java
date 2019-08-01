@@ -54,6 +54,7 @@ import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
+import ru.shtrm.serviceman.data.EquipmentType;
 import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.MeasureType;
 import ru.shtrm.serviceman.data.Task;
@@ -150,7 +151,15 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             MeasureTypeRepository measureTypeRepository = MeasureTypeRepository.getInstance(MeasureTypeLocalDataSource.getInstance());
             measureTypeSpinner.setAdapter(new MeasureTypeAdapter(measureTypeRepository.getMeasureTypes()));
 
-            FloatingActionButton measureButton = view.findViewById(R.id.add_measure);
+            FloatingActionButton measureButton = view.findViewById(R.id.enter_measure);
+            if (equipment.getEquipmentType().getUuid().equals(EquipmentType.Type.EQUIPMENT_ELECTRICITY_COUNTER) ||
+                    equipment.getEquipmentType().getUuid().equals(EquipmentType.Type.EQUIPMENT_HEAT_COUNTER) ||
+                    equipment.getEquipmentType().getUuid().equals(EquipmentType.Type.EQUIPMENT_HVS_COUNTER)) {
+                measureButton.setVisibility(View.VISIBLE);
+            } else {
+                measureButton.setVisibility(View.GONE);
+            }
+
             measureButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

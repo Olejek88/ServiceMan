@@ -9,6 +9,7 @@ import io.realm.Realm;
 import io.realm.Sort;
 import ru.shtrm.serviceman.data.Contragent;
 import ru.shtrm.serviceman.data.Equipment;
+import ru.shtrm.serviceman.data.ObjectContragent;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.WorkStatus;
@@ -43,6 +44,23 @@ public class ContragentLocalDataSource implements ContragentDataSource {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Contragent getContragentByObject(String uuid) {
+        Realm realm = Realm.getDefaultInstance();
+        ObjectContragent objectContragent = realm.where(ObjectContragent.class).
+                equalTo("object.uuid", uuid).findFirst();
+        if (objectContragent != null) {
+            Contragent contragent = realm.where(Contragent.class).
+                    equalTo("uuid", objectContragent.getContragent().getUuid()).findFirst();
+            if (contragent != null) {
+                contragent = realm.copyFromRealm(contragent);
+                realm.close();
+                return contragent;
+            }
+        }
+        return null;
     }
 
     @Override

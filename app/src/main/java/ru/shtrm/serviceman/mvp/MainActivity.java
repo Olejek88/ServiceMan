@@ -42,6 +42,7 @@ import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Photo;
+import ru.shtrm.serviceman.data.ReferenceUpdate;
 import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.HouseRepository;
@@ -149,6 +150,13 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
+/*
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.where(ReferenceUpdate.class).findAll().deleteAllFromRealm();
+        realm.commitTransaction();
+        realm.close();
+*/
 //        if (savedInstanceState != null) {
 //            isLogged = savedInstanceState.getBoolean("isLogged");
 //        } else {

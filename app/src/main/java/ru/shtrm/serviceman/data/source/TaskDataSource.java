@@ -5,6 +5,7 @@ import java.util.List;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.WorkStatus;
 
 public interface TaskDataSource {
@@ -20,6 +21,8 @@ public interface TaskDataSource {
     boolean checkAllOperationsComplete(Task task);
 
     void setTaskStatus(Task task, WorkStatus status);
+
+    void setTaskVerdict(Task task, TaskVerdict taskVerdict);
 
     void setEndDate(Task task);
 

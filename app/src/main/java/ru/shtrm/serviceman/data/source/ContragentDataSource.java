@@ -11,4 +11,6 @@ public interface ContragentDataSource {
 
     Contragent getContragent(String uuid);
 
+    Contragent getContragentByObject(String uuid);
+
 }

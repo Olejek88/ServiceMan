@@ -87,6 +87,7 @@
     <string name="task_type">Тип заявки:</string>
     <string name="task_end">Выполнена:</string>
     <string name="task_contragent">Заявитель:</string>
+    <string name="task_status">Статус:</string>
 
     <!--navigation drawer-->
     <string name="nav_profile">Профиль</string>

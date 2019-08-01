@@ -39,4 +39,9 @@ public class ContragentRepository implements ContragentDataSource {
         return localDataSource.getContragent(uuid);
     }
 
+    @Override
+    public Contragent getContragentByObject(String uuid) {
+        return localDataSource.getContragentByObject(uuid);
+    }
+
 }

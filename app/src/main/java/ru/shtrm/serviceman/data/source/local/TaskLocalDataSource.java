@@ -10,6 +10,7 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.TaskDataSource;
 
@@ -106,6 +107,21 @@ public class TaskLocalDataSource implements TaskDataSource {
             @Override
             public void execute(Realm realm) {
                 task.setWorkStatus(status);
+                task.setChangedAt(new Date());
+                realm.copyToRealmOrUpdate(task);
+            }
+        });
+        realm.close();
+    }
+
+    @Override
+    public void setTaskVerdict(final Task task, final TaskVerdict taskVerdict) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                task.setTaskVerdict(taskVerdict);
+                task.setChangedAt(new Date());
                 realm.copyToRealmOrUpdate(task);
             }
         });
@@ -120,6 +136,7 @@ public class TaskLocalDataSource implements TaskDataSource {
             public void execute(Realm realm) {
                 task.setStartDate(new Date());
                 task.setEndDate(new Date());
+                task.setChangedAt(new Date());
                 realm.copyToRealmOrUpdate(task);
             }
         });

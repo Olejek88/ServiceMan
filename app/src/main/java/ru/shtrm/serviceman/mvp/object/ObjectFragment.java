@@ -36,6 +36,7 @@ import ru.shtrm.serviceman.data.Contragent;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.ZhObject;
+import ru.shtrm.serviceman.data.source.local.ContragentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
 import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
@@ -128,7 +129,7 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
             if (flatUuid != null)
                 object = ObjectLocalDataSource.getInstance().getObject(flatUuid);
             if (object != null) {
-                //contragent = ContragentLocalDataSource.getInstance().getResidentByFlat(flat.getUuid());
+                contragent = ContragentLocalDataSource.getInstance().getContragentByObject(flatUuid);
                 initViews(view);
                 presenter.loadEquipmentsByObject(object);
                 setHasOptionsMenu(true);
@@ -159,11 +160,8 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
 
     @Override
     public void initViews(View view) {
-        //FloatingActionButton add_comment = view.findViewById(R.id.add_comment);
-
         TextView textViewAbonent = view.findViewById(R.id.textViewFlatAbonent);
         TextView textViewFlat = view.findViewById(R.id.textViewFlat);
-        //GridView gridView = view.findViewById(R.id.gridview);
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
 
         textViewStatus = view.findViewById(R.id.textViewStatus);
@@ -173,10 +171,10 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
             mToolbar.setTitle(object.getFullTitle());
             if (object.getHouse().getHouseType() != null) {
                 if (DensityUtil.getScreenHeight(mainActivityConnector) > 1280) {
-                    mToolbar.setSubtitle(object.getHouse().getHouseType().getTitle());
+                    mToolbar.setSubtitle(object.getObjectType().getTitle());
                 } else {
                     mToolbar.setTitle(object.getFullTitle().concat(" - ").
-                            concat(object.getHouse().getHouseType().getTitle()));
+                            concat(object.getObjectType().getTitle()));
                 }
             }
         }

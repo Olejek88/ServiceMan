@@ -20,10 +20,12 @@ import java.util.Locale;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.TaskRepository;
 import ru.shtrm.serviceman.data.source.local.RequestLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.TaskVerdictLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.WorkStatusLocalDataSource;
 
 import static ru.shtrm.serviceman.mvp.task.TaskInfoActivity.TASK_UUID;
@@ -96,6 +98,7 @@ public class TaskInfoFragment extends Fragment {
         AppCompatTextView textComment;
         AppCompatTextView textContragent;
         AppCompatTextView textType;
+        AppCompatTextView textStatus;
 
         LinearLayout endLayout;
         LinearLayout typeLayout;
@@ -115,6 +118,7 @@ public class TaskInfoFragment extends Fragment {
         textComment = view.findViewById(R.id.textComment);
         textContragent = view.findViewById(R.id.textContragent);
         textType = view.findViewById(R.id.textType);
+        textStatus = view.findViewById(R.id.textStatus);
 
         endLayout = view.findViewById(R.id.endLayout);
         typeLayout = view.findViewById(R.id.type);
@@ -124,6 +128,8 @@ public class TaskInfoFragment extends Fragment {
         FloatingActionButton fab_complete = view.findViewById(R.id.task_complete);
 
         if (this.task!=null) {
+            TaskLocalDataSource.getInstance().setTaskStatus(task, task.getWorkStatus());
+
             textViewTaskTitle.setText(task.getTaskTemplate().getTitle());
             textViewTaskAddress.setText(task.getEquipment().getObject().getFullTitle());
             textDeadlineDate.setText(task.getDeadlineDate().toString());
@@ -158,13 +164,16 @@ public class TaskInfoFragment extends Fragment {
 
             textAuthor.setText(task.getAuthor().getName());
             textComment.setText(task.getComment());
-            if (task.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE)) {
+            if (task.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE) ||
+                    task.getWorkStatus().getUuid().equals(WorkStatus.Status.UN_COMPLETE)) {
                 fab_complete.setVisibility(View.GONE);
                 fab_cancel.setVisibility(View.GONE);
             } else {
                 fab_complete.setVisibility(View.VISIBLE);
                 fab_cancel.setVisibility(View.VISIBLE);
             }
+
+            textStatus.setText(task.getWorkStatus().getTitle());
         }
 
         fab_complete.setOnClickListener(new View.OnClickListener() {
@@ -180,6 +189,11 @@ public class TaskInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO set Verdict & status
+                WorkStatus ws = WorkStatusLocalDataSource.getInstance().getWorkStatusByUuid(WorkStatus.Status.UN_COMPLETE);
+                TaskLocalDataSource.getInstance().setTaskStatus(task, ws);
+                TaskLocalDataSource.getInstance().setEndDate(task);
+                TaskVerdict tv = TaskVerdictLocalDataSource.getInstance().getTaskVerdict(TaskVerdict.Verdict.INSPECTED);
+                TaskLocalDataSource.getInstance().setTaskVerdict(task, tv);
                 mainActivityConnector.onBackPressed();
             }
         });

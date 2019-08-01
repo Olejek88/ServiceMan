@@ -44,7 +44,6 @@ public class EquipmentTypeLocalDataSource implements EquipmentTypeDataSource {
                 .equalTo("uuid", uuid)
                 .equalTo("organization.uuid", AuthorizedUser.getInstance().getUser().getUuid())
                 .findFirst();
-        list = realm.copyFromRealm(list);
         if (list != null) {
             list = realm.copyFromRealm(list);
         }

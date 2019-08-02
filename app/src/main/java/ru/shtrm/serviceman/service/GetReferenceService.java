@@ -10,6 +10,8 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -313,6 +315,29 @@ public class GetReferenceService extends Service {
             list = Documentation.getData();
             if (list != null) {
                 if (list.size() > 0) {
+                    for (RealmModel item : list) {
+                        Documentation file = (Documentation) item;
+
+                        File docFile = file.getLocalPath(getApplicationContext());
+                        if (docFile == null) {
+                            continue;
+                        }
+
+                        String url = file.getUrl();
+                        Call<ResponseBody> call1 = SManApiFactory.getDocumentationService().getFile(url);
+                        try {
+                            retrofit2.Response<ResponseBody> r = call1.execute();
+                            ResponseBody trueImgBody = r.body();
+                            if (trueImgBody != null) {
+                                FileOutputStream fos = new FileOutputStream(docFile);
+                                fos.write(trueImgBody.bytes());
+                                fos.close();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     saveData(list, updateDate, realm);
                 }
             } else {

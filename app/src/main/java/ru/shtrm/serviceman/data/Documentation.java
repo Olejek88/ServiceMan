@@ -1,5 +1,9 @@
 package ru.shtrm.serviceman.data;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +11,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import retrofit2.Call;
 import retrofit2.Response;
+import ru.shtrm.serviceman.retrofit.Api;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 
 public class Documentation extends RealmObject implements IBaseRecord {
@@ -116,5 +121,28 @@ public class Documentation extends RealmObject implements IBaseRecord {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+    public File getLocalPath(Context context) {
+        File docFile = new File(context.getExternalFilesDir("Documents"), path);
+        if (!docFile.getParentFile().exists()) {
+            if (!docFile.getParentFile().mkdirs()) {
+                Log.e("Documentation", "can`t create \"" + docFile.getAbsolutePath() + "\" path.");
+                return null;
+            }
+        }
+
+        return docFile;
+    }
+
+    public String getUrl() {
+        String root = "";
+        if (equipment != null) {
+            root = equipment.getUuid();
+        } else if (equipmentType != null) {
+            root = equipmentType.getUuid();
+        }
+
+        return Api.API_URL + "/storage/" + organization.get_id() + "/files/doc/" + root + "/" + path;
     }
 }

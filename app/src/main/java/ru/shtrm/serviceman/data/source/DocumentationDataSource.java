@@ -10,4 +10,5 @@ public interface DocumentationDataSource {
 
     Documentation getDocumentation(String uuid);
 
+    Documentation getDocumentationByEquipment(String uuid);
 }

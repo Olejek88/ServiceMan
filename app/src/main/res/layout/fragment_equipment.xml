@@ -151,6 +151,17 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/documentation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/mdtp_light_gray"
+                android:gravity="start|center_vertical"
+                android:padding="5dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="14sp" />
+
             <LinearLayout
                 android:id="@+id/equipment_measure"
                 android:layout_width="match_parent"

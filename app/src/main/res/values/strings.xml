@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="service_app_name">Сервисмен</string>
+    <string name="service_app_name">ТОИРУС::ЖКХ</string>
 
     <!--activities-->
     <string name="activity_add_alarm">Добавить проблему</string>

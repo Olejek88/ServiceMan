@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -15,6 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -52,6 +55,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Defect;
+import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.EquipmentStatus;
 import ru.shtrm.serviceman.data.EquipmentType;
@@ -62,6 +66,7 @@ import ru.shtrm.serviceman.data.source.EquipmentRepository;
 import ru.shtrm.serviceman.data.source.GpsTrackRepository;
 import ru.shtrm.serviceman.data.source.MeasureRepository;
 import ru.shtrm.serviceman.data.source.MeasureTypeRepository;
+import ru.shtrm.serviceman.data.source.local.DocumentationLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.EquipmentLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.MeasureLocalDataSource;
@@ -90,6 +95,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
     private TaskAdapter taskAdapter;
+    private Documentation documentation;
+    private Documentation documentationType;
 
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
@@ -237,143 +244,28 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             presenter.unsubscribe();
     }
 
-    @Override
-    public void initViews(View view) {
-        //final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
-        final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);
-        final TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
-        final LinearLayout equipment_measure = view.findViewById(R.id.equipment_measure);
-        final LinearLayout equipment_measure_input = view.findViewById(R.id.equipment_measure_input);
+    public static Intent showDocument(File file, Context context) {
+        MimeTypeMap mt = MimeTypeMap.getSingleton();
+        String[] patternList = file.getName().split("\\.");
+        String extension = patternList[patternList.length - 1];
 
-        FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
-        FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
-
-        myCalendar = Calendar.getInstance();
-        textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
-        textInputMeasure = view.findViewById(R.id.addMeasureValue);
-        circleImageView = view.findViewById(R.id.imageViewEquipment);
-        emptyView = view.findViewById(R.id.emptyView);
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        initChart(view);
-
-        SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
-        if (equipment.getTestDate() != null)
-            textViewDate.setText(sDf.format(equipment.getTestDate()));
-        else
-            textViewDate.setText(R.string.no_last_time);
-
-        Toolbar mToolbar = view.findViewById(R.id.toolbar);
-
-        if (mToolbar != null) {
-            if (equipment.getEquipmentType() != null) {
-                mToolbar.setTitle(equipment.getEquipmentType().getTitle());
+        if (mt.hasExtension(extension)) {
+            String mimeType = mt.getMimeTypeFromExtension(extension);
+            Intent target = new Intent(Intent.ACTION_VIEW);
+            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            target.setType(mimeType);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                target.setData(Uri.fromFile(file));
             } else {
-                mToolbar.setTitle(R.string.equipment_unknown);
+                Uri doc = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                target.setData(doc);
+                target.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
 
-            mToolbar.setLogo(R.drawable.baseline_settings_white_24dp);
-            mToolbar.setTitleMarginStart(1);
+            return Intent.createChooser(target, "Open File");
+        } else {
+            return null;
         }
-
-//        if (photoEquipment != null) {
-//            textViewPhotoDate.setText(sDf.format(photoEquipment.getCreatedAt()));
-//            // TODO заменить на ?
-//            circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-//                    MainUtil.getPicturesDirectory(mainActivityConnector),
-//                    photoEquipment.getUuid().concat(".jpg")));
-//        } else {
-        circleImageView.setImageResource(R.drawable.zhkh);
-            textViewPhotoDate.setText("нет фото");
-//        }
-
-        final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
-        EquipmentStatusListAdapter adapter = new EquipmentStatusListAdapter(mainActivityConnector,
-                R.layout.simple_spinner_item, equipmentStatuses, R.color.colorPrimaryDark);
-        statusSpinner.setAdapter(adapter);
-
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
-                textViewDate.setText(sdf.format(myCalendar.getTime()));
-            }
-        };
-
-        textViewDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(mainActivityConnector, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
-        enter_measure.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (firstMeasureClick) {
-                    // если есть данные - вводим их, иначе сохраняем оборудование
-                    if (textInputMeasure.getText().toString().length() > 0) {
-                        Spinner measureTypeSpinner = v.getRootView().findViewById(R.id.measure_type);
-                        createMeasure(textInputMeasure.getText().toString(), (MeasureType) measureTypeSpinner.getSelectedItem());
-                        firstMeasureClick = false;
-                        textInputMeasure.setText("");
-                        equipment_measure.setVisibility(View.GONE);
-                        equipment_measure_input.setVisibility(View.GONE);
-                        textInputMeasure.clearFocus();
-                    } else {
-                        Toast.makeText(mainActivityConnector,
-                                "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
-                                Toast.LENGTH_LONG).show();
-                        mChart.refreshDrawableState();
-                    }
-                    // не дать возможность вводить по несколько раз
-/*
-                    storeEditEquipment(editTextSerial.getText().toString(),
-                            (EquipmentStatus) statusSpinner.getSelectedItem());
-*/
-//                    if (getActivity() != null) {
-//                        getActivity().finishActivity(0);
-//                        getActivity().onBackPressed();
-//                    }
-                } else {
-                    firstMeasureClick = true;
-                    equipment_measure.setVisibility(View.VISIBLE);
-                    equipment_measure_input.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        make_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    photoUuid = java.util.UUID.randomUUID().toString();
-                    photoFile = MainUtil.createImageFile(photoUuid, mainActivityConnector);
-                    if (photoFile != null) {
-                        Uri photoURI = FileProvider.getUriForFile(mainActivityConnector,
-                                "ru.shtrm.serviceman.fileprovider",
-                                photoFile);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(intent, ACTIVITY_PHOTO);
-                    }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-
-        // TODO когда определимся с фото здесь будет грид с последними фото
-        //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
-        //gridView.invalidateViews();
-        //gridView.setVisibility(View.INVISIBLE);
-        //listView = view.findViewById(R.id.list_view);
-        //fillListViewOperations(equipment);
     }
 
     void createMeasure(String value, MeasureType measureType) {
@@ -493,8 +385,164 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         }
     }
 
+    @Override
+    public void initViews(View view) {
+        //final AppCompatEditText editTextSerial = view.findViewById(R.id.editTextEquipmentSerial);
+        final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);
+        final TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
+        final LinearLayout equipment_measure = view.findViewById(R.id.equipment_measure);
+        final LinearLayout equipment_measure_input = view.findViewById(R.id.equipment_measure_input);
+        final AppCompatTextView documentation_text = view.findViewById(R.id.documentation);
+
+        FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
+        FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
+
+        myCalendar = Calendar.getInstance();
+        textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
+        textInputMeasure = view.findViewById(R.id.addMeasureValue);
+        circleImageView = view.findViewById(R.id.imageViewEquipment);
+        emptyView = view.findViewById(R.id.emptyView);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        initChart(view);
+
+        SimpleDateFormat sDf = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
+        if (equipment.getTestDate() != null)
+            textViewDate.setText(sDf.format(equipment.getTestDate()));
+        else
+            textViewDate.setText(R.string.no_last_time);
+
+        Toolbar mToolbar = view.findViewById(R.id.toolbar);
+
+        if (mToolbar != null) {
+            if (equipment.getEquipmentType() != null) {
+                mToolbar.setTitle(equipment.getEquipmentType().getTitle());
+            } else {
+                mToolbar.setTitle(R.string.equipment_unknown);
+            }
+
+            mToolbar.setLogo(R.drawable.baseline_settings_white_24dp);
+            mToolbar.setTitleMarginStart(1);
+        }
+
+        documentation = DocumentationLocalDataSource.getInstance().getDocumentationByEquipment(equipment.getUuid());
+
+        if (documentation != null) {
+            documentation_text.setVisibility(View.VISIBLE);
+            documentation_text.setText(documentation.getTitle());
+            documentation_text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final File file = new File(mainActivityConnector.getExternalFilesDir(documentation.getPath()),
+                            documentation.getPath());
+                    if (file.exists()) {
+                        Intent intent = showDocument(file, mainActivityConnector.getApplicationContext());
+                        if (intent != null) {
+                            startActivity(intent);
+                        }
+                    }
+                }
+            });
+        } else {
+            documentation_text.setVisibility(View.GONE);
+        }
+
+        circleImageView.setImageResource(R.drawable.zhkh);
+        textViewPhotoDate.setText("нет фото");
+//        }
+
+        final List<EquipmentStatus> equipmentStatuses = presenter.loadEquipmentStatuses();
+        EquipmentStatusListAdapter adapter = new EquipmentStatusListAdapter(mainActivityConnector,
+                R.layout.simple_spinner_item, equipmentStatuses, R.color.colorPrimaryDark);
+        statusSpinner.setAdapter(adapter);
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
+                textViewDate.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+
+        textViewDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(mainActivityConnector, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        enter_measure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (firstMeasureClick) {
+                    // если есть данные - вводим их, иначе сохраняем оборудование
+                    if (textInputMeasure.getText().toString().length() > 0) {
+                        Spinner measureTypeSpinner = v.getRootView().findViewById(R.id.measure_type);
+                        createMeasure(textInputMeasure.getText().toString(), (MeasureType) measureTypeSpinner.getSelectedItem());
+                        firstMeasureClick = false;
+                        textInputMeasure.setText("");
+                        equipment_measure.setVisibility(View.GONE);
+                        equipment_measure_input.setVisibility(View.GONE);
+                        textInputMeasure.clearFocus();
+                    } else {
+                        Toast.makeText(mainActivityConnector,
+                                "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
+                                Toast.LENGTH_LONG).show();
+                        mChart.refreshDrawableState();
+                    }
+                    // не дать возможность вводить по несколько раз
+/*
+                    storeEditEquipment(editTextSerial.getText().toString(),
+                            (EquipmentStatus) statusSpinner.getSelectedItem());
+*/
+//                    if (getActivity() != null) {
+//                        getActivity().finishActivity(0);
+//                        getActivity().onBackPressed();
+//                    }
+                } else {
+                    firstMeasureClick = true;
+                    equipment_measure.setVisibility(View.VISIBLE);
+                    equipment_measure_input.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        make_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    photoUuid = java.util.UUID.randomUUID().toString();
+                    photoFile = MainUtil.createImageFile(photoUuid, mainActivityConnector);
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(mainActivityConnector,
+                                "ru.shtrm.serviceman.fileprovider",
+                                photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, ACTIVITY_PHOTO);
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        // TODO когда определимся с фото здесь будет грид с последними фото
+        //gridView.setAdapter(new ImageGridAdapter(mainActivityConnector, photoFlat));
+        //gridView.invalidateViews();
+        //gridView.setVisibility(View.INVISIBLE);
+        //listView = view.findViewById(R.id.list_view);
+        //fillListViewOperations(equipment);
+    }
+
     /**
      * Show flats with recycler view.
+     *
      * @param list The data.
      */
     @Override
@@ -518,22 +566,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         showEmptyView(list.isEmpty());
     }
 
-    /**
-     * Hide a RecyclerView when it is empty and show a empty view
-     * to tell the uses that there is no data currently.
-     * @param toShow Hide or show.
-     */
-    @Override
-    public void showEmptyView(boolean toShow) {
-        if (toShow) {
-            recyclerView.setVisibility(View.INVISIBLE);
-            emptyView.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyView.setVisibility(View.INVISIBLE);
-        }
-    }
-
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
         private ArrayList<String> mValues;
 
@@ -544,6 +576,23 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             return mValues.get((int) value);
+        }
+    }
+
+    /**
+     * Hide a RecyclerView when it is empty and show a empty view
+     * to tell the uses that there is no data currently.
+     *
+     * @param toShow Hide or show.
+     */
+    @Override
+    public void showEmptyView(boolean toShow) {
+        if (toShow) {
+            recyclerView.setVisibility(View.INVISIBLE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.INVISIBLE);
         }
     }
 }

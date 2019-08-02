@@ -1,5 +1,6 @@
 package ru.shtrm.serviceman.mvp.task;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,8 +13,9 @@ import android.widget.Toast;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.data.Photo;
 import ru.shtrm.serviceman.data.Task;
-import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.rfid.RfidDialog;
 import ru.shtrm.serviceman.rfid.RfidDriverBase;
 import ru.shtrm.serviceman.rfid.Tag;
@@ -23,6 +25,12 @@ import static ru.shtrm.serviceman.rfid.RfidDialog.TAG;
 
 public class TaskInfoActivity extends AppCompatActivity {
     public static final String TASK_UUID = "TASK_UUID";
+    // контейнер для пути по которому сохраним файл фотографии, полученой через штатное приложение телефона
+    public static String photoFile;
+    // контейнер для хранения uuid модели к которой привяжем фотографию
+    public static String objectUuid;
+    // контейнер для хранения uuid модели фотографии
+    public static String photoUuid;
     private TaskInfoFragment fragment;
     private RfidDialog rfidDialog;
 
@@ -144,4 +152,19 @@ public class TaskInfoActivity extends AppCompatActivity {
             getSupportFragmentManager().putFragment(outState, "TaskInfoFragment", fragment);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case MainActivity.PHOTO_RESULT:
+                if (resultCode == Activity.RESULT_OK) {
+                    Photo.savePhoto(photoUuid, objectUuid);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 }

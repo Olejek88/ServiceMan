@@ -20,6 +20,7 @@ import java.util.Locale;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.TaskRepository;
@@ -182,6 +183,20 @@ public class TaskInfoFragment extends Fragment {
                 WorkStatus ws = WorkStatusLocalDataSource.getInstance().getWorkStatusByUuid(WorkStatus.Status.COMPLETE);
                 TaskLocalDataSource.getInstance().setTaskStatus(task, ws);
                 TaskLocalDataSource.getInstance().setEndDate(task);
+                UpdateQuery query = new UpdateQuery();
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setModelClass(Task.class.getSimpleName());
+                query.setModelUuid(task.getUuid());
+                query.setAttribute("workStatusUuid");
+                query.setValue(task.getWorkStatus().getUuid());
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setAttribute("endDate");
+                query.setValue(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(task.getEndDate()));
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
                 mainActivityConnector.onBackPressed();
             }
         });

@@ -1,15 +1,19 @@
 package ru.shtrm.serviceman.mvp.task;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.mvp.equipment.EquipmentActivity;
 import ru.shtrm.serviceman.rfid.RfidDialog;
 import ru.shtrm.serviceman.rfid.RfidDriverBase;
 import ru.shtrm.serviceman.rfid.Tag;
@@ -41,7 +45,19 @@ public class TaskInfoActivity extends AppCompatActivity {
             Realm realm = Realm.getDefaultInstance();
             Task task = realm.where(Task.class).equalTo("uuid", task_id).findFirst();
             if (task != null) {
-                runRfidDialog(task.getEquipment().getTag(), task_id);
+                Tag tag = new Tag();
+                tag.loadData(task.getEquipment().getTag());
+                String expectedTagId = tag.getTagId();
+
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+                boolean ask_tags = sp.getBoolean("without_tags_mode", true);
+                if (!ask_tags && expectedTagId != null && !expectedTagId.equals("")) {
+                    runRfidDialog(expectedTagId, task_id);
+                } else {
+                    Intent intent = new Intent(this, EquipmentActivity.class);
+                    intent.putExtra("EQUIPMENT_UUID", task.getEquipment().getUuid());
+                    startActivity(intent);
+                }
             }
             realm.close();
         }

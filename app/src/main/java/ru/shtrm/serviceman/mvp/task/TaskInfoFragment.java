@@ -12,18 +12,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
+import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
 import ru.shtrm.serviceman.data.UpdateQuery;
+import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.TaskRepository;
+import ru.shtrm.serviceman.data.source.local.RequestLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
+import ru.shtrm.serviceman.data.source.local.TaskVerdictLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.WorkStatusLocalDataSource;
 
 import static ru.shtrm.serviceman.mvp.task.TaskInfoActivity.TASK_UUID;
@@ -32,9 +35,6 @@ public class TaskInfoFragment extends Fragment {
     private Activity mainActivityConnector = null;
     private TaskRepository taskRepository;
     private Task task;
-
-    private FloatingActionButton fab_complete;
-    private FloatingActionButton fab_cancel;
 
     public TaskInfoFragment() {}
 
@@ -97,7 +97,13 @@ public class TaskInfoFragment extends Fragment {
         AppCompatTextView textEndDate;
         AppCompatTextView textDeadlineDate;
         AppCompatTextView textComment;
+        AppCompatTextView textContragent;
+        AppCompatTextView textType;
+        AppCompatTextView textStatus;
+
         LinearLayout endLayout;
+        LinearLayout typeLayout;
+        LinearLayout contragentLayout;
 
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
         if (mToolbar !=null) {
@@ -111,12 +117,20 @@ public class TaskInfoFragment extends Fragment {
         textEndDate = view.findViewById(R.id.textEndDate);
         textDeadlineDate = view.findViewById(R.id.textDeadlineDate);
         textComment = view.findViewById(R.id.textComment);
-        endLayout = view.findViewById(R.id.endLayout);
+        textContragent = view.findViewById(R.id.textContragent);
+        textType = view.findViewById(R.id.textType);
+        textStatus = view.findViewById(R.id.textStatus);
 
-        fab_cancel = view.findViewById(R.id.task_verdict);
-        fab_complete = view.findViewById(R.id.task_complete);
+        endLayout = view.findViewById(R.id.endLayout);
+        typeLayout = view.findViewById(R.id.type);
+        contragentLayout = view.findViewById(R.id.contragent);
+
+        FloatingActionButton fab_cancel = view.findViewById(R.id.task_verdict);
+        FloatingActionButton fab_complete = view.findViewById(R.id.task_complete);
 
         if (this.task!=null) {
+            TaskLocalDataSource.getInstance().setTaskStatus(task, task.getWorkStatus());
+
             textViewTaskTitle.setText(task.getTaskTemplate().getTitle());
             textViewTaskAddress.setText(task.getEquipment().getObject().getFullTitle());
             textDeadlineDate.setText(task.getDeadlineDate().toString());
@@ -138,8 +152,29 @@ public class TaskInfoFragment extends Fragment {
             }
             else endLayout.setVisibility(View.GONE);
 
+            Request request = RequestLocalDataSource.getInstance().getRequestByTask(task.getUuid());
+            if (request != null) {
+                typeLayout.setVisibility(View.VISIBLE);
+                contragentLayout.setVisibility(View.VISIBLE);
+                textContragent.setText(request.getContragent().getTitle().concat(" [").concat(request.getContragent().getPhone()).concat("]"));
+                textType.setText(request.getRequestType().getTitle());
+            } else {
+                typeLayout.setVisibility(View.GONE);
+                contragentLayout.setVisibility(View.GONE);
+            }
+
             textAuthor.setText(task.getAuthor().getName());
             textComment.setText(task.getComment());
+            if (task.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE) ||
+                    task.getWorkStatus().getUuid().equals(WorkStatus.Status.UN_COMPLETE)) {
+                fab_complete.setVisibility(View.GONE);
+                fab_cancel.setVisibility(View.GONE);
+            } else {
+                fab_complete.setVisibility(View.VISIBLE);
+                fab_cancel.setVisibility(View.VISIBLE);
+            }
+
+            textStatus.setText(task.getWorkStatus().getTitle());
         }
 
         fab_complete.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +197,13 @@ public class TaskInfoFragment extends Fragment {
                 query.setValue(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(task.getEndDate()));
                 query.setChangedAt(task.getChangedAt());
                 UpdateQuery.addToQuery(query);
+
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setAttribute("startDate");
+                query.setValue(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(task.getStartDate()));
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
                 mainActivityConnector.onBackPressed();
             }
         });
@@ -169,20 +211,36 @@ public class TaskInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO set Verdict & status
+                WorkStatus ws = WorkStatusLocalDataSource.getInstance().getWorkStatusByUuid(WorkStatus.Status.UN_COMPLETE);
+                TaskLocalDataSource.getInstance().setTaskStatus(task, ws);
+                TaskLocalDataSource.getInstance().setEndDate(task);
+                TaskVerdict tv = TaskVerdictLocalDataSource.getInstance().getTaskVerdict(TaskVerdict.Verdict.INSPECTED);
+                TaskLocalDataSource.getInstance().setTaskVerdict(task, tv);
+
+                UpdateQuery query = new UpdateQuery();
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setModelClass(Task.class.getSimpleName());
+                query.setModelUuid(task.getUuid());
+                query.setAttribute("workStatusUuid");
+                query.setValue(task.getWorkStatus().getUuid());
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setAttribute("endDate");
+                query.setValue(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(task.getEndDate()));
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setAttribute("taskVerdictUuid");
+                query.setValue(task.getTaskVerdict().getUuid());
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
                 mainActivityConnector.onBackPressed();
             }
         });
-    }
-
-    /**
-     * Hide the input method like soft keyboard, etc... when they are active.
-     */
-    private void hideImm() {
-        InputMethodManager imm = (InputMethodManager)
-                mainActivityConnector.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm!=null && imm.isActive()) {
-            //imm.hideSoftInputFromWindow(fab.getWindowToken(), 0);
-        }
     }
 
     @Override

@@ -16,13 +16,9 @@
             android:icon="@drawable/baseline_add_location_black_24dp"
             android:title="@string/nav_map" />
         <item
-            android:id="@+id/nav_checkin"
-            android:icon="@drawable/baseline_photo_library_black_24dp"
-            android:title="@string/nav_checkin" />
-        <item
-            android:id="@+id/nav_alarms"
-            android:icon="@drawable/baseline_notification_important_black_24dp"
-            android:title="@string/nav_alarms" />
+            android:id="@+id/nav_tasks"
+            android:icon="@drawable/hammer_black_48"
+            android:title="@string/nav_tasks" />
 
     </group>
 

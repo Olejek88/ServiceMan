@@ -63,8 +63,9 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         pvh.textTaskDate.setText("Назначен: "+sDate+" | "+"Срок: "+eDate);
         if (item.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE))
             pvh.statusTaskImage.setImageResource(R.drawable.circle_green);
-        else
+        else if (item.getWorkStatus().getUuid().equals(WorkStatus.Status.UN_COMPLETE))
             pvh.statusTaskImage.setImageResource(R.drawable.circle_red);
+        else pvh.statusTaskImage.setImageResource(R.drawable.circle_gray);
         pvh.textTaskTitle.setTypeface(null, Typeface.BOLD);
     }
 

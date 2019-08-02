@@ -42,11 +42,14 @@ import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Photo;
+import ru.shtrm.serviceman.data.ReferenceUpdate;
+import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.ObjectRepository;
 import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.TaskRepository;
+import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
@@ -147,6 +150,13 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
+/*
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.where(ReferenceUpdate.class).findAll().deleteAllFromRealm();
+        realm.commitTransaction();
+        realm.close();
+*/
 //        if (savedInstanceState != null) {
 //            isLogged = savedInstanceState.getBoolean("isLogged");
 //        } else {
@@ -268,13 +278,10 @@ public class MainActivity extends AppCompatActivity
                 showMapFragment();
                 break;
             case R.id.nav_users:
-                showMessagesFragment();
+                showObjectsFragment();
                 break;
             case R.id.nav_tasks:
                 showTasksFragment();
-                break;
-            case R.id.nav_checkin:
-                showObjectsFragment();
                 break;
             case R.id.nav_switch_theme:
                 drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -514,7 +521,7 @@ public class MainActivity extends AppCompatActivity
         changeFragment(workFragment);
         toolbar.setTitle(getResources().getString(R.string.nav_checkin));
         toolbar.setSubtitle(null);
-        navigationView.setCheckedItem(R.id.nav_checkin);
+        navigationView.setCheckedItem(R.id.nav_tasks);
     }
 
     private void showMapFragment() {

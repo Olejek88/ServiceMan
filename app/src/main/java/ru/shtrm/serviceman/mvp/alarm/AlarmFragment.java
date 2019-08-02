@@ -65,13 +65,11 @@ public class AlarmFragment extends Fragment implements AlarmContract.View {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.nav_checkin:
+                    case R.id.nav_tasks:
                         break;
                     case R.id.nav_users:
                         break;
                     case R.id.nav_map:
-                        break;
-                    case R.id.nav_alarms:
                         break;
                 }
                 return true;

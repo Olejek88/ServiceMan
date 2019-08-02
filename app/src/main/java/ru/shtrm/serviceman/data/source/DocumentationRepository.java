@@ -38,4 +38,8 @@ public class DocumentationRepository implements DocumentationDataSource {
         return localDataSource.getDocumentation(uuid);
     }
 
+    @Override
+    public Documentation getDocumentationByEquipment(String uuid) {
+        return localDataSource.getDocumentationByEquipment(uuid);
+    }
 }

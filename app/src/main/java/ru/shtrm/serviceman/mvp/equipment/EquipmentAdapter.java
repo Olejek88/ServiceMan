@@ -69,7 +69,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 //            pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
 //                    MainUtil.getPicturesDirectory(context), photoEquipment.getUuid().concat(".jpg")));
 //        } else {
-            pvh.circleImageView.setImageResource(R.drawable.counter);
+        pvh.circleImageView.setImageResource(R.drawable.zhkh);
 //        }
     }
 

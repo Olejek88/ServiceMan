@@ -10,6 +10,7 @@ import io.realm.Sort;
 import ru.shtrm.serviceman.data.Equipment;
 import ru.shtrm.serviceman.data.Operation;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.WorkStatus;
 import ru.shtrm.serviceman.data.source.TaskDataSource;
 
@@ -47,36 +48,45 @@ public class TaskLocalDataSource implements TaskDataSource {
     @Override
     public List<Task> getTaskByEquipment(Equipment equipment, String  status) {
         Realm realm = Realm.getDefaultInstance();
-        if (status!=null)
-            return realm.copyFromRealm(
-                realm.where(Task.class).
-                        equalTo("equipment.uuid", equipment.getUuid()).
-                        equalTo("workStatus.uuid", status).
-                        findAllSorted("createdAt", Sort.ASCENDING));
-        else
-            return realm.copyFromRealm(
+        if (status != null) {
+            List<Task> tasks = realm.copyFromRealm(
+                    realm.where(Task.class).
+                            equalTo("equipment.uuid", equipment.getUuid()).
+                            equalTo("workStatus.uuid", status).
+                            findAllSorted("createdAt", Sort.ASCENDING));
+            realm.close();
+            return tasks;
+        } else {
+            List<Task> tasks = realm.copyFromRealm(
                     realm.where(Task.class).
                             equalTo("equipment.uuid", equipment.getUuid()).
                             findAllSorted("createdAt", Sort.ASCENDING));
+            realm.close();
+            return tasks;
+        }
     }
 
     @Override
     public List<Task> getNewTasks() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<Task> tasks = realm.copyFromRealm(
                 realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
                         equalTo("workStatus.uuid", WorkStatus.Status.NEW).
                         or().
                         equalTo("workStatus.uuid", WorkStatus.Status.IN_WORK).
                         findAllSorted("createdAt", Sort.ASCENDING));
+        realm.close();
+        return tasks;
     }
 
     @Override
     public List<Task> getTasks() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.copyFromRealm(
+        List<Task> tasks = realm.copyFromRealm(
                 realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
                         findAllSorted("changedAt", Sort.ASCENDING));
+        realm.close();
+        return tasks;
     }
 
     @Override
@@ -97,6 +107,21 @@ public class TaskLocalDataSource implements TaskDataSource {
             @Override
             public void execute(Realm realm) {
                 task.setWorkStatus(status);
+                task.setChangedAt(new Date());
+                realm.copyToRealmOrUpdate(task);
+            }
+        });
+        realm.close();
+    }
+
+    @Override
+    public void setTaskVerdict(final Task task, final TaskVerdict taskVerdict) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                task.setTaskVerdict(taskVerdict);
+                task.setChangedAt(new Date());
                 realm.copyToRealmOrUpdate(task);
             }
         });
@@ -111,6 +136,7 @@ public class TaskLocalDataSource implements TaskDataSource {
             public void execute(Realm realm) {
                 task.setStartDate(new Date());
                 task.setEndDate(new Date());
+                task.setChangedAt(new Date());
                 realm.copyToRealmOrUpdate(task);
             }
         });

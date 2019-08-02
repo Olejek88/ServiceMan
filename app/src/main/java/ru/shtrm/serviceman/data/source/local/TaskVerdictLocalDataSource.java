@@ -6,10 +6,12 @@ import java.util.List;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.data.TaskType;
+import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.source.TaskTypeDataSource;
+import ru.shtrm.serviceman.data.source.TaskVerdictDataSource;
 
 
-public class TaskVerdictLocalDataSource implements TaskTypeDataSource {
+public class TaskVerdictLocalDataSource implements TaskVerdictDataSource {
 
     @Nullable
     private static TaskVerdictLocalDataSource INSTANCE = null;
@@ -27,22 +29,21 @@ public class TaskVerdictLocalDataSource implements TaskTypeDataSource {
     }
 
     @Override
-    public List<TaskType> getTaskTypes() {
+    public List<TaskVerdict> getTaskVerdicts() {
         Realm realm = Realm.getDefaultInstance();
-        List<TaskType> list = realm.copyFromRealm(
-                realm.where(TaskType.class).findAllSorted("title"));
+        List<TaskVerdict> list = realm.copyFromRealm(
+                realm.where(TaskVerdict.class).findAllSorted("title"));
         realm.close();
         return list;
     }
 
     @Override
-    public TaskType getTaskType(String uuid) {
+    public TaskVerdict getTaskVerdict(String uuid) {
         Realm realm = Realm.getDefaultInstance();
-        TaskType list = realm.where(TaskType.class).equalTo("uuid", uuid).findFirst();
+        TaskVerdict list = realm.where(TaskVerdict.class).equalTo("uuid", uuid).findFirst();
         if (list != null) {
             list = realm.copyFromRealm(list);
         }
-
         realm.close();
         return list;
     }

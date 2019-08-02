@@ -86,6 +86,9 @@ public class BaseDeserialzer {
         Realm realm = Realm.getDefaultInstance();
         RealmObject refItem = realm.where(realmObject).equalTo(key, refUuid).findFirst();
         if (refItem == null) {
+            if (isNullable) {
+                return null;
+            }
             realm.close();
             throw new JsonParseException("Unparseable data: " + field);
         }

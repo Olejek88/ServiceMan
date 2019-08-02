@@ -46,17 +46,29 @@ public class TaskInfoActivity extends AppCompatActivity {
             Task task = realm.where(Task.class).equalTo("uuid", task_id).findFirst();
             if (task != null) {
                 Tag tag = new Tag();
-                tag.loadData(task.getEquipment().getTag());
-                String expectedTagId = tag.getTagId();
+                String expectedTagId = "";
+                if (task.getEquipment().getTag().contains(":")) {
+                    tag.loadData(task.getEquipment().getTag());
+                    expectedTagId = tag.getTagId();
+                }
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
                 boolean ask_tags = sp.getBoolean("without_tags_mode", true);
                 if (!ask_tags && expectedTagId != null && !expectedTagId.equals("")) {
                     runRfidDialog(expectedTagId, task_id);
                 } else {
-                    Intent intent = new Intent(this, EquipmentActivity.class);
-                    intent.putExtra("EQUIPMENT_UUID", task.getEquipment().getUuid());
+                    Bundle b = new Bundle();
+                    b.putString(TASK_UUID, task.getUuid());
+                    fragment.setArguments(b);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.view_pager, fragment, "TaskInfoFragment")
+                            .commit();
+                    return;
+/*
+                    Intent intent = new Intent(this, TaskInfoActivity.class);
+                    intent.putExtra("TASK_UUID", task.getUuid());
                     startActivity(intent);
+*/
                 }
             }
             realm.close();
@@ -70,6 +82,16 @@ public class TaskInfoActivity extends AppCompatActivity {
 
     private void runRfidDialog(String expectedTagId, final String uuid) {
         Tag tag = new Tag();
+        if (!expectedTagId.contains(":")) {
+            // TODO старые и ошибочные метки пока пускаем
+            Bundle b = new Bundle();
+            b.putString(TASK_UUID, uuid);
+            fragment.setArguments(b);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.view_pager, fragment, "TaskInfoFragment")
+                    .commit();
+            return;
+        }
         tag.loadData(expectedTagId);
         final String expectedTag = tag.getTagId();
 

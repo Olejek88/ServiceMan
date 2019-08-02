@@ -3,14 +3,11 @@ package ru.shtrm.serviceman.mvp.abonents;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import ru.shtrm.serviceman.R;
@@ -35,7 +31,6 @@ import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.object.ObjectActivity;
 import ru.shtrm.serviceman.util.DensityUtil;
-import ru.shtrm.serviceman.util.MainUtil;
 
 public class WorkFragment extends Fragment implements AbonentsContract.View {
     public final static int ACTIVITY_PHOTO = 100;
@@ -45,7 +40,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
     private static final int LEVEL_FLAT = 3;
     private static final int LEVEL_INFO = 4;
     private Activity mainActivityConnector = null;
-    private FloatingActionButton make_photo;
     private FloatingActionButton back;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
@@ -53,34 +47,16 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
     private ObjectAdapter flatAdapter;
     private StreetAdapter streetAdapter;
     private HouseAdapter houseAdapter;
-    private File photoFile;
-    private String photoUuid;
 
     private int currentLevel = LEVEL_CITY;
     private House currentHouse;
     private Street currentStreet;
 
-/*
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
-    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
-    private static final int ALPHA_ANIMATIONS_DURATION = 200;
-
-    private boolean mIsTheTitleVisible = false;
-    private boolean mIsTheTitleContainerVisible = true;
-
-    private LinearLayout mTitleContainer;
-    */
-    //private TextView mTitle;
-
     private TextView mObjectTitle;
     private TextView mObjectDate;
-    //private ImageView mImage;
-    //private ImageView objectIcon;
-    //private AppBarLayout mAppBarLayout;
 
     private AbonentsContract.Presenter presenter;
 
-    // As a fragment, default constructor is needed.
     public WorkFragment() {
     }
 
@@ -120,27 +96,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
             }
         });
 
-
-        make_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    photoUuid = java.util.UUID.randomUUID().toString();
-                    photoFile = MainUtil.createImageFile(photoUuid, mainActivityConnector);
-                    if (photoFile != null) {
-                        Uri photoURI = FileProvider.getUriForFile(mainActivityConnector,
-                                "ru.shtrm.serviceman.fileprovider",
-                                photoFile);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(intent, ACTIVITY_PHOTO);
-                    }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-
         //mAppBarLayout.addOnOffsetChangedListener(this);
         //startAlphaAnimation(mTitle, 0, View.INVISIBLE);
         presenter.loadStreets();
@@ -166,38 +121,12 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
      */
     @Override
     public void initViews(View view) {
-        make_photo = view.findViewById(R.id.fab_photo);
         back = view.findViewById(R.id.back);
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        //objectIcon = view.findViewById(R.id.object_icon);
-        //mTitleContainer = view.findViewById(R.id.main_linearlayout_title);
         mObjectTitle = view.findViewById(R.id.object_name);
         mObjectDate = view.findViewById(R.id.object_date);
-        //mTitle = view.findViewById(R.id.object_name);
-        //mAppBarLayout = view.findViewById(R.id.main_appbar);
-        //handleToolbarTitleVisibility(0);
-
-        make_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    photoUuid = java.util.UUID.randomUUID().toString();
-                    photoFile = MainUtil.createImageFile(photoUuid, mainActivityConnector);
-                    if (photoFile != null) {
-                        Uri photoURI = FileProvider.getUriForFile(mainActivityConnector,
-                                "ru.shtrm.serviceman.fileprovider",
-                                photoFile);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(intent, ACTIVITY_PHOTO);
-                    }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
     }
 
     /**
@@ -272,8 +201,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
         mObjectTitle.setText(currentHouse.getFullTitle());
         //MainActivity.toolbar.setSubtitle(null);
         mObjectDate.setVisibility(View.VISIBLE);
-
-        make_photo.setVisibility(View.VISIBLE);
         back.setVisibility(View.VISIBLE);
         //showEmptyView(list.isEmpty());
 
@@ -311,7 +238,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
             MainActivity.toolbar.setSubtitle(null);
         }
 */
-        make_photo.setVisibility(View.GONE);
         back.setVisibility(View.GONE);
     }
 
@@ -344,7 +270,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
             toolbar.setSubtitle(null);
         }
 
-        make_photo.setVisibility(View.GONE);
         back.setVisibility(View.VISIBLE);
     }
 
@@ -356,60 +281,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
         if (mainActivityConnector == null)
             onDestroyView();
     }
-/*
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
-        int maxScroll = appBarLayout.getTotalScrollRange();
-        float percentage = (float) Math.abs(offset) / (float) maxScroll;
-
-        handleAlphaOnTitle(percentage);
-        handleToolbarTitleVisibility(percentage);
-    }
-
-    private void handleToolbarTitleVisibility(float percentage) {
-        if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
-
-            if (!mIsTheTitleVisible) {
-                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
-                mIsTheTitleVisible = true;
-            }
-
-        } else {
-
-            if (mIsTheTitleVisible) {
-                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
-                mIsTheTitleVisible = false;
-            }
-        }
-    }
-
-    private void handleAlphaOnTitle(float percentage) {
-        if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
-            if (mIsTheTitleContainerVisible) {
-                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
-                mIsTheTitleContainerVisible = false;
-            }
-
-        } else {
-
-            if (!mIsTheTitleContainerVisible) {
-                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
-                mIsTheTitleContainerVisible = true;
-            }
-        }
-    }
-
-    public static void startAlphaAnimation(View v, long duration, int visibility) {
-        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
-                ? new AlphaAnimation(0f, 1f)
-                : new AlphaAnimation(1f, 0f);
-
-        alphaAnimation.setDuration(duration);
-        alphaAnimation.setFillAfter(true);
-        v.startAnimation(alphaAnimation);
-    }
-*/
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

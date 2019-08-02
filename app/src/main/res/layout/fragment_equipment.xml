@@ -238,19 +238,7 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:visibility="invisible"></LinearLayout>
-                <!--
-
-                                <ListView
-                                    android:id="@+id/list_view"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/task"
-                                    android:divider="#333333"
-                                    android:dividerHeight="1px"
-                                    android:scrollbarAlwaysDrawVerticalTrack="true" />
-                -->
-
+                    android:visibility="invisible" />
             </FrameLayout>
         </LinearLayout>
     </FrameLayout>
@@ -260,13 +248,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="145dp"
+        android:layout_marginBottom="75dp"
         android:layout_marginEnd="5dp"
         android:src="@android:drawable/ic_dialog_alert"
         app:backgroundTint="@color/red"
         app:fabSize="normal"
         app:layout_anchorGravity="right" />
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/make_photo"
@@ -284,7 +271,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="75dp"
+        android:layout_marginBottom="145dp"
         android:layout_marginEnd="5dp"
         android:src="@drawable/ic_done_white_24dp"
         app:backgroundTint="@color/colorPrimary"

@@ -65,6 +65,7 @@
     <string name="equipment_unknown">Неизвестный тип</string>
     <string name="task_archive">Выполненные задачи</string>
     <string name="task">Задачи</string>
+    <string name="documentation">Документация</string>
     <string name="operation_title">%1s [%2s]</string>
 
     <!--menu-->

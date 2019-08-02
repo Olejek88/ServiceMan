@@ -156,7 +156,7 @@ public class TaskInfoFragment extends Fragment {
             if (request != null) {
                 typeLayout.setVisibility(View.VISIBLE);
                 contragentLayout.setVisibility(View.VISIBLE);
-                textContragent.setText(request.getContragent().getTitle());
+                textContragent.setText(request.getContragent().getTitle().concat(" [").concat(request.getContragent().getPhone()).concat("]"));
                 textType.setText(request.getRequestType().getTitle());
             } else {
                 typeLayout.setVisibility(View.GONE);
@@ -197,6 +197,13 @@ public class TaskInfoFragment extends Fragment {
                 query.setValue(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(task.getEndDate()));
                 query.setChangedAt(task.getChangedAt());
                 UpdateQuery.addToQuery(query);
+
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setAttribute("startDate");
+                query.setValue(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(task.getStartDate()));
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
                 mainActivityConnector.onBackPressed();
             }
         });
@@ -209,6 +216,28 @@ public class TaskInfoFragment extends Fragment {
                 TaskLocalDataSource.getInstance().setEndDate(task);
                 TaskVerdict tv = TaskVerdictLocalDataSource.getInstance().getTaskVerdict(TaskVerdict.Verdict.INSPECTED);
                 TaskLocalDataSource.getInstance().setTaskVerdict(task, tv);
+
+                UpdateQuery query = new UpdateQuery();
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setModelClass(Task.class.getSimpleName());
+                query.setModelUuid(task.getUuid());
+                query.setAttribute("workStatusUuid");
+                query.setValue(task.getWorkStatus().getUuid());
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setAttribute("endDate");
+                query.setValue(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(task.getEndDate()));
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
+                query.set_id(UpdateQuery.getLastId() + 1);
+                query.setAttribute("taskVerdictUuid");
+                query.setValue(task.getTaskVerdict().getUuid());
+                query.setChangedAt(task.getChangedAt());
+                UpdateQuery.addToQuery(query);
+
                 mainActivityConnector.onBackPressed();
             }
         });

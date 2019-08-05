@@ -84,7 +84,7 @@ public class TaskLocalDataSource implements TaskDataSource {
         Realm realm = Realm.getDefaultInstance();
         List<Task> tasks = realm.copyFromRealm(
                 realm.where(Task.class)./*equalTo("equipment.uuid", equipment.getUuid()).*/
-                        findAllSorted("changedAt", Sort.ASCENDING));
+                        findAllSorted("createdAt", Sort.ASCENDING));
         realm.close();
         return tasks;
     }

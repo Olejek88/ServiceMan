@@ -6,4 +6,11 @@
     <external-path
         name="my_images"
         path="Android/data/ru.shtrm.serviceman/files/Pictures/" />
+    <files-path
+        name="docs"
+        path="Documents/" />
+    <external-path
+        name="docs"
+        path="Android/data/ru.shtrm.serviceman/files/Documents/" />
+
 </paths>

@@ -3,10 +3,9 @@ package ru.shtrm.serviceman.mvp.task;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -31,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.Request;
@@ -132,6 +130,7 @@ public class TaskInfoFragment extends Fragment {
         AppCompatTextView textContragent;
         AppCompatTextView textType;
         AppCompatTextView textStatus;
+        AppCompatTextView textVerdict;
         final AppCompatTextView documentation_text = view.findViewById(R.id.documentation);
 
         LinearLayout endLayout;
@@ -154,6 +153,7 @@ public class TaskInfoFragment extends Fragment {
         textContragent = view.findViewById(R.id.textContragent);
         textType = view.findViewById(R.id.textType);
         textStatus = view.findViewById(R.id.textStatus);
+        textVerdict = view.findViewById(R.id.textVerdict);
 
         endLayout = view.findViewById(R.id.endLayout);
         typeLayout = view.findViewById(R.id.type);
@@ -247,6 +247,10 @@ public class TaskInfoFragment extends Fragment {
                 fab_cancel.setVisibility(View.VISIBLE);
             }
 
+            if (task.getTaskVerdict() != null) {
+                textVerdict.setText(task.getTaskVerdict().getTitle());
+            }
+
             textStatus.setText(task.getWorkStatus().getTitle());
 
             documentation = DocumentationLocalDataSource.getInstance().getDocumentationByEquipment(task.getEquipment().getUuid());
@@ -257,9 +261,8 @@ public class TaskInfoFragment extends Fragment {
                 documentation_text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final File file = new File(mainActivityConnector.getExternalFilesDir(documentation.getPath()),
-                                documentation.getPath());
-                        if (file.exists()) {
+                        final File file = documentation.getLocalPath(mainActivityConnector.getApplicationContext());
+                        if (file != null && file.exists()) {
                             Intent intent = EquipmentFragment.showDocument(file, mainActivityConnector.getApplicationContext());
                             if (intent != null) {
                                 startActivity(intent);

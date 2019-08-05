@@ -257,7 +257,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 target.setData(Uri.fromFile(file));
             } else {
-                Uri doc = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                Uri doc = FileProvider.getUriForFile(context,
+                        "ru.shtrm.serviceman.fileprovider",
+                        file);
                 target.setData(doc);
                 target.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
@@ -435,9 +437,8 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             documentation_text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final File file = new File(mainActivityConnector.getExternalFilesDir(documentation.getPath()),
-                            documentation.getPath());
-                    if (file.exists()) {
+                    final File file = documentation.getLocalPath(mainActivityConnector.getApplicationContext());
+                    if (file != null && file.exists()) {
                         Intent intent = showDocument(file, mainActivityConnector.getApplicationContext());
                         if (intent != null) {
                             startActivity(intent);

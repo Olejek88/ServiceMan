@@ -90,7 +90,6 @@ public class Defect extends RealmObject implements ISend, IBaseRecord {
     }
 
     public static void showDialogNewDefect(final Context context, LayoutInflater inflater, ViewGroup parent, final Equipment equipment) {
-
         View addDefectLayout;
         Spinner defectTypeSpinner;
         DefectTypeLocalDataSource defectTypeLocalDataSource = DefectTypeLocalDataSource.getInstance();

@@ -94,9 +94,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private EquipmentRepository equipmentRepository;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
+
     private TaskAdapter taskAdapter;
     private Documentation documentation;
-    private Documentation documentationType;
 
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
@@ -257,7 +257,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 target.setData(Uri.fromFile(file));
             } else {
-                Uri doc = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                Uri doc = FileProvider.getUriForFile(context,
+                        "ru.shtrm.serviceman.fileprovider",
+                        file);
                 target.setData(doc);
                 target.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
@@ -404,6 +406,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayout docs = view.findViewById(R.id.docs);
 
         initChart(view);
 
@@ -429,14 +432,13 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         documentation = DocumentationLocalDataSource.getInstance().getDocumentationByEquipment(equipment.getUuid());
 
         if (documentation != null) {
-            documentation_text.setVisibility(View.VISIBLE);
+            docs.setVisibility(View.VISIBLE);
             documentation_text.setText(documentation.getTitle());
             documentation_text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final File file = new File(mainActivityConnector.getExternalFilesDir(documentation.getPath()),
-                            documentation.getPath());
-                    if (file.exists()) {
+                    final File file = documentation.getLocalPath(mainActivityConnector.getApplicationContext());
+                    if (file != null && file.exists()) {
                         Intent intent = showDocument(file, mainActivityConnector.getApplicationContext());
                         if (intent != null) {
                             startActivity(intent);
@@ -445,7 +447,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 }
             });
         } else {
-            documentation_text.setVisibility(View.GONE);
+            docs.setVisibility(View.GONE);
         }
 
         circleImageView.setImageResource(R.drawable.zhkh);

@@ -153,6 +153,13 @@ public class MainActivity extends AppCompatActivity
 /*
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
+        realm.where(UpdateQuery.class).findAll().deleteAllFromRealm();
+        realm.commitTransaction();
+        realm.close();
+*/
+/*
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
         realm.where(ReferenceUpdate.class).findAll().deleteAllFromRealm();
         realm.commitTransaction();
         realm.close();

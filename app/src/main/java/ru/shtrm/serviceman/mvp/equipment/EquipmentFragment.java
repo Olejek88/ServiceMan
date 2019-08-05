@@ -94,9 +94,9 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
     private EquipmentRepository equipmentRepository;
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
+
     private TaskAdapter taskAdapter;
     private Documentation documentation;
-    private Documentation documentationType;
 
     private CircleImageView circleImageView;
     private TextInputEditText textInputMeasure;
@@ -404,6 +404,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         emptyView = view.findViewById(R.id.emptyView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayout docs = view.findViewById(R.id.docs);
 
         initChart(view);
 
@@ -429,7 +430,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         documentation = DocumentationLocalDataSource.getInstance().getDocumentationByEquipment(equipment.getUuid());
 
         if (documentation != null) {
-            documentation_text.setVisibility(View.VISIBLE);
+            docs.setVisibility(View.VISIBLE);
             documentation_text.setText(documentation.getTitle());
             documentation_text.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -445,7 +446,7 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 }
             });
         } else {
-            documentation_text.setVisibility(View.GONE);
+            docs.setVisibility(View.GONE);
         }
 
         circleImageView.setImageResource(R.drawable.zhkh);

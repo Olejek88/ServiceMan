@@ -151,16 +151,30 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/documentation"
+            <LinearLayout
+                android:id="@+id/docs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/mdtp_light_gray"
-                android:gravity="start|center_vertical"
-                android:padding="5dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="14sp" />
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="24dp"
+                    android:layout_height="25dp"
+                    android:layout_marginStart="@dimen/activity_margin_half"
+                    android:background="@drawable/baseline_save_black_24dp" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/documentation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/mdtp_white"
+                    android:gravity="start|center_vertical"
+                    android:padding="5dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/equipment_measure"

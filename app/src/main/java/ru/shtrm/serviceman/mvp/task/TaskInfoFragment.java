@@ -31,9 +31,12 @@ import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Defect;
-import ru.shtrm.serviceman.data.Documentation;
+import ru.shtrm.serviceman.data.Measure;
 import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
+import ru.shtrm.serviceman.data.TaskType;
+import ru.shtrm.serviceman.data.UpdateQuery;
+import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.TaskVerdict;
 import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.WorkStatus;
@@ -200,6 +203,17 @@ public class TaskInfoFragment extends Fragment {
                 }
             }
         });
+
+        if (task.getTaskTemplate().getTaskType().getUuid().equals(TaskType.Type.TASK_TYPE_MEASURE)
+                && task.getWorkStatus().getUuid().equals(WorkStatus.Status.IN_WORK)) {
+            view.findViewById(R.id.get_measure_button).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Measure.showDialogEnterMeasure(getContext(), getLayoutInflater(), container, task.getEquipment());
+                }
+            });
+            view.findViewById(R.id.measure_button_layout).setVisibility(View.VISIBLE);
+        }
 
         if (this.task!=null) {
             TaskLocalDataSource.getInstance().setTaskStatus(task, task.getWorkStatus());

@@ -3,15 +3,21 @@ package ru.shtrm.serviceman.mvp.task;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +32,7 @@ import java.util.Locale;
 
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.Defect;
+import ru.shtrm.serviceman.data.Defect;
 import ru.shtrm.serviceman.data.Documentation;
 import ru.shtrm.serviceman.data.Request;
 import ru.shtrm.serviceman.data.Task;
@@ -39,9 +46,11 @@ import ru.shtrm.serviceman.data.source.local.RequestLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.TaskVerdictLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.WorkStatusLocalDataSource;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.mvp.equipment.EquipmentFragment;
 
 import static ru.shtrm.serviceman.mvp.task.TaskInfoActivity.TASK_UUID;
+import static ru.shtrm.serviceman.rfid.RfidDialog.TAG;
 
 public class TaskInfoFragment extends Fragment {
     private Activity mainActivityConnector = null;
@@ -63,7 +72,7 @@ public class TaskInfoFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_task_info, container, false);
         if (getFragmentManager() != null)
@@ -86,9 +95,17 @@ public class TaskInfoFragment extends Fragment {
                 return view;
             }
         }
+
+        if (getFragmentManager() != null)
+            getFragmentManager().popBackStack();
+
+        if (task == null) {
+            if (getFragmentManager() != null) {
+                getFragmentManager().popBackStack();
+            }
+        }
         initViews(view, container);
 
-        setHasOptionsMenu(true);
         return view;
     }
 
@@ -144,7 +161,45 @@ public class TaskInfoFragment extends Fragment {
 
         FloatingActionButton fab_cancel = view.findViewById(R.id.task_verdict);
         FloatingActionButton fab_complete = view.findViewById(R.id.task_complete);
-        FloatingActionButton defectButton = view.findViewById(R.id.add_new_defect);
+        view.findViewById(R.id.add_new_defect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Defect.showDialogNewDefect(getContext(), getLayoutInflater(), container, task.getEquipment());
+            }
+        });
+        view.findViewById(R.id.add_photo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String photoUuid = java.util.UUID.randomUUID().toString().toUpperCase();
+                Context context = getContext();
+                Activity activity = getActivity();
+                if (context == null || activity == null) {
+                    return;
+                }
+
+                File photoFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), photoUuid + ".jpg");
+                if (!photoFile.getParentFile().exists()) {
+                    if (!photoFile.getParentFile().mkdirs()) {
+                        Log.e(TAG, "can`t create \"" + photoFile.getAbsolutePath() + "\" path.");
+                        return;
+                    }
+                }
+
+                // запоминаем данные необходимые для создания записи Photo в onActivityResult
+                TaskInfoActivity.photoFile = photoFile.getAbsolutePath();
+                TaskInfoActivity.objectUuid = task.getUuid();
+                TaskInfoActivity.photoUuid = photoUuid;
+
+                try {
+                    Uri photoURI = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", photoFile);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    activity.startActivityForResult(intent, MainActivity.PHOTO_RESULT);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         if (this.task!=null) {
             TaskLocalDataSource.getInstance().setTaskStatus(task, task.getWorkStatus());
@@ -215,13 +270,6 @@ public class TaskInfoFragment extends Fragment {
             } else {
                 docs.setVisibility(View.GONE);
             }
-
-            defectButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Defect.showDialogNewDefect(getContext(), getLayoutInflater(), container, task.getEquipment());
-                }
-            });
         }
 
         fab_complete.setOnClickListener(new View.OnClickListener() {

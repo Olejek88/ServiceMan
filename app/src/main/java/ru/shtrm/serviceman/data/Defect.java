@@ -33,7 +33,6 @@ import ru.shtrm.serviceman.data.source.local.DefectTypeLocalDataSource;
 import ru.shtrm.serviceman.mvp.defecttype.DefectTypeAdapter;
 import ru.shtrm.serviceman.retrofit.SManApiFactory;
 import ru.shtrm.serviceman.retrofit.serial.DefectSerializer;
-import ru.shtrm.serviceman.retrofit.serial.PhotoSerializer;
 
 public class Defect extends RealmObject implements ISend, IBaseRecord {
     @Index

@@ -65,40 +65,6 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             pvh.textViewImage.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16.0f);
             pvh.textViewImage.setText(item.getNumber().substring(0, 2));
         } else pvh.textViewImage.setText(item.getNumber().substring(0, 1));
-
-/*
-        Measure measure = MeasureLocalDataSource.getInstance().getLastMeasureByHouse(item);
-        long diffInMillies = 1000000000;
-        if (measure!=null) {
-            if (measure.getDate() != null)
-                diffInMillies = (new Date()).getTime() - measure.getDate().getTime();
-        }
-        TimeUnit timeUnit = TimeUnit.DAYS;
-        long days = timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
-        if (days>4) {
-            pvh.layoutObjectItem.setBackgroundColor(context.getResources().
-                    getColor(R.color.colorRowFailed));
-            if (item.getHouseStatus() != null) {
-                pvh.textViewStatus.setText(item.getHouseStatus().getTitle());
-            } else
-                pvh.textViewStatus.setText("Нет статуса");
-        }
-        else {
-            pvh.layoutObjectItem.setBackgroundColor(context.getResources().
-                    getColor(R.color.colorPrimary));
-            pvh.textViewStatus.setText("Показания сняты");
-        }
-*/
-
-        // TODO выдергивать последнее фото из фото?
-/*
-        if (item.getUser()!=null)
-            if (item.getUser().getAvatar()!=null)
-                pvh.circleImageView.setImageBitmap(MainUtil.getBitmapByPath(
-                    MainUtil.getPicturesDirectory(context),item.getUser().getAvatar()));
-            else
-                pvh.textViewAvatar.setText(item.getTitle().substring(0,1));
-*/
     }
 
     @Override
@@ -116,9 +82,9 @@ public class HouseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * @param list The data.
      */
     public void updateData(@NonNull List<House> list) {
-        //this.list.clear();
-        //this.list.addAll(list);
-        //notifyDataSetChanged();
+        this.list.clear();
+        this.list.addAll(list);
+        notifyDataSetChanged();
     }
 
     /**

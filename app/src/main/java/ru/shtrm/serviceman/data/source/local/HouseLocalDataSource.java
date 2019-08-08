@@ -41,7 +41,7 @@ public class HouseLocalDataSource implements HouseDataSource {
         Realm realm = Realm.getDefaultInstance();
         List<House> list = realm.where(House.class).equalTo("street.uuid", street.getUuid())
                 .findAllSorted("number");
-        realm.copyFromRealm(list);
+        list = realm.copyFromRealm(list);
         realm.close();
         return list;
     }

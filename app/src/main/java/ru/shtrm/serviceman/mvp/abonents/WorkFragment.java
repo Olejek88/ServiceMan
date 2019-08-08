@@ -44,7 +44,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
     private RecyclerView recyclerView;
     private LinearLayout emptyView;
 
-    private ObjectAdapter flatAdapter;
+    private ObjectAdapter objectAdapter;
     private StreetAdapter streetAdapter;
     private HouseAdapter houseAdapter;
 
@@ -165,9 +165,9 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
     public void showObjects(@NonNull final List<ZhObject> list) {
         currentLevel = LEVEL_FLAT;
         setHasOptionsMenu(true);
-        if (flatAdapter == null) {
-            flatAdapter = new ObjectAdapter(mainActivityConnector, list);
-            flatAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
+        if (objectAdapter == null) {
+            objectAdapter = new ObjectAdapter(mainActivityConnector, list);
+            objectAdapter.setOnRecyclerViewItemClickListener(new OnRecyclerViewItemClickListener() {
                 @Override
                 public void OnItemClick(View v, int position) {
                     ZhObject flat = list.get(position);
@@ -176,10 +176,10 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
                     startActivity(intent);
                 }
             });
-            recyclerView.setAdapter(flatAdapter);
+            recyclerView.setAdapter(objectAdapter);
         } else {
-            flatAdapter.updateData(list);
-            recyclerView.setAdapter(flatAdapter);
+            objectAdapter.updateData(list);
+            recyclerView.setAdapter(objectAdapter);
         }
 
         if (currentHouse.getHouseType() != null) {
@@ -254,7 +254,6 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
                     presenter.loadObjects(house);
                 }
             });
-            recyclerView.setAdapter(houseAdapter);
             mObjectDate.setVisibility(View.GONE);
         } else {
             houseAdapter.updateData(list);

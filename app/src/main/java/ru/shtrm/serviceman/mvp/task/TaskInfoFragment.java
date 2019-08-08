@@ -255,7 +255,7 @@ public class TaskInfoFragment extends Fragment {
             if (task.getWorkStatus().getUuid().equals(WorkStatus.Status.COMPLETE) ||
                     task.getWorkStatus().getUuid().equals(WorkStatus.Status.UN_COMPLETE)) {
                 fab_complete.setVisibility(View.GONE);
-                fab_cancel.setVisibility(View.GONE);
+                fab_cancel.setVisibility(View.VISIBLE);
             } else {
                 fab_complete.setVisibility(View.VISIBLE);
                 fab_cancel.setVisibility(View.VISIBLE);

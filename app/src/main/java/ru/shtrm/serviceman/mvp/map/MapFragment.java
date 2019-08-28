@@ -50,6 +50,7 @@ import static android.content.Context.LOCATION_SERVICE;
 public class MapFragment extends Fragment implements MapContract.View {
     private static final String TAG = MapFragment.class.getSimpleName();
     ArrayList<OverlayItem> aOverlayItemArray;
+    ItemizedIconOverlay<OverlayItem> houseItemizedIconOverlay;
     ItemizedIconOverlay<OverlayItem> positionItemizedIconOverlay;
     private Activity mainActivityConnector = null;
     private RecyclerView recyclerView;
@@ -147,6 +148,14 @@ public class MapFragment extends Fragment implements MapContract.View {
         mScaleBarOverlay.setScaleBarOffset(200, 10);
         mapView.getOverlays().add(mScaleBarOverlay);
 
+        // инициализируем слой для "подсвечивания" домов в которые ткнули пальцем
+        Context context = getContext();
+        if (context != null) {
+            houseItemizedIconOverlay = new ItemizedIconOverlay<>(getContext(), new ArrayList<OverlayItem>() {
+            }, null);
+            mapView.getOverlays().add(houseItemizedIconOverlay);
+        }
+
         view.setFocusableInTouchMode(true);
         view.requestFocus();
     }
@@ -184,6 +193,10 @@ public class MapFragment extends Fragment implements MapContract.View {
                     House house = list.get(position);
                     if (house != null) {
                         GeoPoint point = new GeoPoint(house.getLatitude(), house.getLongitude());
+                        OverlayItem houseItem = new OverlayItem("We are here", "WAH",
+                                point);
+                        houseItemizedIconOverlay.removeAllItems();
+                        houseItemizedIconOverlay.addItem(houseItem);
                         mapView.getController().animateTo(point);
                     }
                 }
@@ -277,6 +290,7 @@ public class MapFragment extends Fragment implements MapContract.View {
 
     private class TaskOverlayItem extends OverlayItem {
         public Task task;
+
         TaskOverlayItem(String a, String b, GeoPoint p) {
             super(a, b, p);
         }

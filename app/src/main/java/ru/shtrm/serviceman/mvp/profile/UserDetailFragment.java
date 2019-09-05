@@ -2,6 +2,8 @@ package ru.shtrm.serviceman.mvp.profile;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -68,9 +70,20 @@ public class UserDetailFragment extends Fragment
     public void initViews(View view) {
         TextView textViewName = view.findViewById(R.id.profile_name);
         TextView textViewContact = view.findViewById(R.id.profile_contact);
-        if (this.user!=null) {
-            textViewName.setText(this.user.getName());
-            textViewContact.setText(this.user.getContact());
+        if (user != null) {
+            textViewName.setText(user.getName());
+            textViewContact.setText(user.getContact());
+            if (user.getContact() != null) {
+                textViewContact.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + user.getContact()));
+                        startActivity(intent);
+                    }
+                });
+            }
+
         }
     }
 

@@ -73,6 +73,7 @@ import ru.shtrm.serviceman.util.SettingsUtil;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static final int LOGIN_EXIT = 667;
     public static final int PHOTO_RESULT = 666;
     private static final int REQUEST_WRITE_STORAGE = 2;
     private static final int REQUEST_FINE_LOCATION = 3;
@@ -134,10 +135,6 @@ public class MainActivity extends AppCompatActivity
 
         toolbar = findViewById(R.id.toolbar);
 
-        // запускаем сервис который будет в фоне заниматься получением/отправкой данных
-        Intent intent = new Intent(this, ForegroundService.class);
-        startService(intent);
-
         if (PreferenceManager.getDefaultSharedPreferences(this).
                 getBoolean("navigation_bar_tint", true)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -149,6 +146,10 @@ public class MainActivity extends AppCompatActivity
         if (!initDB()) {
             finish();
         }
+
+        // запускаем сервис который будет в фоне заниматься получением/отправкой данных
+        Intent intent = new Intent(this, ForegroundService.class);
+        startService(intent);
 
 /*
         Realm realm = Realm.getDefaultInstance();
@@ -193,7 +194,12 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case LOGIN:
-                isLogged = resultCode == RESULT_OK;
+                if (resultCode == LOGIN_EXIT) {
+                    finish();
+                } else {
+                    isLogged = resultCode == RESULT_OK;
+                }
+
                 break;
             case PHOTO_RESULT:
                 if (resultCode == Activity.RESULT_OK) {

@@ -34,7 +34,11 @@ public class RfidDriverDummy extends RfidDriverBase {
     @Override
     public void readMultiplyTagId(final String[] tagIds) {
         // всегда "считываем" ид меток
-        sHandler.obtainMessage(RESULT_RFID_SUCCESS, new String[]{""}).sendToTarget();
+        String[] returnTags = new String[tagIds.length];
+        for (int i = 0; i < tagIds.length; i++) {
+            returnTags[i] = "0000" + tagIds[i];
+        }
+        sHandler.obtainMessage(RESULT_RFID_SUCCESS, returnTags).sendToTarget();
     }
 
     @Override

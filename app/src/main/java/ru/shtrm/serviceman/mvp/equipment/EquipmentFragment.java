@@ -25,10 +25,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -132,6 +134,32 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         listView.requestLayout();
     }
 
+    public static Intent showDocument(File file, Context context) {
+        MimeTypeMap mt = MimeTypeMap.getSingleton();
+        String[] patternList = file.getName().split("\\.");
+        String extension = patternList[patternList.length - 1];
+
+        if (mt.hasExtension(extension)) {
+            String mimeType = mt.getMimeTypeFromExtension(extension);
+            Intent target = new Intent(Intent.ACTION_VIEW);
+            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            target.setType(mimeType);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                target.setData(Uri.fromFile(file));
+            } else {
+                Uri doc = FileProvider.getUriForFile(context,
+                        "ru.shtrm.serviceman.fileprovider",
+                        file);
+                target.setData(doc);
+                target.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+
+            return Intent.createChooser(target, "Open File");
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,18 +195,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
                 measureButton.setVisibility(View.GONE);
             }
 
-            measureButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    View view = v.getRootView().findViewById(R.id.equipment_measure_input);
-                    if (view.isShown()) {
-                        view.setVisibility(View.GONE);
-                        view.refreshDrawableState();
-                    } else {
-                        view.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
             FloatingActionButton defectButton = view.findViewById(R.id.add_new_defect);
             defectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -242,32 +258,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         super.onPause();
         if (presenter != null)
             presenter.unsubscribe();
-    }
-
-    public static Intent showDocument(File file, Context context) {
-        MimeTypeMap mt = MimeTypeMap.getSingleton();
-        String[] patternList = file.getName().split("\\.");
-        String extension = patternList[patternList.length - 1];
-
-        if (mt.hasExtension(extension)) {
-            String mimeType = mt.getMimeTypeFromExtension(extension);
-            Intent target = new Intent(Intent.ACTION_VIEW);
-            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-            target.setType(mimeType);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                target.setData(Uri.fromFile(file));
-            } else {
-                Uri doc = FileProvider.getUriForFile(context,
-                        "ru.shtrm.serviceman.fileprovider",
-                        file);
-                target.setData(doc);
-                target.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            }
-
-            return Intent.createChooser(target, "Open File");
-        } else {
-            return null;
-        }
     }
 
     void createMeasure(String value, MeasureType measureType) {
@@ -393,11 +383,31 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         final Spinner statusSpinner = view.findViewById(R.id.spinnerEquipmentStatus);
         final TextView textViewDate = view.findViewById(R.id.textViewEquipmentDate);
         final LinearLayout equipment_measure = view.findViewById(R.id.equipment_measure);
-        final LinearLayout equipment_measure_input = view.findViewById(R.id.equipment_measure_input);
+        final RelativeLayout equipment_measure_input = view.findViewById(R.id.equipment_measure_input);
         final AppCompatTextView documentation_text = view.findViewById(R.id.documentation);
 
         FloatingActionButton enter_measure = view.findViewById(R.id.enter_measure);
         FloatingActionButton make_photo = view.findViewById(R.id.make_photo);
+        Button saveMeasure = view.findViewById(R.id.enter_button);
+        saveMeasure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (textInputMeasure.getText().toString().length() > 0) {
+                    Spinner measureTypeSpinner = v.getRootView().findViewById(R.id.measure_type);
+                    createMeasure(textInputMeasure.getText().toString(), (MeasureType) measureTypeSpinner.getSelectedItem());
+                    firstMeasureClick = false;
+                    textInputMeasure.setText("");
+                    equipment_measure.setVisibility(View.GONE);
+                    equipment_measure_input.setVisibility(View.GONE);
+                    textInputMeasure.clearFocus();
+                } else {
+                    Toast.makeText(mainActivityConnector,
+                            "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
+                            Toast.LENGTH_LONG).show();
+                    mChart.refreshDrawableState();
+                }
+            }
+        });
 
         myCalendar = Calendar.getInstance();
         textViewPhotoDate = view.findViewById(R.id.textViewPhotoDate);
@@ -482,21 +492,24 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
             @Override
             public void onClick(View v) {
                 if (firstMeasureClick) {
+                    firstMeasureClick = false;
+                    equipment_measure.setVisibility(View.GONE);
+                    equipment_measure_input.setVisibility(View.GONE);
                     // если есть данные - вводим их, иначе сохраняем оборудование
-                    if (textInputMeasure.getText().toString().length() > 0) {
-                        Spinner measureTypeSpinner = v.getRootView().findViewById(R.id.measure_type);
-                        createMeasure(textInputMeasure.getText().toString(), (MeasureType) measureTypeSpinner.getSelectedItem());
-                        firstMeasureClick = false;
-                        textInputMeasure.setText("");
-                        equipment_measure.setVisibility(View.GONE);
-                        equipment_measure_input.setVisibility(View.GONE);
-                        textInputMeasure.clearFocus();
-                    } else {
-                        Toast.makeText(mainActivityConnector,
-                                "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
-                                Toast.LENGTH_LONG).show();
-                        mChart.refreshDrawableState();
-                    }
+//                    if (textInputMeasure.getText().toString().length() > 0) {
+//                        Spinner measureTypeSpinner = v.getRootView().findViewById(R.id.measure_type);
+//                        createMeasure(textInputMeasure.getText().toString(), (MeasureType) measureTypeSpinner.getSelectedItem());
+//                        firstMeasureClick = false;
+//                        textInputMeasure.setText("");
+//                        equipment_measure.setVisibility(View.GONE);
+//                        equipment_measure_input.setVisibility(View.GONE);
+//                        textInputMeasure.clearFocus();
+//                    } else {
+//                        Toast.makeText(mainActivityConnector,
+//                                "Значение не добавлено. Или вы его не ввели или не добавили разделитель (.).",
+//                                Toast.LENGTH_LONG).show();
+//                        mChart.refreshDrawableState();
+//                    }
                     // не дать возможность вводить по несколько раз
 /*
                     storeEditEquipment(editTextSerial.getText().toString(),
@@ -568,19 +581,6 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         showEmptyView(list.isEmpty());
     }
 
-    public class MyXAxisValueFormatter implements IAxisValueFormatter {
-        private ArrayList<String> mValues;
-
-        MyXAxisValueFormatter(ArrayList<String> values) {
-            this.mValues = values;
-        }
-
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            return mValues.get((int) value);
-        }
-    }
-
     /**
      * Hide a RecyclerView when it is empty and show a empty view
      * to tell the uses that there is no data currently.
@@ -595,6 +595,19 @@ public class EquipmentFragment extends Fragment implements EquipmentContract.Vie
         } else {
             recyclerView.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public class MyXAxisValueFormatter implements IAxisValueFormatter {
+        private ArrayList<String> mValues;
+
+        MyXAxisValueFormatter(ArrayList<String> values) {
+            this.mValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return mValues.get((int) value);
         }
     }
 }

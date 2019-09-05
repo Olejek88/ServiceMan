@@ -16,7 +16,6 @@ public class HouseType extends RealmObject {
     @PrimaryKey
     private long _id;
     private String uuid;
-    private Organization organization;
     private String gisId;
     private String title;
     private Date createdAt;
@@ -76,14 +75,6 @@ public class HouseType extends RealmObject {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
     }
 
     public String getGisId() {

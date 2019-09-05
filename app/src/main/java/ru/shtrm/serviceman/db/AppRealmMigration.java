@@ -36,6 +36,7 @@ import ru.shtrm.serviceman.db.migration.Migration22;
 import ru.shtrm.serviceman.db.migration.Migration23;
 import ru.shtrm.serviceman.db.migration.Migration24;
 import ru.shtrm.serviceman.db.migration.Migration25;
+import ru.shtrm.serviceman.db.migration.Migration26;
 import ru.shtrm.serviceman.db.migration.Migration3;
 import ru.shtrm.serviceman.db.migration.Migration4;
 import ru.shtrm.serviceman.db.migration.Migration5;
@@ -188,6 +189,11 @@ class AppRealmMigration implements RealmMigration {
 
         if (oldVersion == 24) {
             new Migration25().migration(realm);
+            oldVersion++;
+        }
+
+        if (oldVersion == 25) {
+            new Migration26().migration(realm);
             oldVersion++;
         }
 

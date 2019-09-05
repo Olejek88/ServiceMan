@@ -14,6 +14,7 @@ public class RequestType extends RealmObject {
     @PrimaryKey
     private long _id;
     private String uuid;
+    private Organization organization;
     private String title;
     private TaskTemplate taskTemplate;
     private Date createdAt;
@@ -81,6 +82,14 @@ public class RequestType extends RealmObject {
 
     public void setTaskTemplate(TaskTemplate taskTemplate) {
         this.taskTemplate = taskTemplate;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     public class Type {

@@ -99,6 +99,7 @@
     <string name="nav_alarms">Аварии</string>
     <string name="nav_switch_theme">Режим день/ночь</string>
     <string name="nav_settings">Настройки</string>
+    <string name="nav_update_app">Обновление приложения</string>
     <string name="nav_about">О сервисе</string>
     <string name="nav_objects">Объекты</string>
     <string name="nav_tasks">Задачи</string>

@@ -2,8 +2,10 @@ package ru.shtrm.serviceman.mvp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -13,6 +15,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -37,6 +40,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 
 import io.realm.Realm;
 import ru.shtrm.serviceman.R;
@@ -63,11 +68,13 @@ import ru.shtrm.serviceman.mvp.profile.UserDetailFragment;
 import ru.shtrm.serviceman.mvp.profile.UserDetailPresenter;
 import ru.shtrm.serviceman.mvp.task.TaskFragment;
 import ru.shtrm.serviceman.mvp.task.TaskPresenter;
+import ru.shtrm.serviceman.retrofit.Api;
 import ru.shtrm.serviceman.retrofit.TokenTask;
 import ru.shtrm.serviceman.service.ForegroundService;
 import ru.shtrm.serviceman.service.GetReferenceService;
 import ru.shtrm.serviceman.service.SendDataService;
 import ru.shtrm.serviceman.ui.PrefsActivity;
+import ru.shtrm.serviceman.util.Downloader;
 import ru.shtrm.serviceman.util.MainUtil;
 import ru.shtrm.serviceman.util.SettingsUtil;
 
@@ -335,6 +342,9 @@ public class MainActivity extends AppCompatActivity
                 intent = new Intent(MainActivity.this, PrefsActivity.class);
                 intent.putExtra(PrefsActivity.EXTRA_FLAG, PrefsActivity.FLAG_ABOUT);
                 startActivity(intent);
+                break;
+            case R.id.nav_update_app:
+                updateApk();
                 break;
             case R.id.nav_exit:
                 Intent intentFS = new Intent(this, ForegroundService.class);
@@ -741,5 +751,33 @@ public class MainActivity extends AppCompatActivity
 
     public Toolbar getToolbar() {
         return toolbar;
+    }
+
+    public void updateApk() {
+        ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+        dialog.setMessage("Синхронизируем данные");
+        dialog.setIndeterminate(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setCancelable(true);
+        dialog.setMax(100);
+        final Downloader downloaderTask = new Downloader(dialog);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloaderTask.cancel(true);
+            }
+        });
+        String fileName = "zhkh.apk";
+        String updateUrl = Api.API_URL + "/app/" + fileName;
+        if (!Api.API_URL.equals("")) {
+            File file = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+            File outputFile = new File(file, fileName);
+            downloaderTask.execute(updateUrl, outputFile.toString());
+            dialog.show();
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Не указан адрес сервера в настройках приложения!", Toast.LENGTH_LONG)
+                    .show();
+        }
     }
 }

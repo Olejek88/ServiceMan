@@ -19,6 +19,12 @@ public interface AbonentsContract {
         void showStreets(@NonNull List<Street> list);
         void showHouses(@NonNull List<House> list);
         void showObjects(@NonNull List<ZhObject> list);
+
+        int getCurrentLevel();
+
+        House getCurrentHouse();
+
+        Street getCurrentStreet();
     }
 
     interface Presenter extends BasePresenter {

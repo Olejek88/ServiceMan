@@ -255,6 +255,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
                 }
             });
             mObjectDate.setVisibility(View.GONE);
+            recyclerView.setAdapter(houseAdapter);
         } else {
             houseAdapter.updateData(list);
             recyclerView.setAdapter(houseAdapter);
@@ -309,6 +310,21 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    @Override
+    public House getCurrentHouse() {
+        return currentHouse;
+    }
+
+    @Override
+    public Street getCurrentStreet() {
+        return currentStreet;
     }
 }
 

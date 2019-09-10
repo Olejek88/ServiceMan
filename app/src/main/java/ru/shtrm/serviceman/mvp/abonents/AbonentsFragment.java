@@ -27,14 +27,12 @@ import ru.shtrm.serviceman.interfaces.OnRecyclerViewItemClickListener;
 import ru.shtrm.serviceman.mvp.object.ObjectActivity;
 
 public class AbonentsFragment extends Fragment implements AbonentsContract.View {
+    public static final int LEVEL_CITY = 0;
+    public static final int LEVEL_STREET = 1;
+    public static final int LEVEL_HOUSE = 2;
+    public static final int LEVEL_FLAT = 3;
+    public static final int LEVEL_INFO = 4;
     private Activity mainActivityConnector = null;
-
-    private static final int LEVEL_CITY = 0;
-    private static final int LEVEL_STREET = 1;
-    private static final int LEVEL_HOUSE = 2;
-    private static final int LEVEL_FLAT = 3;
-    private static final int LEVEL_INFO = 4;
-
     // View references
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton back;
@@ -262,6 +260,20 @@ public class AbonentsFragment extends Fragment implements AbonentsContract.View 
         // TODO решить что делать если контекст не приехал
         if (mainActivityConnector==null)
             onDestroyView();
+    }
+
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    @Override
+    public House getCurrentHouse() {
+        return currentHouse;
+    }
+
+    @Override
+    public Street getCurrentStreet() {
+        return currentStreet;
     }
 }
 

@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 
 import java.lang.reflect.Type;
 
+import ru.shtrm.serviceman.data.Organization;
 import ru.shtrm.serviceman.data.RequestType;
 import ru.shtrm.serviceman.data.TaskTemplate;
 
@@ -21,8 +22,9 @@ public class RequestTypeDeserializer extends BaseDeserialzer implements JsonDese
 
         item.set_id(getLong(object, "_id"));
         item.setUuid(getString(object, "uuid"));
+        item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
         item.setTitle(getString(object, "title"));
-        item.setTaskTemplate((TaskTemplate) getReference(object, TaskTemplate.class, "taskTemplateUuid"));
+        item.setTaskTemplate((TaskTemplate) getReference(object, TaskTemplate.class, "taskTemplateUuid", "uuid", true));
         item.setCreatedAt(getDate(object, "createdAt"));
         item.setChangedAt(getDate(object, "changedAt"));
 

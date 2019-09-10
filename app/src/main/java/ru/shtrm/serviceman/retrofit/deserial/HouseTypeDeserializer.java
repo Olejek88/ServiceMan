@@ -22,7 +22,6 @@ public class HouseTypeDeserializer extends BaseDeserialzer implements JsonDeseri
 
         item.set_id(getLong(object, "_id"));
         item.setUuid(getString(object, "uuid"));
-        item.setOrganization((Organization) getReference(object, Organization.class, "oid"));
         item.setGisId(getString(object, "gis_id", true));
         item.setTitle(getString(object, "title"));
         item.setCreatedAt(getDate(object, "createdAt"));

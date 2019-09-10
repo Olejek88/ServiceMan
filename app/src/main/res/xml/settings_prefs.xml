@@ -55,7 +55,7 @@
             android:title="@string/default_ufc_driver" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="without_tags_mode"
             android:title="@string/dont_ask_text_tags" />
 

@@ -89,6 +89,7 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
         sp = PreferenceManager.getDefaultSharedPreferences(mainActivityConnector);
 
         FloatingActionButton photoButton = view.findViewById(R.id.add_photo);
+        photoButton.setVisibility(View.GONE);
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -249,7 +250,13 @@ public class ObjectFragment extends Fragment implements ObjectContract.View {
 
     private void runRfidDialog(String expectedTagId, final String uuid) {
         Tag tag = new Tag();
-        tag.loadData(expectedTagId);
+        try {
+            tag.loadData(expectedTagId);
+        } catch (Exception e) {
+            tag.setType(Tag.Type.TAG_TYPE_DUMMY);
+            tag.setTagId(expectedTagId);
+        }
+
         final String expectedTag = tag.getTagId();
         final Activity activity = getActivity();
 

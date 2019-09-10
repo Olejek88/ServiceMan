@@ -99,6 +99,7 @@
     <string name="nav_alarms">Аварии</string>
     <string name="nav_switch_theme">Режим день/ночь</string>
     <string name="nav_settings">Настройки</string>
+    <string name="nav_update_app">Обновление приложения</string>
     <string name="nav_about">О сервисе</string>
     <string name="nav_objects">Объекты</string>
     <string name="nav_tasks">Задачи</string>
@@ -231,7 +232,7 @@
 
     <string name="api_url">api_url</string>
     <string name="api_pref_title">Сервер</string>
-    <string name="api_url_default">http://api.serviceman.tehnosber.ru</string>
+    <string name="api_url_default">http://api-zhkh.serviceman.tehnosber.ru</string>
     <string name="api_oid_default">0</string>
     <string name="api_oid_key">oid</string>
     <string name="api_organization_secret_default" />

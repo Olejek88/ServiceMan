@@ -231,11 +231,13 @@ public class ForegroundService extends Service {
                                 if (response.isSuccessful()) {
                                     List<User> users = response.body();
                                     Realm realm = Realm.getDefaultInstance();
-                                    ReferenceUpdate.saveReferenceData(User.class.getSimpleName(), updateDate);
-                                    realm.beginTransaction();
-                                    realm.copyToRealmOrUpdate(users);
-                                    realm.commitTransaction();
-                                    realm.close();
+                                    if (users.size() > 0) {
+                                        realm.beginTransaction();
+                                        realm.copyToRealmOrUpdate(users);
+                                        realm.commitTransaction();
+                                        realm.close();
+                                        ReferenceUpdate.saveReferenceData(User.class.getSimpleName(), updateDate);
+                                    }
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();

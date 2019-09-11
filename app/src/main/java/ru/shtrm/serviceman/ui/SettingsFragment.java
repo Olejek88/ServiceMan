@@ -97,10 +97,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         drvList.setEntries(drvNames.toArray(new String[]{""}));
         drvList.setEntryValues(drvKeys.toArray(new String[]{""}));
 
-        this.findPreference(getString(R.string.api_url)).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        Preference.OnPreferenceChangeListener listener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Api.API_URL = String.valueOf(newValue);
+                if (preference.getKey().equals(getString(R.string.api_url))) {
+                    Api.API_URL = String.valueOf(newValue);
+                }
+
                 Context context = getContext();
                 if (context != null) {
                     SharedPreferences sp = context
@@ -115,7 +118,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 return true;
             }
-        });
+        };
+        this.findPreference(getString(R.string.api_url)).setOnPreferenceChangeListener(listener);
+        this.findPreference(getString(R.string.api_organization_secret_key)).setOnPreferenceChangeListener(listener);
+        this.findPreference(getString(R.string.api_oid_key)).setOnPreferenceChangeListener(listener);
     }
 
     @Override

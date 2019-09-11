@@ -255,6 +255,7 @@ public class WorkFragment extends Fragment implements AbonentsContract.View {
                 }
             });
             mObjectDate.setVisibility(View.GONE);
+            recyclerView.setAdapter(houseAdapter);
         } else {
             houseAdapter.updateData(list);
             recyclerView.setAdapter(houseAdapter);

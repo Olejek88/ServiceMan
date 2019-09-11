@@ -2,7 +2,6 @@ package ru.shtrm.serviceman.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -12,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.data.ReferenceUpdate;
-import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.db.LoadTestData;
 import ru.shtrm.serviceman.retrofit.Api;
 import ru.shtrm.serviceman.retrofit.UsersTask;
@@ -97,31 +94,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         drvList.setEntries(drvNames.toArray(new String[]{""}));
         drvList.setEntryValues(drvKeys.toArray(new String[]{""}));
 
-        Preference.OnPreferenceChangeListener listener = new Preference.OnPreferenceChangeListener() {
+        this.findPreference(getString(R.string.api_url)).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if (preference.getKey().equals(getString(R.string.api_url))) {
-                    Api.API_URL = String.valueOf(newValue);
-                }
-
-                Context context = getContext();
-                if (context != null) {
-                    SharedPreferences sp = context
-                            .getSharedPreferences(User.SERVICE_USER_UUID, Context.MODE_PRIVATE);
-                    String token = sp.getString("token", null);
-                    if (token != null) {
-                        String lastUpdateDate = ReferenceUpdate.lastChangedAsStr(User.class.getSimpleName());
-                        UsersTask task = new UsersTask(context, token, lastUpdateDate);
-                        task.execute();
-                    }
-                }
-
+                Api.API_URL = String.valueOf(newValue);
                 return true;
             }
-        };
-        this.findPreference(getString(R.string.api_url)).setOnPreferenceChangeListener(listener);
-        this.findPreference(getString(R.string.api_organization_secret_key)).setOnPreferenceChangeListener(listener);
-        this.findPreference(getString(R.string.api_oid_key)).setOnPreferenceChangeListener(listener);
+        });
     }
 
     @Override
@@ -133,4 +112,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        // после изменения настроек пытаемся получить токен и список пользователей
+        Context context = getContext();
+        if (context != null) {
+            UsersTask task = new UsersTask(context);
+            task.execute();
+        }
+    }
 }

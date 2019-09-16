@@ -49,6 +49,18 @@ public class UsersLocalDataSource implements UsersDataSource {
         return list;
     }
 
+    @Override
+    public RealmResults<User> getUsers(Integer[] types) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<User> list = realm
+                .where(User.class)
+                .notEqualTo("uuid", User.SERVICE_USER_UUID)
+                .in("type", types)
+                .findAllSorted("name", Sort.ASCENDING);
+        realm.close();
+        return list;
+    }
+
     public User getLastUser() {
         Realm realm = Realm.getDefaultInstance();
         User user = realm.where(User.class).findFirst();

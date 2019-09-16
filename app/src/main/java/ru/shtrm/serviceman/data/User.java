@@ -120,5 +120,6 @@ public class User extends RealmObject {
     public class Type {
         public static final int ARM = 1;
         public static final int WORKER = 2;
+        public static final int ARM_WORKER = 3;
     }
 }

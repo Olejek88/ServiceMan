@@ -6,13 +6,19 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipEntry;
 
 public class Downloader extends AsyncTask<String, Integer, String> {
 
@@ -93,7 +99,7 @@ public class Downloader extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         dialog.dismiss();
-        if (result == null) {
+        if (result == null && isAPK(outputFile)) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(Uri.fromFile(outputFile), "application/vnd.android.package-archive");
             dialog.getContext().startActivity(intent);
@@ -111,4 +117,38 @@ public class Downloader extends AsyncTask<String, Integer, String> {
         dialog.setMax(100);
         dialog.setProgress(values[0]);
     }
+
+    public static boolean isAPK(File file) {
+            FileInputStream fis = null;
+            ZipInputStream zipIs = null;
+            ZipEntry zEntry = null;
+            String dexFile = "classes.dex";
+            String manifestFile = "AndroidManifest.xml";
+            boolean hasDex = false;
+            boolean hasManifest = false;
+
+            try {
+                fis = new FileInputStream(file);
+                zipIs = new ZipInputStream(new BufferedInputStream(fis));
+                while ((zEntry = zipIs.getNextEntry()) != null) {
+                    if (zEntry.getName().equalsIgnoreCase(dexFile)) {
+                        hasDex = true;
+                    } else if (zEntry.getName().equalsIgnoreCase(manifestFile)) {
+                        hasManifest = true;
+                    }
+                    if (hasDex && hasManifest) {
+                        zipIs.close();
+                        fis.close();
+                        return true;
+                    }
+                }
+                zipIs.close();
+                fis.close();
+            } catch (FileNotFoundException e) {
+                return false;
+            } catch (IOException e) {
+                return false;
+            }
+            return false;
+        }
 }

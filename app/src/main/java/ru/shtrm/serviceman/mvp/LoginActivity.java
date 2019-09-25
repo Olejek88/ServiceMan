@@ -192,7 +192,8 @@ public class LoginActivity extends AppCompatActivity {
 //        });
 //        pinCode.requestFocus();
 
-        RealmResults<User> users = presenter.loadUsers(User.Type.WORKER);
+        Integer[] userTypes = new Integer[]{User.Type.WORKER, User.Type.ARM_WORKER};
+        RealmResults<User> users = presenter.loadUsers(userTypes);
         UserListAdapter adapter = new UserListAdapter(this, R.layout.item_user, users);
         userSelect.setAdapter(adapter);
         SharedPreferences sp = getApplicationContext().getSharedPreferences("lastUser", MODE_PRIVATE);

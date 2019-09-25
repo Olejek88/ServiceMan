@@ -11,6 +11,8 @@ public interface UsersDataSource {
 
     RealmResults<User> getUsers(int type);
 
+    RealmResults<User> getUsers(Integer[] types);
+
     User getUser(@NonNull String userUuid);
 
     boolean checkUser(@NonNull String userUuid, String pin);

@@ -19,5 +19,7 @@ public interface UserContract {
         RealmResults<User> loadUsers();
 
         RealmResults<User> loadUsers(int type);
+
+        RealmResults<User> loadUsers(Integer[] types);
     }
 }

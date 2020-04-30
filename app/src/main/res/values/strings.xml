@@ -232,7 +232,7 @@
 
     <string name="api_url">api_url</string>
     <string name="api_pref_title">Сервер</string>
-    <string name="api_url_default">http://api-zhkh.serviceman.tehnosber.ru</string>
+    <string name="api_url_default">https://api.zhkh.toirus.ru</string>
     <string name="api_oid_default">0</string>
     <string name="api_oid_key">oid</string>
     <string name="api_organization_secret_default" />
@@ -256,5 +256,11 @@
     <string name="defect_type">Тип дефекта</string>
     <string name="defect_description">Описание дефекта</string>
     <string name="measure_type">Тип измерения</string>
+
+    <string name="action_update">Обновить приложение</string>
+    <string name="update">Обновление</string>
+    <string name="not_set_server_address">Не указан адрес сервера в настройках приложения!</string>
+    <string name="sync_data">Синхронизируем данные</string>
+    <string name="update_error">Ошибка при обновлении!</string>
 
 </resources>

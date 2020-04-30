@@ -1,9 +1,14 @@
 package ru.shtrm.serviceman.util;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -17,8 +22,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.util.List;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipEntry;
+
+import ru.shtrm.serviceman.R;
 
 public class Downloader extends AsyncTask<String, Integer, String> {
 
@@ -27,6 +35,40 @@ public class Downloader extends AsyncTask<String, Integer, String> {
 
     public Downloader(ProgressDialog dialog) {
         this.dialog = dialog;
+    }
+
+    public static boolean isAPK(File file) {
+        FileInputStream fis = null;
+        ZipInputStream zipIs = null;
+        ZipEntry zEntry = null;
+        String dexFile = "classes.dex";
+        String manifestFile = "AndroidManifest.xml";
+        boolean hasDex = false;
+        boolean hasManifest = false;
+
+        try {
+            fis = new FileInputStream(file);
+            zipIs = new ZipInputStream(new BufferedInputStream(fis));
+            while ((zEntry = zipIs.getNextEntry()) != null) {
+                if (zEntry.getName().equalsIgnoreCase(dexFile)) {
+                    hasDex = true;
+                } else if (zEntry.getName().equalsIgnoreCase(manifestFile)) {
+                    hasManifest = true;
+                }
+                if (hasDex && hasManifest) {
+                    zipIs.close();
+                    fis.close();
+                    return true;
+                }
+            }
+            zipIs.close();
+            fis.close();
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
     }
 
     /* (non-Javadoc)
@@ -98,13 +140,34 @@ public class Downloader extends AsyncTask<String, Integer, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
+        Context context = dialog.getContext();
         dialog.dismiss();
         if (result == null && isAPK(outputFile)) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(outputFile), "application/vnd.android.package-archive");
-            dialog.getContext().startActivity(intent);
+            Intent intent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Uri apkUri = FileProvider.getUriForFile(context,
+                        context.getPackageName() + ".fileprovider", outputFile);
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                List<ResolveInfo> resInfoList = context.getPackageManager()
+                        .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    context.grantUriPermission(packageName, apkUri,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+
+            } else {
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(outputFile), "application/vnd.android.package-archive");
+            }
+
+            context.startActivity(intent);
         } else {
-            Toast.makeText(dialog.getContext(), "Ошибка при обновлении!", Toast.LENGTH_LONG).show();
+            Toast.makeText(dialog.getContext(), dialog.getContext().getString(R.string.update_error), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -117,38 +180,4 @@ public class Downloader extends AsyncTask<String, Integer, String> {
         dialog.setMax(100);
         dialog.setProgress(values[0]);
     }
-
-    public static boolean isAPK(File file) {
-            FileInputStream fis = null;
-            ZipInputStream zipIs = null;
-            ZipEntry zEntry = null;
-            String dexFile = "classes.dex";
-            String manifestFile = "AndroidManifest.xml";
-            boolean hasDex = false;
-            boolean hasManifest = false;
-
-            try {
-                fis = new FileInputStream(file);
-                zipIs = new ZipInputStream(new BufferedInputStream(fis));
-                while ((zEntry = zipIs.getNextEntry()) != null) {
-                    if (zEntry.getName().equalsIgnoreCase(dexFile)) {
-                        hasDex = true;
-                    } else if (zEntry.getName().equalsIgnoreCase(manifestFile)) {
-                        hasManifest = true;
-                    }
-                    if (hasDex && hasManifest) {
-                        zipIs.close();
-                        fis.close();
-                        return true;
-                    }
-                }
-                zipIs.close();
-                fis.close();
-            } catch (FileNotFoundException e) {
-                return false;
-            } catch (IOException e) {
-                return false;
-            }
-            return false;
-        }
 }

@@ -59,25 +59,32 @@
             android:key="without_tags_mode"
             android:title="@string/dont_ask_text_tags" />
 
-        <Preference
-            android:key="@string/load_test_data"
-            android:title="@string/load_test_data" />
-        <Preference
-            android:key="@string/delete_test_data"
-            android:title="@string/delete_test_data" />
+        <!--<Preference-->
+        <!--android:key="@string/load_test_data"-->
+        <!--android:title="@string/load_test_data" />-->
+        <!--<Preference-->
+        <!--android:key="@string/delete_test_data"-->
+        <!--android:title="@string/delete_test_data" />-->
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/notifications">
-
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/notification_interval"
-            android:entryValues="@array/notification_interval_item"
-            android:key="notification_interval"
-            android:summary="%s"
-            android:title="@string/notification_interval" />
-
+    <PreferenceCategory android:title="@string/update">
+        <!--android:theme="@style/PreferenceScreen"-->
+        <Preference
+            android:key="updateApp"
+            android:title="@string/action_update" />
     </PreferenceCategory>
+
+    <!--<PreferenceCategory android:title="@string/notifications">-->
+
+    <!--<ListPreference-->
+    <!--android:defaultValue="1"-->
+    <!--android:entries="@array/notification_interval"-->
+    <!--android:entryValues="@array/notification_interval_item"-->
+    <!--android:key="notification_interval"-->
+    <!--android:summary="%s"-->
+    <!--android:title="@string/notification_interval" />-->
+
+    <!--</PreferenceCategory>-->
 
 </PreferenceScreen>

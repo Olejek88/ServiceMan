@@ -47,14 +47,11 @@ import io.realm.Realm;
 import ru.shtrm.serviceman.R;
 import ru.shtrm.serviceman.data.AuthorizedUser;
 import ru.shtrm.serviceman.data.Photo;
-import ru.shtrm.serviceman.data.ReferenceUpdate;
-import ru.shtrm.serviceman.data.UpdateQuery;
 import ru.shtrm.serviceman.data.User;
 import ru.shtrm.serviceman.data.source.HouseRepository;
 import ru.shtrm.serviceman.data.source.ObjectRepository;
 import ru.shtrm.serviceman.data.source.StreetRepository;
 import ru.shtrm.serviceman.data.source.TaskRepository;
-import ru.shtrm.serviceman.data.source.local.GpsTrackLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.HouseLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.ObjectLocalDataSource;
 import ru.shtrm.serviceman.data.source.local.StreetLocalDataSource;
@@ -133,6 +130,34 @@ public class MainActivity extends AppCompatActivity
             }
         }
         return true;
+    }
+
+    public static void updateApk(Context context) {
+        ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setMessage("Синхронизируем данные");
+        dialog.setIndeterminate(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setCancelable(true);
+        dialog.setMax(100);
+        final Downloader downloaderTask = new Downloader(dialog);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloaderTask.cancel(true);
+            }
+        });
+        String fileName = "zhkh.apk";
+        String updateUrl = Api.API_URL + "/app/" + fileName;
+        if (!Api.API_URL.equals("")) {
+            File file = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+            File outputFile = new File(file, fileName);
+            downloaderTask.execute(updateUrl, outputFile.toString());
+            dialog.show();
+        } else {
+            Toast.makeText(context,
+                    "Не указан адрес сервера в настройках приложения!", Toast.LENGTH_LONG)
+                    .show();
+        }
     }
 
     @Override
@@ -344,7 +369,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             case R.id.nav_update_app:
-                updateApk();
+                updateApk(MainActivity.this);
                 break;
             case R.id.nav_exit:
                 Intent intentFS = new Intent(this, ForegroundService.class);
@@ -751,33 +776,5 @@ public class MainActivity extends AppCompatActivity
 
     public Toolbar getToolbar() {
         return toolbar;
-    }
-
-    public void updateApk() {
-        ProgressDialog dialog = new ProgressDialog(MainActivity.this);
-        dialog.setMessage("Синхронизируем данные");
-        dialog.setIndeterminate(false);
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        dialog.setCancelable(true);
-        dialog.setMax(100);
-        final Downloader downloaderTask = new Downloader(dialog);
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                downloaderTask.cancel(true);
-            }
-        });
-        String fileName = "zhkh.apk";
-        String updateUrl = Api.API_URL + "/app/" + fileName;
-        if (!Api.API_URL.equals("")) {
-            File file = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-            File outputFile = new File(file, fileName);
-            downloaderTask.execute(updateUrl, outputFile.toString());
-            dialog.show();
-        } else {
-            Toast.makeText(getApplicationContext(),
-                    "Не указан адрес сервера в настройках приложения!", Toast.LENGTH_LONG)
-                    .show();
-        }
     }
 }

@@ -91,7 +91,6 @@
         android:paddingRight="10dp"
         android:text="@string/nav_settings"
         android:textColor="@color/mdtp_white"
-        android:tint="@android:color/white"
-        android:visibility="gone" />
+        android:tint="@android:color/white" />
 
 </RelativeLayout>

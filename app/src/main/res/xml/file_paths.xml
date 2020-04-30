@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
+<paths>
     <files-path
         name="my_images"
         path="Pictures/" />
@@ -12,5 +12,16 @@
     <external-path
         name="docs"
         path="Android/data/ru.shtrm.serviceman/files/Documents/" />
-
+    <files-path
+        name="users"
+        path="users/" />
+    <external-path
+        name="users"
+        path="Android/data/ru.shtrm.serviceman/files/users/" />
+    <files-path
+        name="Download"
+        path="Download/" />
+    <external-path
+        name="Download"
+        path="Android/data/ru.shtrm.serviceman/files/Download/" />
 </paths>

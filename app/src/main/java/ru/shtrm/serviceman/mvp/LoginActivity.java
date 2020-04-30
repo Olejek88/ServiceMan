@@ -143,6 +143,16 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
 
+        findViewById(R.id.setting_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(LoginActivity.this, PrefsActivity.class);
+                intent.putExtra(PrefsActivity.EXTRA_FLAG, PrefsActivity.FLAG_SETTINGS);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public void initViews() {

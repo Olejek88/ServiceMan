@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.shtrm.serviceman.R;
-import ru.shtrm.serviceman.db.LoadTestData;
+//import ru.shtrm.serviceman.db.LoadTestData;
+import ru.shtrm.serviceman.mvp.MainActivity;
 import ru.shtrm.serviceman.retrofit.Api;
 import ru.shtrm.serviceman.retrofit.UsersTask;
 import ru.shtrm.serviceman.rfid.RfidDriverBase;
@@ -19,30 +20,48 @@ import ru.shtrm.serviceman.rfid.RfidDriverBase;
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "Settings";
 
+    private Activity mainActivityConnector = null;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings_prefs);
 
-        Preference loadTestDataBtn = this.findPreference(getString(R.string.load_test_data));
-        loadTestDataBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                LoadTestData.LoadAllTestData();
-                LoadTestData.LoadAllTestData2();
-                LoadTestData.LoadAllTestData3();
-                LoadTestData.LoadAllTestData4();
-                return true;
-            }
-        });
+        mainActivityConnector = getActivity();
 
-        Preference deleteTestDataBtn = this.findPreference(getString(R.string.delete_test_data));
-        deleteTestDataBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                LoadTestData.DeleteSomeData();
-                return true;
-            }
-        });
+        Preference updateAppButton = getPreferenceManager().findPreference("updateApp");
+        if (updateAppButton != null) {
+            updateAppButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference arg0) {
+                    if (mainActivityConnector != null) {
+                        MainActivity.updateApk(mainActivityConnector);
+                    }
+
+                    return true;
+                }
+            });
+        }
+
+//        Preference loadTestDataBtn = this.findPreference(getString(R.string.load_test_data));
+//        loadTestDataBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//            @Override
+//            public boolean onPreferenceClick(Preference preference) {
+//                LoadTestData.LoadAllTestData();
+//                LoadTestData.LoadAllTestData2();
+//                LoadTestData.LoadAllTestData3();
+//                LoadTestData.LoadAllTestData4();
+//                return true;
+//            }
+//        });
+//
+//        Preference deleteTestDataBtn = this.findPreference(getString(R.string.delete_test_data));
+//        deleteTestDataBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//            @Override
+//            public boolean onPreferenceClick(Preference preference) {
+//                LoadTestData.DeleteSomeData();
+//                return true;
+//            }
+//        });
 
         String[] driverClassList;
         List<String> drvNames = new ArrayList<>();

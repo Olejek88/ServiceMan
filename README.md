@@ -10,5 +10,5 @@
 <img src="images/screen115.jpg" align="left" />
 <img src="images/screen116.jpg" align="right" />
 <img src="images/screen117.jpg" align="left" />
-<img src="images/screen118.jpg" align="left" />
-<img src="images/screen119.jpg" align="right" />
+<img src="images/screen118.jpg" align="right" />
+<img src="images/screen119.jpg" align="left" />

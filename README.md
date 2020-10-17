@@ -6,9 +6,9 @@
 <img src="images/screen110.jpg" align="left" />
 <img src="images/screen111.jpg" align="right" />
 <img src="images/screen112.jpg" align="left" />
-<img src="images/screen113.jpg" />
-<img src="images/screen115.jpg" />
-<img src="images/screen116.jpg" />
-<img src="images/screen117.jpg" />
-<img src="images/screen118.jpg" />
-<img src="images/screen119.jpg" />
+<img src="images/screen113.jpg" align="right" />
+<img src="images/screen115.jpg" align="left" />
+<img src="images/screen116.jpg" align="right" />
+<img src="images/screen117.jpg" align="left" />
+<img src="images/screen118.jpg" align="left" />
+<img src="images/screen119.jpg" align="right" />

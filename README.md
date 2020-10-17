@@ -3,9 +3,9 @@
 
 Мобильное приложение обходчика позволяет для каждого объекта вводить показания, комментарии, фиксировать неисправности, делать фотографии счетчиков и передавать собранные показания на сервер. 
 
-<img src="images/screen110.jpg" />
-<img src="images/screen111.jpg" />
-<img src="images/screen112.jpg" />
+<img src="images/screen110.jpg" align="left" />
+<img src="images/screen111.jpg" align="right" />
+<img src="images/screen112.jpg" align="left" />
 <img src="images/screen113.jpg" />
 <img src="images/screen115.jpg" />
 <img src="images/screen116.jpg" />

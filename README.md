@@ -1,13 +1,14 @@
 # ServiceMan
 Программный комплекс Serviceman предназначен для сбора данных/показаний счетчиков, для автоматизации процесса съема показаний индивидуальных и общедомовых приборов учета воды. Задача сервера обеспечить интерфейс обмена данными с мобильными приложениями контроллеров (смартфоны с Android) через встроенный API, обеспечить хранение, обработку и визуализацию собранных данных. 
-Мобильное приложение обходчика позволяет для каждого объекта вводить показания, комментарии, фиксировать неисправности, делать фотографии счетчиков и передавать собранные показания на сервер. 
-<img src=“images/screen110.jpg” />
-<img src=“images/screen111.jpg” />
-<img src=“images/screen112.jpg” />
-<img src=“images/screen113.jpg” />
-<img src=“images/screen115.jpg” />
-<img src=“images/screen116.jpg” />
-<img src=“images/screen117.jpg” />
-<img src=“images/screen118.jpg” />
-<img src=“images/screen119.jpg” />
 
+Мобильное приложение обходчика позволяет для каждого объекта вводить показания, комментарии, фиксировать неисправности, делать фотографии счетчиков и передавать собранные показания на сервер. 
+
+<img src="images/screen110.jpg" />
+<img src="images/screen111.jpg" />
+<img src="images/screen112.jpg" />
+<img src="images/screen113.jpg" />
+<img src="images/screen115.jpg" />
+<img src="images/screen116.jpg" />
+<img src="images/screen117.jpg" />
+<img src="images/screen118.jpg" />
+<img src="images/screen119.jpg" />
